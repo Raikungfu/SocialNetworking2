@@ -1,5 +1,6 @@
 export interface TextareaProps {
   id?: string;
+  name?: string;
   label?: string;
   children?: JSX.Element;
   numberOfRows: number;

@@ -1,4 +1,3 @@
-import React from "react";
 import { PProps } from "./types";
 
 export const P = (props: PProps) => {

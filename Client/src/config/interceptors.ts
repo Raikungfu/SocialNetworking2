@@ -41,7 +41,8 @@ Axios.interceptors.response.use(
           return Promise.resolve(res);
         }
       } catch {
-        console.log("Error");
+        Cookies.remove("accessToken");
+        Cookies.remove("refreshToken");
         localStorage.clear();
         location.reload();
       }

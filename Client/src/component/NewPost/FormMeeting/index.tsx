@@ -3,26 +3,24 @@ import NewPostForm from "../../Layout/NewPostForm";
 
 export const NewMeeting: React.FC = () => {
   const handleSuccess = (data: object) => {
-    // Xử lý thành công
     console.log(data);
   };
 
   const handleError = (error: string) => {
-    // Xử lý lỗi
     console.log(error);
   };
 
   const handleSubmitTextarea = (
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
-    // Xử lý sự kiện thay đổi của textarea
-    console.log(event); // In ra giá trị của textarea
+    console.log(event);
   };
 
   return (
     <NewPostForm
       textarea={{
-        id: "post-content",
+        id: "meeting-content",
+        name: "meeting-content",
         label: "Post Content",
         numberOfRows: 4,
         className: "flex flex-row justify-between py-2",

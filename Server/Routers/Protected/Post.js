@@ -11,13 +11,9 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.post("/news", function (req, res, next) {
-  console.log(req.body);
-  return res.status(200).json("sss");
-});
+app.get("/", function (req, res, next) {});
 
 app.post("/", function (req, res, next) {
-  console.log(req.body);
   return res.status(200).json("sss");
 });
 

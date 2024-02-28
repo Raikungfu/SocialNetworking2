@@ -13,10 +13,9 @@ const Textarea: React.FC<TextareaProps> = (props) => {
         {props.labelContent}
       </label>
       <textarea
-        id={props.id}
+        {...props}
         rows={props.numberOfRows}
         className={props.variantTextarea}
-        placeholder={props.placeholder}
         onChange={handleTextareaChange}
       ></textarea>
     </>

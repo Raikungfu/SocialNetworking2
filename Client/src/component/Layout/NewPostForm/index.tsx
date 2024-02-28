@@ -16,7 +16,6 @@ const NewPostForm: React.FC<NewPostFormProps> = (props) => {
   const handleTextareaChange = (
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
-    console.log(event.target.value);
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
   };

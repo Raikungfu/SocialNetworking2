@@ -36,6 +36,7 @@ export interface NewPostFormProps {
 
   textarea: {
     id?: string;
+    name?: string;
     label?: string;
     children?: JSX.Element;
     numberOfRows: number;

@@ -3,20 +3,17 @@ import NewPostForm from "../../Layout/NewPostForm";
 
 const FormPost: React.FC = () => {
   const handleSuccess = (data: object) => {
-    // Xử lý thành công
     console.log(data);
   };
 
   const handleError = (error: string) => {
-    // Xử lý lỗi
     console.log(error);
   };
 
   const handleSubmitTextarea = (
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
-    // Xử lý sự kiện thay đổi của textarea
-    console.log(event); // In ra giá trị của textarea
+    console.log(event.target.name);
   };
 
   return (
@@ -27,6 +24,7 @@ const FormPost: React.FC = () => {
       labelVariant="block basis-1/3 text-sm font-medium text-gray-900 dark:text-white"
       textarea={{
         id: "post-content",
+        name: "post-content",
         label: "Post Content",
         numberOfRows: 4,
         variantTextarea: "textarea-new-post",
