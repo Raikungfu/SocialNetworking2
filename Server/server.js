@@ -5,6 +5,8 @@ const path = require("path");
 var cookieParser = require("cookie-parser");
 const checkAccess = require("./Middleware/Auth");
 
+const port = process.env.PORT || 3000;
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -31,6 +33,6 @@ app.get("/", (req, res, next) => {
   res.status(200).json({ name: req.userData.name, avt: req.userData.avt });
 });
 
-app.listen(3000, () => {
+app.listen(port, () => {
   console.log("Server running on port 3000");
 });
