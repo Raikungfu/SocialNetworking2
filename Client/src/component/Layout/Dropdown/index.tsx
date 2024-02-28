@@ -1,9 +1,7 @@
 import { useState } from "react";
-import logoAvt from "../../../assets/img/logoAvt.jpeg";
 import { DropdownProps } from "./types";
 import Button from "../Button";
-import Img from "../Img";
-import LinkCmp from "../Link";
+import { Link } from "react-router-dom";
 
 const DropdownMenu: React.FC<DropdownProps> = (props) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,38 +11,44 @@ const DropdownMenu: React.FC<DropdownProps> = (props) => {
   };
 
   return (
-    <div className="relative items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+    <div className={props.className}>
       <Button
         id={`user-menu-button-${props.id}`}
         className={`${props.navHeaderClassName}`}
-        variant={undefined}
         onClick={toggleDropdown}
-        children={
-          <>
-            <span className="sr-only">Open user menu</span>
-            <Img src={logoAvt} alt="user photo" variant={"avt"} />
-          </>
-        }
-        aria-expanded="false"
-        data-dropdown-toggle="user-dropdown"
-        data-dropdown-placement="bottom"
+        children={props.navLinkAvt}
       />
       {isOpen && (
         <div
           className={props.wrapDropdownListVariant}
           key={`user-dropdown-${props.id}`}
         >
-          <LinkCmp
-            id={""}
-            to={""}
-            variant={"access-link"}
-            className={props.navLinkAvt?.link}
-          >
-            <span>{props.navLinkAvt?.avtSrc}</span>
-            {props.navLinkAvt?.info?.map((navLink) => (
-              <span className={`${navLink.className}`}>{navLink.label}</span>
+          <div className="flex flex-col">
+            {props.navLinkIcon?.map((navLink) => (
+              <Link
+                id={""}
+                to={navLink.link ? navLink.link : "#"}
+                className={"access-link"}
+                onClick={
+                  navLink.link
+                    ? () => {}
+                    : (event) => {
+                        event.preventDefault();
+                        if (navLink.onClick) {
+                          navLink.onClick();
+                        }
+                      }
+                }
+              >
+                <div key={navLink.label} className="flex flex-row p-2 gap-2">
+                  <span>{navLink.icon ? navLink.icon : ""}</span>
+                  <span className={`${navLink.className}`}>
+                    {navLink.label}
+                  </span>
+                </div>
+              </Link>
             ))}
-          </LinkCmp>
+          </div>
         </div>
       )}
     </div>

@@ -6,7 +6,19 @@ export interface InputProps {
   placeholder?: string;
   types: string;
   wrapInputVariant?: string;
+  wrapGroupInputVariant?: string;
+  groupInput?: {
+    labelVariant?: string;
+    inputVariant?: string;
+    wrapInputVariant?: string;
+    input: Array<{
+      id: string;
+      value: string;
+      name: string;
+      label: string;
+    }>;
+  };
   inputVariant?: string;
   labelVariant?: string;
-  require?: boolean;
+  required?: boolean;
 }

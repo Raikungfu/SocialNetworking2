@@ -1,4 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
+import Cookies from "js-cookie";
+import { RootState } from "./rootReducer";
 
 interface UserState {
   payload: {
@@ -6,9 +8,11 @@ interface UserState {
     name?: string;
     userName?: string;
     avt?: string;
+    accessToken?: string;
+    refreshToken?: string;
   };
   userState: {
-    state: string;
+    state: boolean;
     name?: string;
     userName?: string;
     avt?: string;
@@ -17,7 +21,7 @@ interface UserState {
 
 const initialState: UserState = {
   userState: {
-    state: "inactive",
+    state: false,
   },
   payload: {
     state: "",
@@ -32,17 +36,34 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
     setState: (state: UserState, action) => {
-      state.userState = action.payload;
+      Object.assign(state.userState, action.payload);
+      Cookies.set("accessToken", action.payload.accessToken);
+      Cookies.set("refreshToken", action.payload.refreshToken);
     },
     logoutUser: (state: UserState) => {
-      Cookies.remove("refreshToken")
+      Cookies.remove("refreshToken");
+      Cookies.remove("accessToken");
+      localStorage.clear();
       state.userState = {
-        state: "inactive",
+        state: false,
       };
+    },
+    loginUser: (state: UserState, action) => {
+      state.userState = action.payload;
+      state.userState.state = true;
+      Cookies.set("accessToken", action.payload.accessToken);
+      Cookies.set("refreshToken", action.payload.refreshToken);
+    },
+    updateProfileSuccess: (state: UserState, action) => {
+      Object.assign(state.userState, action.payload);
     },
   },
 });
 
-export const { setState, logoutUser } = userSlice.actions;
+export const { setState, logoutUser, loginUser, updateProfileSuccess } =
+  userSlice.actions;
+
+export const selectUserState = (state: RootState) => state.user.userState;
+export const selectUserName = (state: RootState) => state.user.userState.name;
 
 export default userSlice.reducer;

@@ -1,56 +1,56 @@
 import React, { useState, useEffect } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import logo from "../../assets/img/logoAvt.jpeg";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../hook/UserSlice";
 import { RootState } from "../../hook/rootReducer";
 import GroupButton from "../Layout/GroupElement";
 import Button from "../Layout/Button";
-import LinkCmp from "../Layout/Link";
 import Dropdown from "../Layout/Dropdown";
 import Img from "../Layout/Img";
+import { Link, useNavigate } from "react-router-dom";
 
 const HeaderRight: React.FC = () => {
   const dispatch = useDispatch();
   const nav = useNavigate();
   const initialState = useSelector((state: RootState) => state.user.userState);
-  const [state, setState] = useState<string>(initialState.state);
+  const [state, setState] = useState<boolean>(initialState.state);
   useEffect(() => {
     setState(initialState.state);
   }, [initialState.state]);
 
-  return state === "inactive" ? (
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    nav("/login");
+  };
+
+  return state ? (
     <Dropdown
-      className={"flex flex-row relative justify-end font-medium basis-[20%]"}
+      className={
+        "flex flex-row justify-end items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse"
+      }
       variant={"drop-down"}
       id={""}
       children={[]}
       wrapDropdownListVariant={
-        "z-50 my-4 text-base absolute list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
+        "flex flex-col z-50 py-2 px-2 right-5 top-14 right-0 text-base absolute list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
       }
-      navLinkAvt={{
-        link: "profile",
-        avtSrc: <Img src={initialState.avt} variant={"avt"} />,
-        info: [
-          {
-            label: "Profile",
-          },
-          {
-            label: "Profile",
-          },
-        ],
-      }}
+      navLinkAvt={
+        <Img src={initialState.avt ? initialState.avt : logo} variant={"avt"} />
+      }
       navLinkIcon={[
         {
-          link: "",
-          label: "Profile",
+          link: "profile",
+          label: `${initialState.name ? initialState.name : "User"}`,
+          icon: (
+            <Img
+              src={initialState.avt ? initialState.avt : logo}
+              variant={"avt"}
+            />
+          ),
         },
         {
-          link: "/logout",
           label: "Logout",
-          onClick() {
-            dispatch(logoutUser());
-            nav("/login");
-          },
+          onClick: handleLogout,
         },
       ]}
       navHeaderClassName={
@@ -61,7 +61,7 @@ const HeaderRight: React.FC = () => {
     <div>
       <GroupButton
         children={[
-          <LinkCmp
+          <Link
             key={"log-btn"}
             to={`/login`}
             children={
@@ -70,12 +70,13 @@ const HeaderRight: React.FC = () => {
                 variant={"accept-link-button"}
                 type={"button"}
                 label="Login"
+                className="px-5 py-2"
               />
             }
             id={""}
-            variant={"access-link"}
+            className="access-link"
           />,
-          <LinkCmp
+          <Link
             key={"reg-btn"}
             to={"/register"}
             children={
@@ -84,12 +85,13 @@ const HeaderRight: React.FC = () => {
                 variant={"accept-link-button"}
                 type={"button"}
                 label="Register"
+                className="px-5"
               >
                 Register
               </Button>
             }
             id={""}
-            variant={"access-link"}
+            className={"access-link"}
           />,
         ]}
         variant={"flex flex-row justify-end font-medium gap-x-1.5 basis-[20%]"}

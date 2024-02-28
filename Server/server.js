@@ -3,9 +3,7 @@ const app = express();
 const bodyParser = require("body-parser");
 const path = require("path");
 var cookieParser = require("cookie-parser");
-const fs = require("fs");
-const Cookies = require("cookies");
-const jwt = require("jsonwebtoken");
+const checkAccess = require("./Middleware/Auth");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -13,7 +11,7 @@ app.use(cookieParser());
 
 const userState = require("./Routers/UserState");
 const authentication = require("./Routers/Authenticate");
-const userPosts = require("./Routers/Post");
+const userPosts = require("./Routers/Protected/Post");
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "http://localhost:5173");
   res.header("Access-Control-Allow-Headers", "Content-Type");
@@ -22,37 +20,9 @@ app.use((req, res, next) => {
   next();
 });
 
-const checkAccess = (req, res, next) => {
-  const cookies = new Cookies(req, res);
-  var token = cookies.get("accessToken");
-  checkJWT(token)
-    .then((data) => {
-      if (data) {
-        req.userData = data;
-        next();
-      }
-    })
-    .catch((error) => {
-      res.status(403).json(error.message);
-    });
-};
-
-function checkJWT(token) {
-  return new Promise((resolve, reject) => {
-    cert = fs.readFileSync("./Key/AccessToken/publickey.crt");
-    jwt.verify(token, cert, (err, data) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(data);
-      }
-    });
-  });
-}
-
 app.use("/User", userState);
 app.use("/authentication", authentication);
-app.use("/posts", checkAccess, userPosts);
+app.use("/post", userPosts);
 app.use("/", checkAccess);
 
 app.use(express.static(path.join(__dirname, "public")));

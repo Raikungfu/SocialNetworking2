@@ -2,8 +2,8 @@ const express = require("express");
 const app = express();
 const jwt = require("jsonwebtoken");
 const path = require("path");
-const fs = require('fs');
-const Cookies = require('cookies')
+const fs = require("fs");
+const Cookies = require("cookies");
 
 const AccountModel = require("../Modules/account");
 
@@ -26,11 +26,11 @@ app.post("/register", function (req, res, next) {
           password: pw,
           age: age,
           gender: gender,
-          name: email.split('@')[0]
+          name: email.split("@")[0],
         })
           .save()
           .then((newUser) => {
-            res.status(200).json(newUser);
+            res.status(200).json("Register success!");
           })
           .catch((err) => {
             res.status(500).json({ error: "Database Error!" });
@@ -38,7 +38,7 @@ app.post("/register", function (req, res, next) {
       }
     })
     .catch((err) => {
-      res.status(500).json({ error: "Check User error" });
+      res.status(400).json({ error: "Check User error" });
     });
 });
 
@@ -47,7 +47,13 @@ app.post("/login", function (req, res, next) {
   var pw = req.body.password;
   checkLogin(id, pw, req, res)
     .then((data) => {
-      res.status(200).json({ accessToken: data.accessToken, refreshToken: data.refreshToken,  name: data.existingUser.name, avt: data.existingUser.avt, userName: data.existingUser.username});
+      res.status(200).json({
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
+        name: data.existingUser.name,
+        avt: data.existingUser.avt,
+        userName: data.existingUser.username,
+      });
     })
     .catch((err) => {
       if (err instanceof Error) {
@@ -67,15 +73,29 @@ function checkLogin(email, password, req, res) {
       }).then((existingUser) => {
         if (existingUser) {
           privateKeyA = fs.readFileSync("./Key/AccessToken/privatekey.pem");
-          var accessToken = jwt.sign({ username: existingUser.username, name: existingUser.name, avt: existingUser.avt, id: existingUser._id, role: "user" }, privateKeyA, {
-            expiresIn: "60s",
-            algorithm: "RS256",
-          });
+          var accessToken = jwt.sign(
+            {
+              username: existingUser.username,
+              name: existingUser.name,
+              avt: existingUser.avt,
+              id: existingUser._id,
+              role: "user",
+            },
+            privateKeyA,
+            {
+              expiresIn: "60s",
+              algorithm: "RS256",
+            }
+          );
           privateKeyR = fs.readFileSync("./Key/RefreshToken/privatekey.pem");
-          var refreshToken = jwt.sign({ id: existingUser._id, role: "user" }, privateKeyR, {
+          var refreshToken = jwt.sign(
+            { id: existingUser._id, role: "user" },
+            privateKeyR,
+            {
               expiresIn: "1d",
               algorithm: "RS256",
-          });
+            }
+          );
           resolve({ accessToken, refreshToken, existingUser });
         } else {
           reject(new Error("ID/Password not correct!"));

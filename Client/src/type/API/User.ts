@@ -11,4 +11,5 @@ export interface authResponseData {
   userName: string;
   avt: string;
   name: string;
+  status: number;
 }

@@ -1,13 +1,22 @@
 import React, { useState } from "react";
-import { FormProps } from "./types";
+import { NewPostFormProps } from "./types";
 import Input from "../Input";
 import Button from "../Button";
+import Textarea from "../Textarea/Textarea";
 
-const Form: React.FC<FormProps> = (props) => {
+const NewPostForm: React.FC<NewPostFormProps> = (props) => {
   const [formData, setFormData] = useState({});
   const API_FETCH_FORM = props.apiFetchForm;
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleTextareaChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    console.log(event.target.value);
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
   };
@@ -35,26 +44,22 @@ const Form: React.FC<FormProps> = (props) => {
           {...input}
         />
       ))}
+      {props.textarea ? (
+        <Textarea {...props.textarea} onChange={handleTextareaChange} />
+      ) : null}
+
       <div className="flex justify-end gap-3">
         <Button
-          variant="summit-button"
+          variant="accept-link-button"
           type="submit"
           className="px-5 py-2 "
           id={"summit-btn"}
         >
           Submit
         </Button>
-        <Button
-          variant="summit-button"
-          type="reset"
-          className="px-5 py-2 bg-red-100 border-red-300 text-red-900 shadow-lg shadow-red-400 hover:border-red-500"
-          id={"reset-btn"}
-        >
-          Reset
-        </Button>
       </div>
     </form>
   );
 };
 
-export default Form;
+export default NewPostForm;

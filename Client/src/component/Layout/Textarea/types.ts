@@ -1,4 +1,5 @@
 export interface TextareaProps {
+  id?: string;
   label?: string;
   children?: JSX.Element;
   numberOfRows: number;
@@ -8,5 +9,6 @@ export interface TextareaProps {
     | "textarea-new-story";
   variantLabel: string;
   placeholder: string;
-  onChange: (newValue: string) => void;
+  labelContent?: string;
+  onChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }

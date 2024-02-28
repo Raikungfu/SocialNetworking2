@@ -5,8 +5,9 @@ export interface errorData {
   status?: number;
 }
 
-export interface FormProps {
+export interface NewPostFormProps {
   onSubmit?: (api: Element) => void;
+  title?: string;
   wrapInputVariant?: string;
   inputVariant?: string;
   labelVariant?: string;
@@ -32,6 +33,22 @@ export interface FormProps {
       }>;
     };
   }>;
+
+  textarea: {
+    id?: string;
+    label?: string;
+    children?: JSX.Element;
+    numberOfRows: number;
+    variantTextarea:
+      | "textarea-new-meeting"
+      | "textarea-new-post"
+      | "textarea-new-story";
+    className?: string;
+    variantLabel: string;
+    placeholder: string;
+    labelContent?: string;
+    onChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  };
   formVariant?: string;
   onSubmitSuccess: (data: object) => void;
   onSubmitFail: (error: string) => void;
