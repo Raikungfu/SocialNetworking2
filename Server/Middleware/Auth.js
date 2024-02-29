@@ -54,7 +54,7 @@ function genNewAccessToken(data, req, res) {
     AccountModel.findById(data.id)
       .then((existingUser) => {
         if (existingUser) {
-          privateKey = fs.readFileSync("./Key/AccessToken/privatekey.pem");
+          privateKey = fs.readFileSync("./Key/AccessToken/privateKey.pem");
           var accessToken = jwt.sign(
             {
               username: existingUser.username,

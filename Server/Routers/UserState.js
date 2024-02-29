@@ -72,7 +72,7 @@ function checkLogin(email, password, req, res) {
         password: password,
       }).then((existingUser) => {
         if (existingUser) {
-          privateKeyA = fs.readFileSync("./Key/AccessToken/privatekey.pem");
+          privateKeyA = fs.readFileSync("./Key/AccessToken/privateKey.pem");
           var accessToken = jwt.sign(
             {
               username: existingUser.username,
@@ -87,7 +87,7 @@ function checkLogin(email, password, req, res) {
               algorithm: "RS256",
             }
           );
-          privateKeyR = fs.readFileSync("./Key/RefreshToken/privatekey.pem");
+          privateKeyR = fs.readFileSync("./Key/RefreshToken/privateKey.pem");
           var refreshToken = jwt.sign(
             { id: existingUser._id, role: "user" },
             privateKeyR,
