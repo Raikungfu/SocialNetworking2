@@ -17,15 +17,7 @@ const authentication = require("./Routers/Authenticate");
 const userPosts = require("./Routers/Protected/Post");
 
 app.use((req, res, next) => {
-  console.log(process.env.NODE_ENV);
-  if (process.env.NODE_ENV === "development") {
-    res.header("Access-Control-Allow-Origin", "http://localhost:5173");
-  } else {
-    res.header(
-      "Access-Control-Allow-Origin",
-      "https://socialnetworkingclient.onrender.com"
-    );
-  }
+  res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Content-Type");
   res.header("Access-Control-Allow-Credentials", "true");
   res.header(`Access-Control-Allow-Methods`, `GET,PUT,POST,DELETE`);
