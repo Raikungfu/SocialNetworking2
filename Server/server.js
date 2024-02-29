@@ -5,6 +5,7 @@ const path = require("path");
 var cookieParser = require("cookie-parser");
 const checkAccess = require("./Middleware/Auth");
 const x = require("dotenv").config();
+const cors = require("cors");
 
 const port = process.env.PORT || 3000;
 
@@ -16,15 +17,9 @@ const userState = require("./Routers/UserState");
 const authentication = require("./Routers/Authenticate");
 const userPosts = require("./Routers/Protected/Post");
 
+app.use(cors({ origin: "*", credentials: true }));
+
 app.use((req, res, next) => {
-  if (process.env.NODE_ENV && process.env.NODE_ENV === "development") {
-    res.header("Access-Control-Allow-Origin", "http://localhost:5173");
-  } else {
-    res.header(
-      "Access-Control-Allow-Origin",
-      "https://socialnetworkingclient.onrender.com"
-    );
-  }
   res.header("Access-Control-Allow-Headers", "Content-Type");
   res.header("Access-Control-Allow-Credentials", "true");
   res.header(`Access-Control-Allow-Methods`, `GET,PUT,POST,DELETE`);
