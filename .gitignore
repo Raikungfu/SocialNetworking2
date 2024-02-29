@@ -30,3 +30,4 @@ server/node_modules
 server/npm-debug.log*
 server/yarn-debug.log*
 server/yarn-error.log*
+server/package-lock.json
