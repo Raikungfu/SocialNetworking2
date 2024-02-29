@@ -32,17 +32,20 @@ const NewPostForm: React.FC<NewPostFormProps> = (props) => {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      {props.input?.map((input, index) => (
-        <Input
-          key={index}
-          inputVariant={input.inputVariant ?? props.inputVariant}
-          wrapInputVariant={input.wrapInputVariant ?? props.wrapInputVariant}
-          labelVariant={input.labelVariant ?? props.labelVariant}
-          onChange={handleInputChange}
-          groupInput={input.groupInput}
-          {...input}
-        />
-      ))}
+      <div className={props.wrapInputVariant}>
+        {props.input?.map((input, index) => (
+          <Input
+            key={index}
+            inputVariant={input.inputVariant ?? props.inputVariant}
+            wrapInputVariant={input.wrapInputVariant ?? props.wrapInputVariant}
+            labelVariant={input.labelVariant ?? props.labelVariant}
+            onChange={handleInputChange}
+            groupInput={input.groupInput}
+            {...input}
+          />
+        ))}
+      </div>
+
       {props.textarea ? (
         <Textarea {...props.textarea} onChange={handleTextareaChange} />
       ) : null}

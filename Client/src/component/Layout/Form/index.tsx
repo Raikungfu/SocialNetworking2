@@ -8,8 +8,11 @@ const Form: React.FC<FormProps> = (props) => {
   const API_FETCH_FORM = props.apiFetchForm;
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setFormData({ ...formData, [name]: value });
+    if (event.target.type === "checkbox" || event.target.type === "radio") {
+      setFormData({ ...formData, [event.target.name]: event.target.id });
+    } else {
+      setFormData({ ...formData, [event.target.name]: event.target.value });
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -32,6 +35,7 @@ const Form: React.FC<FormProps> = (props) => {
           labelVariant={input.labelVariant ?? props.labelVariant}
           onChange={handleInputChange}
           groupInput={input.groupInput}
+          value={input.value}
           {...input}
         />
       ))}

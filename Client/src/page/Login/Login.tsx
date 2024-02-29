@@ -41,8 +41,8 @@ function Login() {
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
             <Form
               formVariant="space-y-4 md:space-y-6"
-              inputVariant="bg-gray-50 my-2 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              wrapInputVariant="flex w-full rounded-md items-center"
+              inputVariant="w-full bg-gray-50 my-2 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              wrapInputVariant="flex rounded-md items-center"
               labelVariant="block basis-1/3 text-sm font-medium text-gray-900 dark:text-white"
               input={[
                 {
@@ -63,8 +63,11 @@ function Login() {
                   id: "check",
                   label: "Remember me",
                   types: "checkbox",
+                  inputVariant:
+                    "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800",
                   wrapInputVariant:
-                    "flex my-2 rounded-md flex flex-row justify-center items-center gap-2 flex-row-reverse",
+                    "flex flex-row justify-center w-full rounded-md items-center flex-row-reverse gap-2",
+                  labelVariant: "font-light text-gray-500 dark:text-gray-300",
                 },
               ]}
               onSubmitSuccess={handleSuccess}

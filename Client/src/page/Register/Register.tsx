@@ -42,7 +42,6 @@ function Register() {
                   id: "email",
                   label: "Your email",
                   types: "text",
-
                   required: true,
                   placeholder: "Enter your email...",
                 },
@@ -88,7 +87,7 @@ function Register() {
                 {
                   id: "age",
                   label: "Age",
-                  types: "datetime-local",
+                  types: "date",
                   required: true,
                 },
                 {

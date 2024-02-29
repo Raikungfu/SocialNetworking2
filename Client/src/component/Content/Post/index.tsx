@@ -1,8 +1,9 @@
 import { useState } from "react";
-import FormPost from "../../NewPost/FormPost";
 import { PostProps } from "./types";
 import GroupButton from "../../Layout/GroupElement";
 import Button from "../../Layout/Button";
+import NewPost from "../../NewPost/FormPost";
+import { NewMeeting } from "../../NewPost/FormMeeting";
 
 const Post: React.FC<PostProps> = () => {
   const [isNewPost, setIsNewPost] = useState(true);
@@ -24,8 +25,8 @@ const Post: React.FC<PostProps> = () => {
   };
 
   const InputComp = () => {
-    if (isNewPost) return <FormPost />;
-    else if (isNewMeeting) return <></>;
+    if (isNewPost) return <NewPost />;
+    else if (isNewMeeting) return <NewMeeting />;
     else return <></>;
   };
 

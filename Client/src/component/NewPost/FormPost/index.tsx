@@ -1,7 +1,7 @@
 import { API_USER_POST } from "../../../service/Post/fetchPost";
 import NewPostForm from "../../Layout/NewPostForm";
 
-const FormPost: React.FC = () => {
+const NewPost: React.FC = () => {
   const handleSuccess = (data: object) => {
     console.log(data);
   };
@@ -39,4 +39,4 @@ const FormPost: React.FC = () => {
   );
 };
 
-export default FormPost;
+export default NewPost;

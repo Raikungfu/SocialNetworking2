@@ -70,7 +70,7 @@ const HeaderRight: React.FC = () => {
                 variant={"accept-link-button"}
                 type={"button"}
                 label="Login"
-                className="px-5 py-2"
+                className="px-5 py-2 dark:text-white"
               />
             }
             id={""}
@@ -85,7 +85,7 @@ const HeaderRight: React.FC = () => {
                 variant={"accept-link-button"}
                 type={"button"}
                 label="Register"
-                className="px-5"
+                className="px-5 py-2 dark:text-white"
               >
                 Register
               </Button>

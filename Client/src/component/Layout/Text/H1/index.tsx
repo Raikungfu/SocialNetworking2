@@ -7,8 +7,8 @@ export const H1: React.FC<H1Props> = (props) => {
         `${
           props.className
             ? props.className
-            : "mt-4 text-xl md:text-3xl font-bold tracking-tight sm:text-2xl text-gray-900 dark:text-white "
-        } ` + props.variant
+            : "mt-4 font-bold tracking-tight text-gray-900 dark:text-white "
+        }  text-xl md:text-3xl  sm:text-2xl` + props.variant
       }
     >
       {props.content}

@@ -16,6 +16,8 @@ app.post("/register", function (req, res, next) {
   var pw = req.body.password;
   var age = req.body.age;
   var gender = req.body.gender;
+  console.log(req.body.gender);
+  console.log(req.body);
   AccountModel.findOne({ username: email })
     .then((existingUser) => {
       if (existingUser) {

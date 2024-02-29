@@ -18,6 +18,7 @@ export const API_LOG_USER = <T>(data: FormDataOrOther<T>): Promise<T> => {
 };
 
 export const API_REG_USER = <T>(data: FormDataOrOther<T>): Promise<T> => {
+  console.log(data);
   return AxiosApi.post<T>("/User/register", false, data)
     .then((response) => {
       if (response.data) {

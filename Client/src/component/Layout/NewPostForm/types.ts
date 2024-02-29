@@ -9,6 +9,7 @@ export interface NewPostFormProps {
   onSubmit?: (api: Element) => void;
   title?: string;
   wrapInputVariant?: string;
+  wrapGroupInputVariant?: string;
   inputVariant?: string;
   labelVariant?: string;
   input?: Array<{
