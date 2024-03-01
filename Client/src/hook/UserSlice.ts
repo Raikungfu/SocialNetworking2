@@ -43,7 +43,7 @@ export const userSlice = createSlice({
       Cookies.remove("accessToken");
       localStorage.clear();
       state.userState = {
-        state: "",
+        state: "inactive",
         name: undefined,
         userName: undefined,
         avt: undefined,

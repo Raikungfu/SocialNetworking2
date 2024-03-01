@@ -7,13 +7,11 @@ import { Provider } from "react-redux";
 import store from "./hook/store.ts";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <BrowserRouter>
-        <Suspense fallback={<div>Loading...</div>}>
-          <App />
-        </Suspense>
-      </BrowserRouter>
-    </Provider>
-  </React.StrictMode>
+  <Provider store={store}>
+    <BrowserRouter>
+      <Suspense fallback={<div>Loading...</div>}>
+        <App />
+      </Suspense>
+    </BrowserRouter>
+  </Provider>
 );

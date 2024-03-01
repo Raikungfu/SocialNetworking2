@@ -2,6 +2,8 @@ const fs = require("fs");
 const Cookies = require("cookies");
 const jwt = require("jsonwebtoken");
 
+const AccountModel = require("../Modules/account");
+
 const checkAccess = (req, res, next) => {
   const cookies = new Cookies(req, res);
   var token = cookies.get("accessToken");
@@ -80,6 +82,7 @@ function genNewAccessToken(data, req, res) {
         }
       })
       .catch((err) => {
+        console.log("New access token found", err);
         reject(err);
       });
   });
