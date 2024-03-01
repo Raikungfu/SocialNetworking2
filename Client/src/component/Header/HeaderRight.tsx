@@ -13,9 +13,9 @@ const HeaderRight: React.FC = () => {
   const dispatch = useDispatch();
   const nav = useNavigate();
   const initialState = useSelector((state: RootState) => state.user.userState);
-  const [state, setState] = useState<string>(initialState.state);
+  const [state, setState] = useState<boolean>(initialState.state === "active");
   useEffect(() => {
-    setState(initialState.state);
+    setState(initialState.state === "active");
   }, [initialState.state]);
 
   const handleLogout = () => {

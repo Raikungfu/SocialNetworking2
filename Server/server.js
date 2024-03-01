@@ -4,7 +4,6 @@ const bodyParser = require("body-parser");
 const path = require("path");
 var cookieParser = require("cookie-parser");
 const checkAccess = require("./Middleware/Auth");
-const x = require("dotenv").config();
 const cors = require("cors");
 
 const allowedOrigins = [
@@ -16,7 +15,6 @@ app.use(
   cors({
     origin: function (origin, callback) {
       if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-        console.log("sss");
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));

@@ -21,4 +21,6 @@ function App() {
   );
 }
 
-export default withAuth(App);
+const AppWithAuth = withAuth(App);
+
+export default AppWithAuth;
