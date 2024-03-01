@@ -34,13 +34,14 @@ const userPosts = require("./Routers/Protected/Post");
 
 app.use("/User", userState);
 app.use("/authentication", authentication);
-app.use("/post", userPosts);
+app.use("/post", checkAccess, userPosts);
 app.use("/", checkAccess, authentication);
 
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", (req, res, next) => {
-  res.status(200).json({ name: req.userData.name, avt: req.userData.avt });
+  const user = req.userData;
+  res.status(200).json(data);
 });
 
 const port = process.env.PORT || 3000;

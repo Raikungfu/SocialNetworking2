@@ -11,3 +11,8 @@ export interface responseForm<T> {
   error: string | null;
   status: number | null;
 }
+
+export interface FormData {
+  "input-file": FileList | null;
+  [key: string]: string | string[] | FileList | number | undefined | null;
+}

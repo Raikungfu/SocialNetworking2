@@ -20,11 +20,12 @@ const Input: React.FC<InputProps> = (props) => {
             <div className={`${props.groupInput?.wrapInputVariant}`}>
               <input
                 type={props.types}
-                name={input.name}
-                id={input.id}
                 placeholder={props.placeholder}
                 onChange={handleInputChange}
                 required={props.required}
+                accept={props.accept}
+                multiple={props.multiple}
+                {...input}
               />
               <label
                 htmlFor={input.id}
@@ -43,6 +44,8 @@ const Input: React.FC<InputProps> = (props) => {
           id={props.id}
           placeholder={props.placeholder}
           onChange={handleInputChange}
+          accept={props.accept}
+          multiple={props.multiple}
           required={props.required}
         />
       )}

@@ -41,6 +41,15 @@ const Post: React.FC<PostProps> = () => {
               "resize-none overflow-y-auto overscroll-none block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
             placeholder: "What in your mind",
           }}
+          input={[
+            {
+              id: "input-file",
+              label: "Photo/Video",
+              types: "file",
+              accept: "image/*, video/*",
+              multiple: true,
+            },
+          ]}
           buttonVariant="bg-opacity-30 text-xs md:text-base border-solid bg-[#827d7d21] hover:bg-slate-200 border-[#fcfcfca1] border-[1px] rounded-[5px] p-2 px-[20px] md:px-[70px] mt-2 self-end"
         />
       );

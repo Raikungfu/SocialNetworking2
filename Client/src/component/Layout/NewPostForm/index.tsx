@@ -4,14 +4,20 @@ import Input from "../Input";
 import Button from "../Button";
 import Textarea from "../Textarea/Textarea";
 import { H3 } from "../Text/H3";
+import { API_FETCH_FILE } from "../../../service/UploadFileToFirebase/uploadFile";
+import { FormData } from "../../../type/API";
 
 const NewPostForm: React.FC<NewPostFormProps> = (props) => {
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState<FormData>({ "input-file": null });
   const API_FETCH_FORM = props.apiFetchForm;
+  const [process, setProcess] = useState<number>(0);
+  const [isPost, setIsPost] = useState<boolean>(false);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setFormData({ ...formData, [name]: value });
+    const { name, value, files } = event.target;
+    name === "input-file" && files
+      ? setFormData({ ...formData, [name]: files })
+      : setFormData({ ...formData, [name]: value });
   };
 
   const handleTextareaChange = (
@@ -24,9 +30,21 @@ const NewPostForm: React.FC<NewPostFormProps> = (props) => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      const response = await API_FETCH_FORM(formData);
-      props.onSubmitSuccess(response);
+      setIsPost(true);
+      const { ["input-file"]: inputFile, ...rest } = formData;
+      console.log(rest);
+      if (inputFile) {
+        const res = await API_FETCH_FILE(inputFile, setProcess);
+        setFormData({ ...formData, ["urlFile"]: res });
+        const response = await API_FETCH_FORM(formData);
+        props.onSubmitSuccess(response);
+      } else {
+        const response = await API_FETCH_FORM(formData);
+        props.onSubmitSuccess(response);
+      }
+      setIsPost(false);
     } catch (error) {
+      setIsPost(false);
       props.onSubmitFail(error as string);
     }
   };
@@ -64,9 +82,8 @@ const NewPostForm: React.FC<NewPostFormProps> = (props) => {
           type="submit"
           className={"px-5 py-2 " + props.buttonVariant}
           id={"summit-btn"}
-        >
-          Submit
-        </Button>
+          label={`${isPost ? "Uploading.... " + process + "%" : "Submit"}`}
+        />
       </div>
     </form>
   );

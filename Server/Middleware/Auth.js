@@ -15,13 +15,15 @@ const checkAccess = (req, res, next) => {
       }
     })
     .catch((error) => {
+      console.log(error);
       const refreshToken = cookies.get("refreshToken");
       checkJWTRefresh(refreshToken)
         .then((data) => {
           if (data) {
             genNewAccessToken(data)
               .then((data) => {
-                res.status(200).json(data);
+                req.userData = data;
+                next();
               })
               .catch((err) => {
                 if (err instanceof Error) {
@@ -76,6 +78,7 @@ function genNewAccessToken(data, req, res) {
             userName: existingUser.username,
             name: existingUser.name,
             avt: existingUser.avt,
+            id: existingUser._id,
           });
         } else {
           throw new Error("User not found!");

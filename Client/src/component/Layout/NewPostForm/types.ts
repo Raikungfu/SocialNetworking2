@@ -23,6 +23,8 @@ export interface NewPostFormProps {
     labelVariant?: string;
     required?: boolean;
     placeholder?: string;
+    accept?: string;
+    multiple?: boolean;
     groupInput?: {
       labelVariant?: string;
       inputVariant?: string;

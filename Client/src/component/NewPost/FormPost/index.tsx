@@ -14,7 +14,7 @@ const NewPost: React.FC<NewPostProps> = (props) => {
   const handleSubmitTextarea = (
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
-    console.log(event.target.name);
+    console.log(event.target.value);
   };
 
   return (

@@ -15,6 +15,8 @@ export interface NewPostProps {
     labelVariant?: string;
     required?: boolean;
     placeholder?: string;
+    accept?: string;
+    multiple?: boolean;
     groupInput?: {
       labelVariant?: string;
       inputVariant?: string;

@@ -12,7 +12,6 @@ const withAuth = (WrappedComponent: React.ComponentType) => {
     useEffect(() => {
       const checkLoginStatus = async () => {
         const response = await AxiosApi.get<RootState>("/", true);
-        console.log("dsd" + response.data);
         if (response.data) {
           dispatch(setState({ state: "active", ...response.data }));
         } else {
