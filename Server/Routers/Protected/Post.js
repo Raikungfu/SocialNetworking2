@@ -14,7 +14,7 @@ app.use(function (req, res, next) {
 app.get("/", function (req, res, next) {});
 
 app.post("/", function (req, res, next) {
-  return res.status(200).json("sss");
+  return res.status(200).json("");
 });
 
 app.delete("/:id", function (req, res, next) {});

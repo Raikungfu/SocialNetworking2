@@ -44,7 +44,6 @@ Axios.interceptors.response.use(
         Cookies.remove("accessToken");
         Cookies.remove("refreshToken");
         localStorage.clear();
-        location.reload();
       }
     } else {
       console.log("Token expired");
