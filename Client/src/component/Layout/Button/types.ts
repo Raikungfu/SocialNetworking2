@@ -10,6 +10,7 @@ export interface ButtonProps {
     | "accept-link-button"
     | "nav-button"
     | "reset-button"
-    | "summit-button";
+    | "summit-button"
+    | undefined;
   type?: "button" | "submit" | "reset";
 }

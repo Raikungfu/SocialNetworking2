@@ -16,6 +16,7 @@ app.use(
   cors({
     origin: function (origin, callback) {
       if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        console.log("sss");
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));
@@ -36,7 +37,7 @@ const userPosts = require("./Routers/Protected/Post");
 app.use("/User", userState);
 app.use("/authentication", authentication);
 app.use("/post", userPosts);
-app.use("/", checkAccess);
+app.use("/", checkAccess, authentication);
 
 app.use(express.static(path.join(__dirname, "public")));
 

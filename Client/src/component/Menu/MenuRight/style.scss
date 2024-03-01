@@ -1,0 +1,19 @@
+@media only screen and (max-width: 768px) {
+    #nav-right {
+        .nav-child {
+            justify-content: center;
+
+            .nav-right-title {
+                display: none;
+            }
+        }
+
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    #nav-right {
+        display: none;
+
+    }
+}

@@ -13,7 +13,7 @@ const header: React.FC = () => {
   return (
     <div className="App">
       <header className="App-header shadow-md bg-white dark:bg-slate-950 dark:text-white w-screen fixed z-50 py-2">
-        <nav className="flex flex-row justify-between items-center px-10">
+        <nav className="flex flex-row justify-between items-center px-2 sm:px-7 md:px-10">
           <div className="basis-[20%] flex flex-row justify-start items-center">
             <Img src={logo} alt="logo-brand" variant="logo" />
           </div>
@@ -24,15 +24,17 @@ const header: React.FC = () => {
                 "font-light cursor-pointer flex-1 flex flex-row justify-around"
               }
               wrapChildVariant={
-                "hover:bg-[#827d7d21] hover:dark:bg-white hover:bg-opacity-30 p-3 border-red-500 rounded-x rounded-lg pl-3 pr-3"
+                "hover:bg-[#827d7d21] hover:dark:bg-white hover:bg-opacity-30 border-red-500 rounded-x rounded-lg px-1 py-2 md:px-5 lg:px-8"
               }
-              navContext={[
-                { link: "/", icon: <HomeIcon />, id: "dashboard" },
-                { link: "/group", icon: <GroupIcon />, id: "group" },
-                { link: "/feed", icon: <FeedIcon />, id: "feed" },
-                { link: "/chat", icon: <ChatIcon />, id: "chat" },
-                { link: "/about", icon: <AboutIcon />, id: "about" },
-              ]}
+              navContext={{
+                navChild: [
+                  { link: "/", icon: <HomeIcon />, id: "dashboard" },
+                  { link: "/group", icon: <GroupIcon />, id: "group" },
+                  { link: "/feed", icon: <FeedIcon />, id: "feed" },
+                  { link: "/chat", icon: <ChatIcon />, id: "chat" },
+                  { link: "/about", icon: <AboutIcon />, id: "about" },
+                ],
+              }}
             />
           </div>
           <div className="basis-[20%]">

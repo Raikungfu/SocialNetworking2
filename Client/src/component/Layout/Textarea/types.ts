@@ -4,12 +4,12 @@ export interface TextareaProps {
   label?: string;
   children?: JSX.Element;
   numberOfRows: number;
-  variantTextarea:
+  className?: string;
+  variantTextarea?:
     | "textarea-new-meeting"
     | "textarea-new-post"
     | "textarea-new-story";
-  variantLabel: string;
-  placeholder: string;
-  labelContent?: string;
+  labelVariant?: string;
+  placeholder?: string;
   onChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }

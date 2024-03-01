@@ -6,9 +6,14 @@ const Input: React.FC<InputProps> = (props) => {
   };
   return (
     <div className={`${props.wrapInputVariant}`}>
-      <label htmlFor={props.id} className={`${props.labelVariant}`}>
-        {props.label}
-      </label>
+      {props.label ? (
+        <label htmlFor={props.id} className={`${props.labelVariant}`}>
+          {props.label}
+        </label>
+      ) : (
+        <></>
+      )}
+
       {props.groupInput ? (
         <div className={props.wrapGroupInputVariant}>
           {props.groupInput.input.map((input) => (

@@ -3,17 +3,17 @@ import logo from "../../assets/img/logoAvt.jpeg";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../hook/UserSlice";
 import { RootState } from "../../hook/rootReducer";
-import GroupButton from "../Layout/GroupElement";
 import Button from "../Layout/Button";
 import Dropdown from "../Layout/Dropdown";
 import Img from "../Layout/Img";
 import { Link, useNavigate } from "react-router-dom";
+import GroupElement from "../Layout/GroupElement";
 
 const HeaderRight: React.FC = () => {
   const dispatch = useDispatch();
   const nav = useNavigate();
   const initialState = useSelector((state: RootState) => state.user.userState);
-  const [state, setState] = useState<boolean>(initialState.state);
+  const [state, setState] = useState<string>(initialState.state);
   useEffect(() => {
     setState(initialState.state);
   }, [initialState.state]);
@@ -59,7 +59,7 @@ const HeaderRight: React.FC = () => {
     />
   ) : (
     <div>
-      <GroupButton
+      <GroupElement
         children={[
           <Link
             key={"log-btn"}
@@ -70,7 +70,7 @@ const HeaderRight: React.FC = () => {
                 variant={"accept-link-button"}
                 type={"button"}
                 label="Login"
-                className="px-5 py-2 dark:text-white"
+                className="dark:text-white text-xs md:text-lg sm:text-base py-2.5 px-1.5 sm:px-3 md:px-5"
               />
             }
             id={""}
@@ -85,7 +85,7 @@ const HeaderRight: React.FC = () => {
                 variant={"accept-link-button"}
                 type={"button"}
                 label="Register"
-                className="px-5 py-2 dark:text-white"
+                className="dark:text-white text-xs md:text-lg sm:text-base py-2.5 px-1.5 sm:px-3 md:px-5"
               >
                 Register
               </Button>
@@ -95,7 +95,7 @@ const HeaderRight: React.FC = () => {
           />,
         ]}
         variant={"flex flex-row justify-end font-medium gap-x-1.5 basis-[20%]"}
-      ></GroupButton>
+      ></GroupElement>
     </div>
   );
 };

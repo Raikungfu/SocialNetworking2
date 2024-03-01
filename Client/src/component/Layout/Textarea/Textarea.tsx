@@ -9,13 +9,17 @@ const Textarea: React.FC<TextareaProps> = (props) => {
 
   return (
     <>
-      <label htmlFor={props.id} className={props.variantLabel}>
-        {props.labelContent}
-      </label>
+      {props.label ? (
+        <label htmlFor={props.id} className={props.labelVariant}>
+          {props.label}
+        </label>
+      ) : (
+        <></>
+      )}
       <textarea
         {...props}
         rows={props.numberOfRows}
-        className={props.variantTextarea}
+        className={`${props.variantTextarea} ${props.className}`}
         onChange={handleTextareaChange}
       ></textarea>
     </>

@@ -3,6 +3,7 @@ import { NewPostFormProps } from "./types";
 import Input from "../Input";
 import Button from "../Button";
 import Textarea from "../Textarea/Textarea";
+import { H3 } from "../Text/H3";
 
 const NewPostForm: React.FC<NewPostFormProps> = (props) => {
   const [formData, setFormData] = useState({});
@@ -32,29 +33,36 @@ const NewPostForm: React.FC<NewPostFormProps> = (props) => {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <div className={props.wrapInputVariant}>
-        {props.input?.map((input, index) => (
-          <Input
-            key={index}
-            inputVariant={input.inputVariant ?? props.inputVariant}
-            wrapInputVariant={input.wrapInputVariant ?? props.wrapInputVariant}
-            labelVariant={input.labelVariant ?? props.labelVariant}
-            onChange={handleInputChange}
-            groupInput={input.groupInput}
-            {...input}
-          />
-        ))}
-      </div>
-
+      <H3 variant={props.titleVariant} content={props.title || ""} />
       {props.textarea ? (
-        <Textarea {...props.textarea} onChange={handleTextareaChange} />
+        <>
+          <Textarea {...props.textarea} onChange={handleTextareaChange} />
+        </>
       ) : null}
+      {props.input ? (
+        <div className={props.wrapInputVariant}>
+          {props.input?.map((input, index) => (
+            <Input
+              key={index}
+              inputVariant={input.inputVariant ?? props.inputVariant}
+              wrapInputVariant={
+                input.wrapInputVariant ?? props.wrapInputVariant
+              }
+              labelVariant={input.labelVariant ?? props.labelVariant}
+              onChange={handleInputChange}
+              groupInput={input.groupInput}
+              {...input}
+            />
+          ))}
+        </div>
+      ) : (
+        <></>
+      )}
 
       <div className="flex justify-end gap-3">
         <Button
-          variant="accept-link-button"
           type="submit"
-          className="px-5 py-2 "
+          className={"px-5 py-2 " + props.buttonVariant}
           id={"summit-btn"}
         >
           Submit

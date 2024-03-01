@@ -7,7 +7,7 @@ export const H1: React.FC<H1Props> = (props) => {
         `${
           props.className
             ? props.className
-            : "mt-4 font-bold tracking-tight text-gray-900 dark:text-white "
+            : "font-bold tracking-tight text-gray-900 dark:text-white "
         }  text-xl md:text-3xl  sm:text-2xl` + props.variant
       }
     >

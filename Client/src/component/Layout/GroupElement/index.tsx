@@ -1,6 +1,6 @@
-import { GroupButtonProps } from "./types";
+import { GroupElementProps } from "./types";
 
-const GroupButton: React.FC<GroupButtonProps> = (props) => {
+const GroupElement: React.FC<GroupElementProps> = (props) => {
   return (
     <div className={`${props.variant}`}>
       {props.children.map((item) => item)}
@@ -8,4 +8,4 @@ const GroupButton: React.FC<GroupButtonProps> = (props) => {
   );
 };
 
-export default GroupButton;
+export default GroupElement;
