@@ -86,9 +86,7 @@ const HeaderRight: React.FC = () => {
                 type={"button"}
                 label="Register"
                 className="dark:text-white text-xs md:text-lg sm:text-base py-2.5 px-1.5 sm:px-3 md:px-5"
-              >
-                Register
-              </Button>
+              />
             }
             id={""}
             className={"access-link"}
