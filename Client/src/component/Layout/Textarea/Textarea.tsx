@@ -18,8 +18,8 @@ const Textarea: React.FC<TextareaProps> = (props) => {
       )}
       <textarea
         {...props}
-        rows={props.numberOfRows}
-        className={`${props.variantTextarea} ${props.className}`}
+        rows={props.rows}
+        className={`${props.variant} ${props.className}`}
         onChange={handleTextareaChange}
       ></textarea>
     </>

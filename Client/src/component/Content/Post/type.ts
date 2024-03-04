@@ -1,11 +1,9 @@
-export interface CardProps {
-  id?: string;
-  type?: "post" | "media" | "image" | undefined;
-  className?: string;
-  variant?: string;
-  title?: string;
+import { RefObject } from "react";
+
+export interface PostProps {
+  _id?: string;
+  username?: string;
   content?: string;
-  onClick?: () => void;
   likes?: number;
   shares?: number;
   comment?: number;
@@ -22,4 +20,9 @@ export interface CardProps {
     username?: string;
     avt?: string;
   };
+}
+
+export interface PostsProps {
+  newPost: PostProps;
+  ref?: RefObject<HTMLElement>;
 }

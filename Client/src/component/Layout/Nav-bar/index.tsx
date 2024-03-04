@@ -6,12 +6,15 @@ const Nav: React.FC<NavProps> = (props) => {
     <ul className={props.wrapNavVariant} key={props.id} id={props.id}>
       {props.navContext.navChild.map((items) => (
         <Link
+          id={items.id}
+          key={items.id}
           to={items.link}
           className="focus:text-red-500 focus:bg-[#827d7d21] hover:bg-[#827d7d21] focus:rounded-md"
         >
           <li
-            key={items.id}
-            className={`${props.wrapChildVariant} ${items.classColor} nav-child`}
+            className={`${props.wrapChildVariant} ${
+              items.classColor || ""
+            } nav-child`}
           >
             {items.icon ?? items.icon}
             {items.context ? (

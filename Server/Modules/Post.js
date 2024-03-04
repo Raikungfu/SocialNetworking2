@@ -8,8 +8,8 @@ const PostSchema = new Schema({
   comment: { type: Number, default: 0 },
   createAt: { type: Date },
   isEdited: { type: Boolean, default: false },
-  media: { type: Schema.Types.ObjectId, ref: "Media" },
-  author: { type: Schema.Types.ObjectId, require: true, ref: "account" },
+  media: { type: Array, default: null },
+  userId: { type: Schema.Types.ObjectId, require: true, ref: "account" },
   userLike: { type: Schema.Types.ObjectId, ref: "Like" },
 });
 

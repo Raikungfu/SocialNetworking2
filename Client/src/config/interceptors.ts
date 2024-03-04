@@ -9,7 +9,6 @@ const Axios = axios.create({
   },
   withCredentials: true,
 });
-
 Axios.interceptors.request.use(
   (config) => {
     return config;
@@ -24,9 +23,9 @@ Axios.interceptors.response.use(
     return Promise.resolve(response);
   },
   async (error) => {
+    console.log(error);
     const refreshToken = Cookies.get("refreshToken");
-
-    if (refreshToken && error.response.status === 403) {
+    if (refreshToken && error.response?.status === 403) {
       try {
         const res = await axios.post(
           `${API_BASE_URL}/authentication/refreshToken`,
@@ -46,7 +45,7 @@ Axios.interceptors.response.use(
         localStorage.clear();
       }
     } else {
-      console.log("Token expired");
+      return Promise.reject("Token expired");
     }
     return Promise.reject(error.response || error.message);
   }

@@ -5,7 +5,8 @@ const path = require("path");
 const fs = require("fs");
 const Cookies = require("cookies");
 
-const AccountModel = require("../Modules/account");
+const Account = require("../Modules/account");
+const { genAccessToken, genRefreshToken } = require("../Middleware/Auth");
 
 app.use(function (req, res, next) {
   next();
@@ -16,12 +17,12 @@ app.post("/register", function (req, res, next) {
   var pw = req.body.password;
   var age = req.body.age;
   var gender = req.body.gender;
-  AccountModel.findOne({ username: email })
+  Account.findOne({ username: email })
     .then((existingUser) => {
       if (existingUser) {
         return res.status(400).json({ error: "User existed! Please login." });
       } else {
-        new AccountModel({
+        new Account({
           username: email,
           password: pw,
           age: age,
@@ -67,34 +68,24 @@ app.post("/login", function (req, res, next) {
 function checkLogin(email, password, req, res) {
   return new Promise((resolve, reject) => {
     try {
-      AccountModel.findOne({
+      Account.findOne({
         username: email,
         password: password,
       }).then((existingUser) => {
         if (existingUser) {
-          privateKeyA = fs.readFileSync("./Key/AccessToken/privateKey.pem");
-          var accessToken = jwt.sign(
-            {
-              username: existingUser.username,
-              name: existingUser.name,
-              avt: existingUser.avt,
-              id: existingUser._id,
-              role: "user",
-            },
-            privateKeyA,
-            {
-              expiresIn: "60s",
-              algorithm: "RS256",
-            }
+          var accessToken = genAccessToken(
+            existingUser,
+            "user",
+            fs.readFileSync("./Key/AccessToken/privateKey.pem"),
+            "60s",
+            "RS256"
           );
-          privateKeyR = fs.readFileSync("./Key/RefreshToken/privateKey.pem");
-          var refreshToken = jwt.sign(
-            { id: existingUser._id, role: "user" },
-            privateKeyR,
-            {
-              expiresIn: "1d",
-              algorithm: "RS256",
-            }
+          var refreshToken = genRefreshToken(
+            existingUser,
+            "user",
+            fs.readFileSync("./Key/RefreshToken/privateKey.pem"),
+            "1d",
+            "RS256"
           );
           resolve({ accessToken, refreshToken, existingUser });
         } else {

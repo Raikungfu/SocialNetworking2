@@ -13,6 +13,6 @@ export interface responseForm<T> {
 }
 
 export interface FormData {
-  "input-file": FileList | null;
+  "input-file": FileList | string[] | null;
   [key: string]: string | string[] | FileList | number | undefined | null;
 }

@@ -19,7 +19,8 @@ const Button: React.FC<ButtonProps> = (props) => {
       onSubmit={handleSubmit}
       className={`${props.variant} ${props.className}`}
     >
-      {props.label || props.children}
+      {props.children && props.children}
+      {props.label && props.label}
     </button>
   );
 };

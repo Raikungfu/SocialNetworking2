@@ -1,13 +1,18 @@
 import React, { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import AxiosApi from "../config/axios";
 import { RootState } from "../hook/rootReducer";
 import { setState } from "../hook/UserSlice";
 
-const withAuth = (WrappedComponent: React.ComponentType) => {
-  const WithAuthComponent: React.FC = (props) => {
+const withAuth = (
+  WrappedComponent: React.ComponentType<{ element: React.JSX.Element }>
+) => {
+  const WithAuthComponent: React.FC<{ element: React.JSX.Element }> = (
+    props
+  ) => {
     const dispatch = useDispatch();
+    const nav = useNavigate();
     const loc = useLocation();
     useEffect(() => {
       const checkLoginStatus = async () => {
@@ -16,6 +21,7 @@ const withAuth = (WrappedComponent: React.ComponentType) => {
           dispatch(setState({ state: "active", ...response.data }));
         } else {
           console.error("Error:", response.error);
+          nav("./login");
         }
       };
       checkLoginStatus();

@@ -41,7 +41,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", (req, res, next) => {
   const user = req.userData;
-  res.status(200).json(data);
+  res.status(200).json(user);
 });
 
 const port = process.env.PORT || 3000;

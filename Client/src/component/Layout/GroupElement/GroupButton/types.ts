@@ -1,4 +1,5 @@
 export interface GroupButtonProps {
+  id: string;
   buttons: Array<{
     id: string;
     label?: string;

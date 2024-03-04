@@ -9,6 +9,7 @@ import "./style.scss";
 const MenuLeft: React.FC = () => {
   return (
     <Nav
+      id="nav-menu-left"
       wrapNavVariant={
         "flex flex-col h-screen w-full justify-start md:pl-10 sm:pl-5"
       }
@@ -29,29 +30,29 @@ const MenuLeft: React.FC = () => {
             link: "/friends-request",
             icon: <FriendRequestIcon />,
             id: "friends-request",
-            context: "FriendRequests",
+            context: "Friend Requests",
             classColor: "text-purple-500",
           },
           {
             link: "/news",
             icon: <NewsIcon />,
             id: "news",
-            context: "news",
+            context: "News",
             classColor: "text-green-500",
           },
           {
             link: "/pages",
             icon: <PagesIcon />,
             id: "pages",
-            context: "pages",
+            context: "Pages",
             classColor: "text-blue-500",
           },
           {
             link: "/market",
             icon: <MarketIcon />,
             id: "market",
-            context: "market",
-            classColor: "text-yellow-300",
+            context: "Market",
+            classColor: "text-yellow-500",
           },
         ],
       }}

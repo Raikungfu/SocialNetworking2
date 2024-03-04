@@ -19,7 +19,7 @@ const header: React.FC = () => {
           </div>
           <div className=" grow flex flex-row justify-start items-center">
             <Nav
-              id="nav"
+              id="nav-header"
               wrapNavVariant={
                 "font-light cursor-pointer flex-1 flex flex-row justify-around"
               }

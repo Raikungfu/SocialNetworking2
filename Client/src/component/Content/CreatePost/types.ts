@@ -1,6 +1,8 @@
 export interface PostProps {
   className?: string;
   variant?: string;
+  onSubmitSuccess: (data: object) => void;
+  onSubmitFail: (error: string) => void;
   groupButton?: {
     title?: string;
     wrapGroupButtonVariant?: string;

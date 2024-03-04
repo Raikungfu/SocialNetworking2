@@ -7,6 +7,7 @@ export interface errorData {
 
 export interface NewPostFormProps {
   onSubmit?: (api: Element) => void;
+  id: string;
   title?: string;
   wrapInputVariant?: string;
   wrapGroupInputVariant?: string;
@@ -42,8 +43,9 @@ export interface NewPostFormProps {
     id?: string;
     name?: string;
     label?: string;
+    variant?: string;
     children?: JSX.Element;
-    numberOfRows: number;
+    rows: number;
     variantTextarea?:
       | "textarea-new-meeting"
       | "textarea-new-post"

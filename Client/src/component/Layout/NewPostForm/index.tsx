@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { NewPostFormProps } from "./types";
 import Input from "../Input";
 import Button from "../Button";
@@ -12,12 +12,11 @@ const NewPostForm: React.FC<NewPostFormProps> = (props) => {
   const API_FETCH_FORM = props.apiFetchForm;
   const [process, setProcess] = useState<number>(0);
   const [isPost, setIsPost] = useState<boolean>(false);
+  const formPost = useRef<HTMLFormElement>(null);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, files } = event.target;
-    name === "input-file" && files
-      ? setFormData({ ...formData, [name]: files })
-      : setFormData({ ...formData, [name]: value });
+    setFormData({ ...formData, [name]: name === "input-file" ? files : value });
   };
 
   const handleTextareaChange = (
@@ -32,17 +31,20 @@ const NewPostForm: React.FC<NewPostFormProps> = (props) => {
     try {
       setIsPost(true);
       const { ["input-file"]: inputFile, ...rest } = formData;
-      console.log(rest);
       if (inputFile) {
-        const res = await API_FETCH_FILE(inputFile, setProcess);
-        setFormData({ ...formData, ["urlFile"]: res });
-        const response = await API_FETCH_FORM(formData);
+        const res = await API_FETCH_FILE(inputFile as FileList, setProcess);
+        const response = await API_FETCH_FORM({
+          ["formData"]: rest,
+          ["input-file"]: res,
+        });
         props.onSubmitSuccess(response);
       } else {
-        const response = await API_FETCH_FORM(formData);
+        const response = await API_FETCH_FORM({ ["formData"]: formData });
         props.onSubmitSuccess(response);
       }
       setIsPost(false);
+      setFormData({ "input-file": null });
+      formPost.current?.reset();
     } catch (error) {
       setIsPost(false);
       props.onSubmitFail(error as string);
@@ -50,7 +52,13 @@ const NewPostForm: React.FC<NewPostFormProps> = (props) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <form
+      key={props.id}
+      id={props.id}
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-4"
+      ref={formPost}
+    >
       <H3 variant={props.titleVariant} content={props.title || ""} />
       {props.textarea ? (
         <>

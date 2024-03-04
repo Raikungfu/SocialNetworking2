@@ -11,7 +11,7 @@ const DropdownMenu: React.FC<DropdownProps> = (props) => {
   };
 
   return (
-    <div className={props.className}>
+    <div className={props.className} key={props.id} id={props.id}>
       <Button
         id={`user-menu-button-${props.id}`}
         className={`${props.navHeaderClassName}`}

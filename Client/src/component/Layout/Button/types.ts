@@ -1,7 +1,7 @@
 export interface ButtonProps {
   id: string;
   label?: string;
-  children?: React.ReactNode;
+  children?: React.ReactNode | JSX.Element;
   className?: string;
   onClick?: () => void;
   onSubmit?: () => void;

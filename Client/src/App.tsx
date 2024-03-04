@@ -5,8 +5,7 @@ import Page404 from "./page/Error/Page404";
 import Login from "./page/Login/Login";
 import Register from "./page/Register/Register";
 import Dashboard from "./page/Dashboard/Dashboard";
-import withAuth from "./hoc/Authenticated";
-import { Protected } from "./component/Protected/CheckAuthenticated";
+import Protected from "./component/Protected/CheckAuthenticated";
 
 function App() {
   return (
@@ -21,6 +20,4 @@ function App() {
   );
 }
 
-const AppWithAuth = withAuth(App);
-
-export default AppWithAuth;
+export default App;

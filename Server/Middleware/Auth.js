@@ -7,7 +7,7 @@ const AccountModel = require("../Modules/account");
 const checkAccess = (req, res, next) => {
   const cookies = new Cookies(req, res);
   var token = cookies.get("accessToken");
-  checkJWTAccess(token)
+  checkJWT(token, "./Key/AccessToken/publickey.crt")
     .then((data) => {
       if (data) {
         req.userData = data;
@@ -15,9 +15,8 @@ const checkAccess = (req, res, next) => {
       }
     })
     .catch((error) => {
-      console.log(error);
       const refreshToken = cookies.get("refreshToken");
-      checkJWTRefresh(refreshToken)
+      checkJWT(refreshToken, "./Key/RefreshToken/publickey.crt")
         .then((data) => {
           if (data) {
             genNewAccessToken(data)
@@ -26,6 +25,7 @@ const checkAccess = (req, res, next) => {
                 next();
               })
               .catch((err) => {
+                console.log(err);
                 if (err instanceof Error) {
                   res.status(404).json({ error: err.message });
                 } else {
@@ -40,9 +40,9 @@ const checkAccess = (req, res, next) => {
     });
 };
 
-function checkJWTAccess(token) {
+function checkJWT(token, link) {
   return new Promise((resolve, reject) => {
-    cert = fs.readFileSync("./Key/AccessToken/publickey.crt");
+    cert = fs.readFileSync(link);
     jwt.verify(token, cert, (err, data) => {
       if (err) {
         reject(err);
@@ -59,19 +59,12 @@ function genNewAccessToken(data, req, res) {
       .then((existingUser) => {
         if (existingUser) {
           privateKey = fs.readFileSync("./Key/AccessToken/privateKey.pem");
-          var accessToken = jwt.sign(
-            {
-              username: existingUser.username,
-              name: existingUser.name,
-              avt: existingUser.avt,
-              id: existingUser._id,
-              role: "user",
-            },
+          var accessToken = genAccessToken(
+            existingUser,
+            "user",
             privateKey,
-            {
-              expiresIn: "60s",
-              algorithm: "RS256",
-            }
+            "60s",
+            "RS256"
           );
           resolve({
             accessToken: accessToken,
@@ -85,23 +78,35 @@ function genNewAccessToken(data, req, res) {
         }
       })
       .catch((err) => {
-        console.log("New access token found", err);
         reject(err);
       });
   });
 }
 
-function checkJWTRefresh(token) {
-  return new Promise((resolve, reject) => {
-    cert = fs.readFileSync("./Key/RefreshToken/publickey.crt");
-    jwt.verify(token, cert, (err, data) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(data);
-      }
-    });
+function genRefreshToken(user, role, privateKey, expiresIn, algorithm) {
+  return jwt.sign({ id: user._id, role: user }, privateKey, {
+    expiresIn: expiresIn,
+    algorithm: algorithm,
   });
 }
 
+function genAccessToken(user, role, privateKey, expiresIn, algorithm) {
+  return jwt.sign(
+    {
+      username: user.username,
+      name: user.name,
+      avt: user.avt,
+      id: user._id,
+      role: role,
+    },
+    privateKey,
+    {
+      expiresIn: expiresIn,
+      algorithm: algorithm,
+    }
+  );
+}
+
 module.exports = checkAccess;
+module.exports.genRefreshToken = genRefreshToken;
+module.exports.genAccessToken = genAccessToken;
