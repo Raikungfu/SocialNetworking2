@@ -3,6 +3,7 @@ import { PostProps, PostsProps } from "./type";
 import Card from "../../Layout/Card";
 import InfiniteScroll from "react-infinite-scroller";
 import { API_USER_GET_POSTS } from "../../../service/Post/fetchPost";
+import LoadingPost from "../../Layout/Skeleton/LoadingPost";
 
 const LoadPosts: React.FC<PostsProps> = (props) => {
   const [posts, setPosts] = useState<PostProps[]>([]);
@@ -29,7 +30,7 @@ const LoadPosts: React.FC<PostsProps> = (props) => {
       threshold={250}
       useCapture={false}
       useWindow={true}
-      loader={<div>Loading...</div>}
+      loader={<LoadingPost />}
       className="w-full"
     >
       {posts?.map((post: PostProps, index: number) => {
