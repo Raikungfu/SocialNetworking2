@@ -1,5 +1,5 @@
 import Nav from "../../Layout/Nav-bar";
-import GroupIcon from "@mui/icons-material/Diversity1TwoTone";
+import CommunityIcon from "@mui/icons-material/Diversity1TwoTone";
 import FriendRequestIcon from "@mui/icons-material/GroupAddTwoTone";
 import NewsIcon from "@mui/icons-material/NewspaperTwoTone";
 import PagesIcon from "@mui/icons-material/DocumentScannerTwoTone";
@@ -20,10 +20,10 @@ const MenuLeft: React.FC = () => {
         className: "nav-left-title",
         navChild: [
           {
-            link: "/group",
-            icon: <GroupIcon />,
-            id: "groups",
-            context: "Groups",
+            link: "/community",
+            icon: <CommunityIcon />,
+            id: "community",
+            context: "community",
             classColor: "text-red-500",
           },
           {

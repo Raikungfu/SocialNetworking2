@@ -1,6 +1,6 @@
 export interface InputProps {
   id: string;
-  label: string;
+  label?: string;
   value?: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;

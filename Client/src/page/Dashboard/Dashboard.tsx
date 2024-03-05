@@ -12,7 +12,7 @@ const Dashboard = () => {
         <Content />
       </div>
       <div className="basis-[20%] right-[20vw]">
-        <MenuRight />
+        <MenuRight id={"menu-right-dashboard"} />
       </div>
     </div>
   );

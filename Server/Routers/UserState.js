@@ -77,14 +77,14 @@ function checkLogin(email, password, req, res) {
             existingUser,
             "user",
             fs.readFileSync("./Key/AccessToken/privateKey.pem"),
-            "60s",
+            "1d",
             "RS256"
           );
           var refreshToken = genRefreshToken(
             existingUser,
             "user",
             fs.readFileSync("./Key/RefreshToken/privateKey.pem"),
-            "1d",
+            "30d",
             "RS256"
           );
           resolve({ accessToken, refreshToken, existingUser });

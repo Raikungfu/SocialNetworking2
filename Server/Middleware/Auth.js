@@ -40,7 +40,7 @@ function genNewAccessToken(data, req, res) {
             existingUser,
             "user",
             privateKey,
-            "60s",
+            "1d",
             "RS256"
           );
           resolve({

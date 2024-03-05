@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 
-const Post = require("../../Modules/Post");
+const Post = require("../Modules/Post");
 
 app.post("/create", function (req, res, next) {
   const data = req.body["formData"];

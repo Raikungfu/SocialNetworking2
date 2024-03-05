@@ -30,11 +30,13 @@ app.use(cookieParser());
 
 const userState = require("./Routers/UserState");
 const authentication = require("./Routers/Authenticate");
-const userPosts = require("./Routers/Protected/Post");
+const userPosts = require("./Routers/Post");
+const community = require("./Routers/Community");
 
 app.use("/User", userState);
 app.use("/authentication", authentication);
 app.use("/post", checkAccess, userPosts);
+app.use("/community", community);
 app.use("/", checkAccess, authentication);
 
 app.use(express.static(path.join(__dirname, "public")));
