@@ -50,10 +50,10 @@ export const userSlice = createSlice({
       };
     },
     loginUser: (state: UserState, action) => {
-      state.userState = action.payload;
-      state.userState.state = "active";
       Cookies.set("accessToken", action.payload.accessToken);
       Cookies.set("refreshToken", action.payload.refreshToken);
+      state.userState = action.payload;
+      state.userState.state = "active";
     },
     updateProfileSuccess: (state: UserState, action) => {
       Object.assign(state.userState, action.payload);
