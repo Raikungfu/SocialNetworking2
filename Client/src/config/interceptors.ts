@@ -20,31 +20,16 @@ Axios.interceptors.request.use(
 
 Axios.interceptors.response.use(
   (response) => {
+    Cookies.set("accessToken", response.data?.accessToken);
     return Promise.resolve(response);
   },
   async (error) => {
     console.log(error);
     const refreshToken = Cookies.get("refreshToken");
     if (refreshToken && error.response?.status === 403) {
-      try {
-        const res = await axios.post(
-          `${API_BASE_URL}/authentication/refreshToken`,
-          {},
-          {
-            withCredentials: true,
-          }
-        );
-
-        if (res.status === 200) {
-          Cookies.set("accessToken", res.data.accessToken);
-          return Promise.resolve(res);
-        }
-      } catch {
-        Cookies.remove("accessToken");
-        Cookies.remove("refreshToken");
-        localStorage.clear();
-      }
-    } else {
+      Cookies.remove("accessToken");
+      Cookies.remove("refreshToken");
+      localStorage.clear();
       return Promise.reject("Token expired");
     }
     return Promise.reject(error.response || error.message);
