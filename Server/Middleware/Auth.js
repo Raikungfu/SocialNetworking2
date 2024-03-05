@@ -1,12 +1,10 @@
 const fs = require("fs");
-const Cookies = require("cookies");
 const jwt = require("jsonwebtoken");
 
 const AccountModel = require("../Modules/account");
 
 const checkAccess = (req, res, next) => {
-  const cookies = new Cookies(req, res);
-  var token = cookies.get("accessToken");
+  const token = req.headers.authorization?.split(" ")[1];
   checkJWT(token, "./Key/AccessToken/publickey.crt")
     .then((data) => {
       if (data) {
@@ -15,28 +13,7 @@ const checkAccess = (req, res, next) => {
       }
     })
     .catch((error) => {
-      const refreshToken = cookies.get("refreshToken");
-      checkJWT(refreshToken, "./Key/RefreshToken/publickey.crt")
-        .then((data) => {
-          if (data) {
-            genNewAccessToken(data)
-              .then((data) => {
-                req.userData = data;
-                next();
-              })
-              .catch((err) => {
-                console.log(err);
-                if (err instanceof Error) {
-                  res.status(404).json({ error: err.message });
-                } else {
-                  res.status(500).json({ error: "An error occurred" });
-                }
-              });
-          }
-        })
-        .catch((error) => {
-          res.status(403).json(error.message);
-        });
+      return res.status(403).json(error);
     });
 };
 
@@ -110,3 +87,5 @@ function genAccessToken(user, role, privateKey, expiresIn, algorithm) {
 module.exports = checkAccess;
 module.exports.genRefreshToken = genRefreshToken;
 module.exports.genAccessToken = genAccessToken;
+module.exports.checkJWT = checkJWT;
+module.exports.genNewAccessToken = genNewAccessToken;
