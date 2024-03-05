@@ -50,6 +50,8 @@ export const userSlice = createSlice({
       };
     },
     loginUser: (state: UserState, action) => {
+      // localStorage.setItem("accessToken", action.payload.accessToken);
+      // localStorage.setItem("refreshToken", action.payload.refreshToken);
       Cookies.set("accessToken", action.payload.accessToken);
       Cookies.set("refreshToken", action.payload.refreshToken);
       state.userState = action.payload;

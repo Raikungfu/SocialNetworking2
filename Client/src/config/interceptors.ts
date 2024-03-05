@@ -11,6 +11,8 @@ const Axios = axios.create({
 });
 Axios.interceptors.request.use(
   (config) => {
+    config.headers.Authorization = "Bearer " + Cookies.get("accessToken");
+    config.headers["refreshToken"] = localStorage.getItem("refreshToken");
     return config;
   },
   (error) => {
@@ -20,15 +22,12 @@ Axios.interceptors.request.use(
 
 Axios.interceptors.response.use(
   (response) => {
-    Cookies.set("accessToken", response.data?.accessToken);
     return Promise.resolve(response);
   },
-  async (error) => {
+  (error) => {
     console.log(error);
     const refreshToken = Cookies.get("refreshToken");
     if (refreshToken && error.response?.status === 403) {
-      Cookies.remove("accessToken");
-      Cookies.remove("refreshToken");
       localStorage.clear();
       return Promise.reject("Token expired");
     }
