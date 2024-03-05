@@ -1,6 +1,6 @@
 export interface CardProps {
   id?: string;
-  type?: "post" | "media" | "image" | undefined;
+  type?: "post" | "meeting" | "story" | undefined;
   className?: string;
   variant?: string;
   title?: string;
