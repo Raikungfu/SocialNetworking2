@@ -7,8 +7,6 @@ const Cookies = require("cookies");
 
 const AccountModel = require("../Modules/account");
 
-app.post("/refreshToken", (req, res, next) => {});
-
 app.get("/", (req, res, next) => {
   if (req.userData) {
     res.status(200).json(JSON.stringify(req.userData));
