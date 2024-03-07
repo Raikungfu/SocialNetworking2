@@ -23,7 +23,7 @@ const Card: React.FC<CardProps> = (props) => {
           </a>
           <div>
             <h3 className="text-xl font-medium text-slate-700">
-              {props.userId.username || "User"}
+              {props.userId.name || props.userId.username || "User"}
             </h3>
             <p className="text-sm text-slate-400">
               {dayjs(props.createAt).format("YYYY-MM-DD HH:mm:ss") || ""}

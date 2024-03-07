@@ -5,6 +5,10 @@ const path = require("path");
 var cookieParser = require("cookie-parser");
 const checkAccess = require("./Middleware/Auth");
 const cors = require("cors");
+const http = require("http");
+const { startSocketIOServer } = require("./serverSocketIO");
+const httpServer = http.createServer(app);
+startSocketIOServer(httpServer);
 
 const allowedOrigins = [
   "http://localhost:5173",
@@ -32,22 +36,24 @@ const userState = require("./Routers/UserState");
 const authentication = require("./Routers/Authenticate");
 const userPosts = require("./Routers/Post");
 const community = require("./Routers/Community");
+const auth = require("./Routers/Auth");
 
-app.use("/User", userState);
+app.use("/User", checkAccess, userState);
+app.use("/Auth", auth);
 app.use("/authentication", authentication);
 app.use("/post", checkAccess, userPosts);
-app.use("/community", community);
+app.use("/community", checkAccess, community);
 app.use("/", checkAccess, authentication);
 
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", (req, res, next) => {
-  const user = req.userData;
+  const user = req.user;
   res.status(200).json(user);
 });
 
 const port = process.env.PORT || 3000;
 
-app.listen(port, () => {
+httpServer.listen(port, () => {
   console.log("Server running on port 3000");
 });

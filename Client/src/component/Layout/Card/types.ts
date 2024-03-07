@@ -21,5 +21,6 @@ export interface CardProps {
     _id?: string;
     username?: string;
     avt?: string;
+    name?: string;
   };
 }

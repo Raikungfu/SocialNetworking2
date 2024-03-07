@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FormProps } from "./types";
 import Input from "../Input";
-import Button from "../Button";
+import GroupButton from "../GroupElement/GroupButton";
 
 const Form: React.FC<FormProps> = (props) => {
   const [formData, setFormData] = useState({});
@@ -17,8 +17,10 @@ const Form: React.FC<FormProps> = (props) => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (props.formBeforeSubmit) props.formBeforeSubmit(formData);
     try {
       const response = await API_FETCH_FORM(formData);
+      console.log(response);
       props.onSubmitSuccess(response);
     } catch (error) {
       props.onSubmitFail(error as string);
@@ -26,7 +28,10 @@ const Form: React.FC<FormProps> = (props) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <form
+      onSubmit={handleSubmit}
+      className={`${props.formClassName || "flex flex-col gap-4"}`}
+    >
       {props.input?.map((input, index) => (
         <Input
           key={index}
@@ -39,24 +44,13 @@ const Form: React.FC<FormProps> = (props) => {
           {...input}
         />
       ))}
-      <div className="flex justify-end gap-3">
-        <Button
-          variant="summit-button"
-          type="submit"
-          className="px-5 py-2 "
-          id={"summit-btn"}
-        >
-          Submit
-        </Button>
-        <Button
-          variant="summit-button"
-          type="reset"
-          className="px-5 py-2 bg-red-100 border-red-300 text-red-900 shadow-lg shadow-red-400 hover:border-red-500"
-          id={"reset-btn"}
-        >
-          Reset
-        </Button>
-      </div>
+      {props.groupBtn && (
+        <GroupButton
+          id={props.groupBtn.id}
+          buttons={props.groupBtn.buttons}
+          variant={`${props.groupBtn.variant || "flex justify-end gap-3"}`}
+        />
+      )}
     </form>
   );
 };

@@ -4,7 +4,7 @@ import MenuRight from "../../component/Menu/MenuRight/MenuRight";
 
 const Dashboard = () => {
   return (
-    <div className="flex flex-row w-screen py-24">
+    <div className="flex flex-row w-screen py-20">
       <div className="basis-[20%]" id="nav-left">
         <MenuLeft />
       </div>

@@ -7,6 +7,7 @@ import ChatIcon from "@mui/icons-material/QuestionAnswer";
 import AboutIcon from "@mui/icons-material/Info";
 import FeedIcon from "@mui/icons-material/Feed";
 import HeaderLeft from "./HeaderLeft";
+import Chat from "../Layout/Chat-box";
 
 const header: React.FC = () => {
   return (
@@ -46,6 +47,7 @@ const header: React.FC = () => {
         </nav>
       </header>
       <Outlet />
+      <Chat />
     </div>
   );
 };

@@ -8,7 +8,7 @@ const checkAccess = (req, res, next) => {
   checkJWT(token, "./Key/AccessToken/publickey.crt")
     .then((data) => {
       if (data) {
-        req.userData = data;
+        req.user = data;
         next();
       }
     })

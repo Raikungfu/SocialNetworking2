@@ -6,7 +6,7 @@ const Post = require("../Modules/Post");
 app.post("/create", function (req, res, next) {
   const data = req.body["formData"];
   const media = req.body["input-file"];
-  const user = req.userData;
+  const user = req.user;
   if (user) {
     new Post({
       userId: user.id,
@@ -16,6 +16,7 @@ app.post("/create", function (req, res, next) {
     })
       .save()
       .then((createdPost) => {
+        createdPost.userId = user;
         res.status(200).json(createdPost);
       })
       .catch((err) => {
@@ -27,12 +28,12 @@ app.post("/create", function (req, res, next) {
 });
 
 app.get("/", function (req, res, next) {
-  var userID = req.userData.id;
+  var userID = req.user.id;
   Post.find({ userId: userID })
     .sort([["createAt", "descending"]])
     .skip((req.query.page - 1) * 10)
     .limit(10)
-    .populate("userId", "username avt")
+    .populate("userId", "username avt name")
     .then((docs) => {
       if (docs.length > 0) {
         res.status(200).json(docs);

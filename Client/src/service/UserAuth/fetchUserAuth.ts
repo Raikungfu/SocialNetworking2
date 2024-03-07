@@ -4,7 +4,7 @@ import { FormDataOrOther } from "../../type/API";
 import { errorData } from "../../component/Layout/Form/types";
 
 export const API_LOG_USER = <T>(data: FormDataOrOther<T>): Promise<T> => {
-  return AxiosApi.post<T>("/User/login", false, data)
+  return AxiosApi.post<T>("/Auth/login", false, data)
     .then((response) => {
       if (response.data) {
         return response.data;
@@ -18,7 +18,7 @@ export const API_LOG_USER = <T>(data: FormDataOrOther<T>): Promise<T> => {
 };
 
 export const API_REG_USER = <T>(data: FormDataOrOther<T>): Promise<T> => {
-  return AxiosApi.post<T>("/User/register", false, data)
+  return AxiosApi.post<T>("/Auth/register", false, data)
     .then((response) => {
       if (response.data) {
         return response.data;

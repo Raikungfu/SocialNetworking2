@@ -1,29 +1,30 @@
-import Nav from "../../Layout/Nav-bar";
+import {
+  API_ACCEPT_REQUEST,
+  API_GET_LIST_FRIENDS,
+  API_GET_REQUESTS,
+} from "../../../service/Community/fetchCommunity";
+import List from "../../Layout/List";
 import "./style.scss";
 import { MenuRightProps } from "./type";
 
-const MenuRight: React.FC<MenuRightProps> = (props) => {
+const MenuRight: React.FC<MenuRightProps> = () => {
   return (
-    <>
-      <Nav
-        label={"List Friends"}
-        id={`${props.id}`}
-        wrapNavVariant={
-          "flex flex-col h-screen w-full justify-start md:pr-10 sm:pr-5"
-        }
-        wrapChildVariant={
-          "flex flex-row gap-3 hover:bg-[#827d7d21] hover:dark:bg-white hover:bg-opacity-30 p-3 border-red-500 rounded-x rounded-lg pr-3 pl-3"
-        }
-        navContext={{
-          navChild: [
-            {
-              id: "menu-right",
-              link: "",
-            },
-          ],
-        }}
+    <div className="flex flex-col justify-start gap-2">
+      <List
+        title="Requests"
+        API_GET_DATA={API_GET_REQUESTS}
+        wrapVariant="max-h-40"
+        typeList="requestsList"
+        API_HANDLE_EVENT={API_ACCEPT_REQUEST}
       />
-    </>
+      <List
+        title="List friends"
+        API_GET_DATA={API_GET_LIST_FRIENDS}
+        wrapVariant="max-h-40"
+        typeList="friendsList"
+        API_HANDLE_EVENT={API_GET_REQUESTS}
+      />
+    </div>
   );
 };
 

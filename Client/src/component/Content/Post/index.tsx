@@ -7,12 +7,16 @@ import LoadingPost from "../../Layout/Skeleton/LoadingPost";
 
 const LoadPosts: React.FC<PostsProps> = (props) => {
   const [posts, setPosts] = useState<PostProps[]>([]);
+  const [hasMore, setHasMore] = useState<boolean>(true);
   const newPost = props.newPost;
   const loadMore = async (page: number) => {
     const response = await API_USER_GET_POSTS({ page });
+    console.log(response);
     if (response) {
       const data = response as unknown as PostProps[];
-      setPosts((prevPosts) => [...prevPosts, ...data]);
+      data.length > 0
+        ? setPosts((prevPosts) => [...prevPosts, ...data])
+        : setHasMore(false);
     }
   };
 
@@ -22,7 +26,7 @@ const LoadPosts: React.FC<PostsProps> = (props) => {
 
   return (
     <InfiniteScroll
-      hasMore={true}
+      hasMore={hasMore}
       initialLoad={true}
       isReverse={false}
       loadMore={loadMore}

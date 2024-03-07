@@ -1,11 +1,5 @@
 const express = require("express");
 const app = express();
-const jwt = require("jsonwebtoken");
-const path = require("path");
-const fs = require("fs");
-const Cookies = require("cookies");
-
-const AccountModel = require("../Modules/account");
 
 const { checkJWT, genNewAccessToken } = require("../Middleware/Auth");
 
@@ -34,8 +28,10 @@ app.post("/refreshToken", (req, res, next) => {
 });
 
 app.get("/", (req, res, next) => {
-  if (req.userData) {
-    res.status(200).json(JSON.stringify(req.userData));
+  if (req.user) {
+    res.status(200).json(req.user);
+  } else {
+    res.status(404).json({ error: "User not found!" });
   }
 });
 

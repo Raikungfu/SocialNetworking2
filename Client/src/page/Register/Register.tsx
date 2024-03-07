@@ -106,6 +106,27 @@ function Register() {
               onSubmitSuccess={handleSuccess}
               onSubmitFail={handleError}
               apiFetchForm={API_REG_USER}
+              groupBtn={{
+                id: "register-btn",
+                buttons: [
+                  {
+                    label: "Register",
+                    variant: "summit-button",
+                    type: "submit",
+                    className: "px-5 py-2",
+                    id: "summit-btn",
+                  },
+                  {
+                    label: "Reset",
+                    variant: "summit-button",
+                    type: "reset",
+                    className:
+                      "px-5 py-2 bg-red-100 border-red-300 text-red-900 shadow-lg shadow-red-400 hover:border-red-500",
+                    id: "reset-btn",
+                  },
+                ],
+                variant: "flex justify-end gap-3",
+              }}
             />
             <div id="error" className="sr-only"></div>
             <div id="success" className="sr-only">

@@ -14,11 +14,11 @@ function App() {
       <Route path="/" element={<Header />}>
         <Route index element={<Protected element={<Dashboard />} />} />
         <Route
-          path="/community"
+          path="community"
           element={<Protected element={<Community />} />}
         />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="login" element={<Login />} />
+        <Route path="register" element={<Register />} />
         <Route path="*" element={<Page404 />} />
       </Route>
     </Routes>

@@ -11,6 +11,7 @@ const PostSchema = new Schema({
   media: { type: Array, default: null },
   userId: { type: Schema.Types.ObjectId, require: true, ref: "account" },
   userLike: { type: Schema.Types.ObjectId, ref: "Like" },
+  isDelete: { type: Boolean, default: false },
 });
 
 const Post = mongoose.model("Post", PostSchema);

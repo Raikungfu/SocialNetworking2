@@ -1,6 +1,6 @@
 export interface GroupButtonProps {
-  id: string;
-  buttons: Array<{
+  id?: string;
+  buttons?: Array<{
     id: string;
     label?: string;
     children?: React.ReactNode;
@@ -15,7 +15,7 @@ export interface GroupButtonProps {
       | "summit-button";
     type?: "button" | "submit" | "reset";
   }>;
-  variant: string;
+  variant?: string;
   label?: string;
   buttonClassName?: string;
 }

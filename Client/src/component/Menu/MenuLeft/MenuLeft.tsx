@@ -23,7 +23,7 @@ const MenuLeft: React.FC = () => {
             link: "/community",
             icon: <CommunityIcon />,
             id: "community",
-            context: "community",
+            context: "Community",
             classColor: "text-red-500",
           },
           {

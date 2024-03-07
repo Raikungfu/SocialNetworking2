@@ -13,6 +13,7 @@ const StorySchema = new Schema({
   createAt: { type: Date },
   isEdited: { type: Boolean, default: false },
   authorId: { type: Schema.Types.ObjectId, ref: "account" },
+  isDelete: { type: Boolean, default: false },
 });
 
 const Story = mongoose.model("Story", StorySchema);

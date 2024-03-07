@@ -24,6 +24,7 @@ const CreatePost: React.FC<PostProps> = (props) => {
   };
 
   const handleSuccess = (data: object) => {
+    console.log(data);
     props.onSubmitSuccess(data);
   };
 
@@ -58,7 +59,7 @@ const CreatePost: React.FC<PostProps> = (props) => {
               multiple: true,
             },
           ]}
-          buttonVariant="bg-opacity-30 text-xs md:text-base border-solid bg-[#827d7d21] hover:bg-slate-200 border-[#fcfcfca1] border-[1px] rounded-[5px] p-2 px-[20px] md:px-[70px] mt-2 self-end"
+          buttonVariant="bg-opacity-30 text-xs md:text-base border-solid bg-[#827d7d21] hover:bg-red-50 hover:text-red-500 border-[#fcfcfca1] border-[1px] rounded-[5px] p-2 px-[20px] md:px-[70px] self-end"
           id={""}
           onSubmitSuccess={handleSuccess}
           onSubmitFail={handleError}
@@ -97,7 +98,7 @@ const CreatePost: React.FC<PostProps> = (props) => {
                 "text-gray-900 bg-gray-50 border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 rounded-lg px-2",
             },
           ]}
-          buttonVariant="bg-opacity-30 text-xs md:text-base border-solid bg-[#827d7d21] hover:bg-slate-200 border-[#fcfcfca1] border-[1px] rounded-[5px] p-2 px-[20px] md:px-[70px] mt-2 self-end"
+          buttonVariant="bg-opacity-30 text-xs md:text-base border-solid bg-[#827d7d21] hover:bg-red-50 hover:text-red-500 border-[#fcfcfca1] border-[1px] rounded-[5px] p-2 px-[20px] md:px-[70px] mt-2 self-end"
           id={""}
           onSubmitSuccess={handleSuccess}
           onSubmitFail={handleError}
@@ -108,10 +109,10 @@ const CreatePost: React.FC<PostProps> = (props) => {
   };
 
   return (
-    <div className="w-full flex flex-col justify-between text">
+    <div className="w-full mb-5">
       <GroupButton
         id="new-post-group-button"
-        buttonClassName="bg-opacity-30 text-xs md:text-base rounded-[5px] bg-[#827d7d21] hover:bg-slate-200 px-[5px] md:px-[15px] py-[5px]"
+        buttonClassName="bg-opacity-30 text-xs md:text-base rounded-[5px] bg-[#827d7d21] hover:bg-red-50 hover:text-red-500 px-[5px] md:px-[15px] py-[5px]"
         buttons={[
           {
             id: "new-post",
