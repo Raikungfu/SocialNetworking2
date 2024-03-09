@@ -2,7 +2,7 @@ const mongoose = require("./Connection");
 
 let Schema = mongoose.Schema;
 const PostSchema = new Schema({
-  content: { type: String, required: true },
+  content: { type: String },
   likes: { type: Number, default: 0 },
   shares: { type: Number, default: 0 },
   comment: { type: Number, default: 0 },

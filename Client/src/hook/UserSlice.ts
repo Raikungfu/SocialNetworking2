@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import Cookies from "js-cookie";
 import { RootState } from "./rootReducer";
+import socket from "../config/socketIO";
 
 interface UserState {
   payload: {
@@ -16,6 +17,7 @@ interface UserState {
     name?: string;
     userName?: string;
     avt?: string;
+    id?: string;
   };
 }
 
@@ -41,6 +43,7 @@ export const userSlice = createSlice({
     logoutUser: (state: UserState) => {
       Cookies.remove("refreshToken");
       Cookies.remove("accessToken");
+      socket.close();
       localStorage.clear();
       state.userState = {
         state: "inactive",
@@ -50,8 +53,6 @@ export const userSlice = createSlice({
       };
     },
     loginUser: (state: UserState, action) => {
-      // localStorage.setItem("accessToken", action.payload.accessToken);
-      // localStorage.setItem("refreshToken", action.payload.refreshToken);
       Cookies.set("accessToken", action.payload.accessToken);
       Cookies.set("refreshToken", action.payload.refreshToken);
       state.userState = action.payload;

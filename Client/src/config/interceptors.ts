@@ -28,7 +28,6 @@ Axios.interceptors.response.use(
     return response;
   },
   async (error) => {
-    console.log(error.response || error.message);
     const refreshToken = Cookies.get("refreshToken");
     if (refreshToken && error.response.status === 403) {
       try {

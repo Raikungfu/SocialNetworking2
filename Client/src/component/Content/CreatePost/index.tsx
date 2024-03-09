@@ -57,6 +57,7 @@ const CreatePost: React.FC<PostProps> = (props) => {
               types: "file",
               accept: "image/*, video/*",
               multiple: true,
+              max: 6,
             },
           ]}
           buttonVariant="bg-opacity-30 text-xs md:text-base border-solid bg-[#827d7d21] hover:bg-red-50 hover:text-red-500 border-[#fcfcfca1] border-[1px] rounded-[5px] p-2 px-[20px] md:px-[70px] self-end"

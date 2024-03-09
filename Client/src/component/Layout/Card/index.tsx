@@ -6,15 +6,16 @@ import GroupButton from "../GroupElement/GroupButton";
 import LikeIcon from "@mui/icons-material/ThumbUpOffAlt";
 import CommentIcon from "@mui/icons-material/ChatOutlined";
 import ShareIcon from "@mui/icons-material/SendOutlined";
+import MediaLayout from "../MediaLayout";
 
 const Card: React.FC<CardProps> = (props) => {
   return (
     <div
-      className="overflow-hidden bg-white rounded shadow-md text-slate-500 shadow-slate-200 my-5"
+      className="p-4 overflow-hidden bg-white rounded-md shadow-md text-slate-500 shadow-slate-200 my-5"
       id={props.id}
     >
       <div className="p-6">
-        <header className="flex gap-4 mb-4">
+        <header className="flex gap-4 mb-4 ">
           <a
             href="#"
             className="relative inline-flex items-center justify-center w-12 h-12 text-white rounded-full"
@@ -36,16 +37,10 @@ const Card: React.FC<CardProps> = (props) => {
             <></>
           )}
         </header>
-        <p> {props.content || ""}</p>
+        <p className="post-header"> {props.content || ""}</p>
       </div>
-      <figure>
-        {props.media?.map((media, index) => {
-          if (media.type.startsWith("image")) {
-            return <Img key={index} alt="image post" src={media.url} />;
-          } else {
-            return <video controls key={index} src={media.url}></video>;
-          }
-        })}
+      <figure className="post-content ">
+        <MediaLayout children={props.media} />
       </figure>
       <GroupButton
         buttonClassName="w-full inline-flex items-center justify-center h-12 gap-2 px-6 text-sm font-medium tracking-wide transition duration-300 justify-self-center hover:bg-red-100 hover:text-red-600 focus:bg-red-200 focus:text-red-700 focus-visible:outline-none disabled:cursor-not-allowed disabled:border-red-300 disabled:bg-red-100 disabled:text-red-400"

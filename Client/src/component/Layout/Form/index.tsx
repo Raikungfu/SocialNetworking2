@@ -17,7 +17,6 @@ const Form: React.FC<FormProps> = (props) => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (props.formBeforeSubmit) props.formBeforeSubmit(formData);
     try {
       const response = await API_FETCH_FORM(formData);
       console.log(response);

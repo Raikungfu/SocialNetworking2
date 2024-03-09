@@ -7,6 +7,7 @@ import Register from "./page/Register/Register";
 import Dashboard from "./page/Dashboard/Dashboard";
 import Protected from "./component/Protected/CheckAuthenticated";
 import Community from "./page/Community/Community";
+import About from "./page/About/About";
 
 function App() {
   return (
@@ -17,10 +18,11 @@ function App() {
           path="community"
           element={<Protected element={<Community />} />}
         />
-        <Route path="login" element={<Login />} />
-        <Route path="register" element={<Register />} />
+        <Route path="/about" element={<About />} />
         <Route path="*" element={<Page404 />} />
       </Route>
+      <Route path="login" element={<Login />} />
+      <Route path="register" element={<Register />} />
     </Routes>
   );
 }

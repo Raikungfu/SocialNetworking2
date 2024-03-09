@@ -1,19 +1,18 @@
 const fs = require("fs");
 const jwt = require("jsonwebtoken");
 
-const AccountModel = require("../Modules/account");
-
-const checkAccess = (socket) => {
-  const token = socket.handshake.headers.authorization?.split(" ")[1];
-  checkJWT(token, "./Key/AccessToken/publickey.crt")
-    .then((data) => {
-      if (data) {
-        return data;
-      }
-    })
-    .catch((error) => {
-      return new Error(error);
-    });
+const checkAccess = async (socket, next) => {
+  try {
+    const token = socket.handshake.headers.authorization?.split(" ")[1];
+    if (!token) {
+      throw new Error("Token not provided");
+    }
+    const user = await checkJWT(token, "./Key/AccessToken/publickey.crt");
+    socket.user = user;
+    next();
+  } catch (error) {
+    next(new Error("Unauthorized"));
+  }
 };
 
 function checkJWT(token, link) {
@@ -28,4 +27,5 @@ function checkJWT(token, link) {
     });
   });
 }
+
 module.exports = checkAccess;

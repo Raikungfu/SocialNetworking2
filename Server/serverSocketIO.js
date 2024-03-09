@@ -1,10 +1,14 @@
 const { Server } = require("socket.io");
 const checkAccess = require("./Middleware/AuthSocket");
+const chatGroup = require("./SocketIO/ChatGroup");
+const chatIndividual = require("./SocketIO/ChatIndividual");
 
 const allowedOrigins = [
   "http://localhost:5173",
   "https://socialnetworkingclient.onrender.com",
 ];
+
+const userSocketMap = new Map();
 
 const startSocketIOServer = (httpServer) => {
   const io = new Server(httpServer, {
@@ -14,40 +18,43 @@ const startSocketIOServer = (httpServer) => {
       allowedHeaders: ["Authorization"],
       credentials: true,
     },
+  }).use((socket, next) => {
+    checkAccess(socket, (err, user) => {
+      if (err) {
+        next(new Error("Unauthorized"));
+      } else {
+        next();
+      }
+    });
   });
 
-  io.use((socket, next) => {
-    socket.user = checkAccess(socket);
-    console.log(socket.user);
-    next();
-  });
-
-  const chatGroup = require("./SocketIO/ChatGroup");
-  const chatIndividual = require("./SocketIO/ChatIndividual");
-
-  const onConnection = (socket) => {
+  io.on("connection", (socket) => {
+    const userId = socket.user.id;
+    userSocketMap.set(userId, socket.id);
     console.log(`A user connected: ${socket.id}`);
 
-    socket.on("", (message) => {
+    socket.on("login", (message) => {
       console.log(message);
-      chatGroup(io, message);
     });
 
     socket.on("massage:group", (message) => {
-      console.log(message);
       chatGroup(io, message);
     });
-    socket.on("message:individual", (message) => {
-      console.log(message);
-      chatIndividual(socket, message);
+    socket.on("message:individual", (message, callback) => {
+      chatIndividual(userSocketMap, socket, message, callback);
+    });
+
+    socket.on("individual:typing", (recipt) => {
+      socket
+        .to(userSocketMap.get(recipt))
+        .emit("individual_typing", "typing...");
     });
 
     socket.on("disconnect", (reason) => {
+      userSocketMap.delete(userId);
       console.log(`User disconnected: ${socket.id}, reason: ${reason}`);
     });
-  };
-
-  io.on("connection", onConnection);
+  });
 };
 
 module.exports = { startSocketIOServer };

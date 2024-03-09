@@ -4,10 +4,12 @@ const app = express();
 const Post = require("../Modules/Post");
 
 app.post("/create", function (req, res, next) {
+  console.log(req.body);
   const data = req.body["formData"];
   const media = req.body["input-file"];
   const user = req.user;
-  if (user) {
+  if (user && (data["post-content"] || media)) {
+    console.log(data);
     new Post({
       userId: user.id,
       content: data["post-content"],
@@ -31,7 +33,7 @@ app.get("/", function (req, res, next) {
   var userID = req.user.id;
   Post.find({ userId: userID })
     .sort([["createAt", "descending"]])
-    .skip((req.query.page - 1) * 10)
+    .skip((req.query.page - 1) * 10 + req.query.numberPosted)
     .limit(10)
     .populate("userId", "username avt name")
     .then((docs) => {

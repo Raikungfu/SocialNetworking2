@@ -11,7 +11,7 @@ const Input: React.FC<InputProps> = (props) => {
           {props.label}
         </label>
       ) : (
-        <></>
+        <>{props.children}</>
       )}
 
       {props.groupInput ? (

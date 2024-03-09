@@ -20,6 +20,7 @@ export interface InputProps {
       label: string;
     }>;
   };
+  children?: JSX.Element;
   inputVariant?: string;
   labelVariant?: string;
   required?: boolean;

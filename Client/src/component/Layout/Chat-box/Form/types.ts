@@ -1,11 +1,9 @@
-import { FormDataOrOther } from "../../../type/API";
-
 export interface errorData {
   error?: string;
   status?: number;
 }
 
-export interface NewPostFormProps {
+export interface FormProps {
   onSubmit?: (api: Element) => void;
   id: string;
   title?: string;
@@ -16,10 +14,9 @@ export interface NewPostFormProps {
   labelVariant?: string;
   input?: Array<{
     id: string;
-    label: string;
     value?: string;
     types: string;
-    max?: number;
+    children?: JSX.Element;
     inputVariant?: string;
     wrapInputVariant?: string;
     labelVariant?: string;
@@ -39,27 +36,9 @@ export interface NewPostFormProps {
       }>;
     };
   }>;
-
-  textarea: {
-    id?: string;
-    name?: string;
-    label?: string;
-    variant?: string;
-    children?: JSX.Element;
-    rows: number;
-    variantTextarea?:
-      | "textarea-new-meeting"
-      | "textarea-new-post"
-      | "textarea-new-story";
-    className?: string;
-    labelVariant?: string;
-    placeholder?: string;
-    onChange?: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  };
   formVariant?: string;
   onSubmitSuccess: (data: object) => void;
   onSubmitFail: (error: string) => void;
-  apiFetchForm: <T>(data: FormDataOrOther<T>) => Promise<T>;
   button?: string;
   buttonVariant?: string;
 }

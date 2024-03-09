@@ -23,9 +23,9 @@ const List: React.FC<ListProps> = (props) => {
   };
 
   return (
-    <div className="w-full max-h-40 overflow-y-auto">
+    <div className={props.wrapVariant + " w-full overflow-y-auto"}>
       <div className="w-full flex items-center justify-between mb-4  overflow-y-hidden">
-        <h5 className="text-xl font-bold leading-none text-gray-900 dark:text-white">
+        <h5 className="text-xl font-bold leading-none text-gray-900 dark:gray-900">
           {props.title}
         </h5>
         <a
@@ -35,7 +35,7 @@ const List: React.FC<ListProps> = (props) => {
           View all
         </a>
       </div>
-      <div className={props.wrapVariant}>
+      <div>
         <ul role="list" className="w-10/12">
           <InfiniteScroll
             hasMore={hasMore}
@@ -60,7 +60,7 @@ const List: React.FC<ListProps> = (props) => {
                     />
                   </div>
                   <div className="flex-1 min-w-0 ms-4">
-                    <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                    <p className="text-sm font-medium text-gray-900 truncate dark:gray-900">
                       {item.friend?.name ||
                         item.friend?.username ||
                         item.name ||
@@ -70,7 +70,7 @@ const List: React.FC<ListProps> = (props) => {
                       {item.gender || item.friend?.gender || "unknown"}
                     </p>
                   </div>
-                  <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                  <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:gray-900">
                     {props.typeList === "communityList" ? (
                       <GroupButton
                         id={""}
@@ -97,6 +97,14 @@ const List: React.FC<ListProps> = (props) => {
                           {
                             id: "open-message-btn",
                             children: <ChatBubbleIcon />,
+                            onClick: () =>
+                              props.handleOpenReceptMessage
+                                ? props.handleOpenReceptMessage({
+                                    id: item.friend?._id || item._id,
+                                    name: item.friend?.name || item.name,
+                                    avt: item.friend?.avt || item.avt,
+                                  })
+                                : undefined,
                           },
                         ]}
                         variant={"flex flex-row gap-1"}

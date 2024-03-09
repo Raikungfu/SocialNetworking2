@@ -8,9 +8,10 @@ import LoadingPost from "../../Layout/Skeleton/LoadingPost";
 const LoadPosts: React.FC<PostsProps> = (props) => {
   const [posts, setPosts] = useState<PostProps[]>([]);
   const [hasMore, setHasMore] = useState<boolean>(true);
+  const [numberPosted, setNumberPosted] = useState<number>(0);
   const newPost = props.newPost;
   const loadMore = async (page: number) => {
-    const response = await API_USER_GET_POSTS({ page });
+    const response = await API_USER_GET_POSTS({ page, numberPosted });
     console.log(response);
     if (response) {
       const data = response as unknown as PostProps[];
@@ -21,7 +22,10 @@ const LoadPosts: React.FC<PostsProps> = (props) => {
   };
 
   useEffect(() => {
-    if (newPost) setPosts((prevPosts) => [newPost, ...prevPosts]);
+    if (newPost) {
+      setPosts((prevPosts) => [newPost, ...prevPosts]);
+      setNumberPosted(numberPosted + 1);
+    }
   }, [newPost]);
 
   return (

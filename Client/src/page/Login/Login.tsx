@@ -1,10 +1,11 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Form from "../../component/Layout/Form";
 import { authResponseData } from "../../type/API/User";
 import { H1 } from "../../component/Layout/Text/H1";
 import { API_LOG_USER } from "../../service/UserAuth/fetchUserAuth";
 import { useDispatch } from "react-redux";
 import { loginUser } from "../../hook/UserSlice";
+import { refreshSocket } from "../../config/socketIO";
 
 function Login() {
   const nav = useNavigate();
@@ -12,6 +13,7 @@ function Login() {
   const handleSuccess = (data: object) => {
     const user = data as authResponseData;
     dispatch(loginUser(user));
+    refreshSocket();
     nav("/");
   };
 
@@ -96,6 +98,17 @@ function Login() {
               }}
             />
             <div id="error" className="sr-only"></div>
+            <div className="flex flex-col">
+              <h5>
+                Don't have an account?&nbsp;
+                <Link to="/register" className="text-red-500">
+                  Register here
+                </Link>
+              </h5>
+              <Link to="/" className="hover:text-red-500">
+                Dashboard
+              </Link>
+            </div>
           </div>
         </div>
       </div>

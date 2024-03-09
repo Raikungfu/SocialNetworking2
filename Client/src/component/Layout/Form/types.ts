@@ -11,7 +11,6 @@ export interface FormProps {
   wrapInputVariant?: string;
   inputVariant?: string;
   labelVariant?: string;
-  formBeforeSubmit?: (formData: object) => void;
   input?: Array<{
     id: string;
     label?: string;
