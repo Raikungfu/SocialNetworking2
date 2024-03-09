@@ -5,18 +5,21 @@ const Account = require("../Modules/account");
 
 app.get("/", function (req, res, next) {
   const page = req.query.page;
-  Account.find({ _id: { $ne: req.user.id } })
-    .sort({ name: 1, username: 1, age: 1 })
-    .skip((page - 1) * 10)
-    .limit(10)
-    .select("username avt age gender name")
-    .then((data) => {
-      res.status(200).json(data);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).send("Server error!");
-    });
+  Account.findOne({ _id: req.user.id }).then((data) => {
+    const idFriendList = data.friendsList.map((friend) => friend.friend);
+    Account.find({ _id: { $nin: [req.user.id, ...idFriendList] } })
+      .sort({ name: 1, username: 1, age: 1 })
+      .skip((page - 1) * 10)
+      .limit(10)
+      .select("username avt age gender name")
+      .then((data) => {
+        res.status(200).json(data);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).send("Server error!");
+      });
+  });
 });
 
 app.get("/profile/:userId", function (req, res, next) {

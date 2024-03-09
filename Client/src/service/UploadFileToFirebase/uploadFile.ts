@@ -12,7 +12,6 @@ export const API_FETCH_FILE = (
 ): Promise<Array<{ url: string; type: string }>> => {
   return new Promise((resolve, reject) => {
     const uploadPromises: Promise<{ url: string; type: string }>[] = [];
-
     [...files].forEach((fileItem) => {
       const storageRef = ref(storage, `files/${fileItem.name}`);
       const uploadTask = uploadBytesResumable(storageRef, fileItem);

@@ -4,7 +4,11 @@ export interface ListProps {
   API_HANDLE_EVENT: <T>(data: T) => Promise<T>;
   typeList: "communityList" | "friendsList" | "requestsList";
   wrapVariant?: string;
-  handleOpenReceptMessage?: (data: object) => void;
+  handleOpenReceptMessage?: (data: {
+    id: string;
+    name?: string;
+    avt?: string;
+  }) => void;
 }
 
 export interface User {

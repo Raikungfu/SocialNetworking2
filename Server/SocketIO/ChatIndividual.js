@@ -17,9 +17,10 @@ const chatIndividual = (mapUser, socket, message, callback) => {
   }
   socket.to(recipientSocketId).emit("individual_message", {
     sender: socket.user.id,
-    data: content.content,
+    content: content,
+    createAt: new Date(),
   });
-  callback("message sent successfully");
+  callback("sent");
 };
 
 module.exports = chatIndividual;

@@ -12,7 +12,15 @@ export interface responseForm<T> {
   status: number | null;
 }
 
-export interface FormData {
-  "input-file": FileList | string[] | null;
-  [key: string]: string | string[] | FileList | number | undefined | null;
+export interface FormDataChat {
+  "chat-attach-file-input":
+    | FileList
+    | Array<{ url: string; type: string }>
+    | null;
+  content?: string;
+}
+
+export interface FormDataPost {
+  "input-file": FileList | Array<{ url: string; type: string }> | null;
+  content?: string;
 }

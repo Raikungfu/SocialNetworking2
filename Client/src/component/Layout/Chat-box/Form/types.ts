@@ -37,8 +37,12 @@ export interface FormProps {
     };
   }>;
   formVariant?: string;
-  onSubmitSuccess: (data: object) => void;
+  onSubmitSuccess: (data: {
+    "chat-attach-file-input"?: Array<{ url: string; type: string }>;
+    content?: string;
+  }) => void;
   onSubmitFail: (error: string) => void;
+  onInputChange: () => void;
   button?: string;
   buttonVariant?: string;
 }

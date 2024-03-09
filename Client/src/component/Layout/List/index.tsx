@@ -23,8 +23,8 @@ const List: React.FC<ListProps> = (props) => {
   };
 
   return (
-    <div className={props.wrapVariant + " w-full overflow-y-auto"}>
-      <div className="w-full flex items-center justify-between mb-4  overflow-y-hidden">
+    <div className={props.wrapVariant + " w-full"}>
+      <div className="w-full flex items-center justify-between mb-4 overflow-y-hidden">
         <h5 className="text-xl font-bold leading-none text-gray-900 dark:gray-900">
           {props.title}
         </h5>
@@ -35,7 +35,7 @@ const List: React.FC<ListProps> = (props) => {
           View all
         </a>
       </div>
-      <div>
+      <div className="overflow-y-auto">
         <ul role="list" className="w-10/12">
           <InfiniteScroll
             hasMore={hasMore}

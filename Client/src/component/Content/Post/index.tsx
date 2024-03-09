@@ -26,6 +26,7 @@ const LoadPosts: React.FC<PostsProps> = (props) => {
       setPosts((prevPosts) => [newPost, ...prevPosts]);
       setNumberPosted(numberPosted + 1);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newPost]);
 
   return (

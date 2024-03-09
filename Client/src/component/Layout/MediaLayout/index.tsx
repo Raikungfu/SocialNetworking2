@@ -62,10 +62,11 @@ const MediaLayout: React.FC<MediaLayoutProps> = (props) => {
       }
     };
     determineLayoutStyle();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (props.children?.length === 1) {
-    props.children?.map((media, index) => {
+    return props.children?.map((media, index) => {
       if (media.type.startsWith("image")) {
         return <Img key={index} alt="image post" src={media.url} />;
       } else {

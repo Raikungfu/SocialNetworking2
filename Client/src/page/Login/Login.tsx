@@ -97,7 +97,7 @@ function Login() {
                 variant: "flex justify-end gap-3",
               }}
             />
-            <div id="error" className="sr-only"></div>
+            <div id="error" className="sr-only text-red-500"></div>
             <div className="flex flex-col">
               <h5>
                 Don't have an account?&nbsp;

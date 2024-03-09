@@ -15,25 +15,32 @@ const MenuRight: React.FC<MenuRightProps> = () => {
   const isChatBoxOpen = useSelector(
     (state: RootState) => state.chatBox.isChatBoxOpen
   );
+  const onChatWith = useSelector(
+    (state: RootState) => state.chatBox.recept?.id
+  );
 
-  const handleOpenReceptMessage = (data: object) => {
-    dispatch(setReceptId(data));
+  const handleOpenReceptMessage = (data: {
+    id: string;
+    name?: string;
+    avt?: string;
+  }) => {
+    if (data.id !== onChatWith) dispatch(setReceptId(data));
     dispatch(setIsChatBoxOpen(!isChatBoxOpen));
   };
 
   return (
-    <div className="flex flex-col h-screen justify-start gap-2">
+    <div className="flex flex-col justify-start gap-2">
       <List
         title="Requests"
         API_GET_DATA={API_GET_REQUESTS}
-        wrapVariant="max-basis-[50%]"
+        wrapVariant="flex-1 max-h-40"
         typeList="requestsList"
         API_HANDLE_EVENT={API_ACCEPT_REQUEST}
       />
       <List
         title="List friends"
         API_GET_DATA={API_GET_LIST_FRIENDS}
-        wrapVariant="max-basis-[50vh]"
+        wrapVariant="flex-1 max-h-40"
         typeList="friendsList"
         API_HANDLE_EVENT={API_GET_REQUESTS}
         handleOpenReceptMessage={handleOpenReceptMessage}

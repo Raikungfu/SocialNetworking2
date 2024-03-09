@@ -11,6 +11,7 @@ import avt from "../../../assets/img/logoAvt.jpeg";
 import socket from "../../../config/socketIO";
 import Form from "./Form";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
+import MediaLayout from "../MediaLayout";
 
 const Chat: React.FC = () => {
   const dispatch = useDispatch();
@@ -18,37 +19,24 @@ const Chat: React.FC = () => {
     (state: RootState) => state.chatBox.isChatBoxOpen
   );
   const chatWith = useSelector((state: RootState) => state.chatBox.recept);
+  const me = useSelector((state: RootState) => state.user.userState.id);
   const refChatArea = useRef<HTMLDivElement>(null);
-  const typing = "";
   const notiChat = useRef<HTMLSpanElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [chatContent, setChatContent] = useState<
-    {
+    Array<{
       sender: string;
-      content: string | JSX.Element;
+      content: {
+        "chat-attach-file-input"?: Array<{ url: string; type: string }>;
+        content?: string;
+      };
       createAt?: string;
       state?: string;
       file?: JSX.Element;
-    }[]
+    }>
   >([]);
 
   useEffect(() => {
-    const data = chatWith?.id;
-    socket.emit("individual:typing", data);
-  }, [typing, chatWith]);
-
-  useEffect(() => {
-    socket.on("individual_message", (response) => {
-      if (response) {
-        setChatContent((prevChat) => [
-          ...prevChat,
-          { sender: "", content: response.data },
-        ]);
-      } else {
-        console.error("Network not working...");
-      }
-    });
-
     socket.on("individual_typing", (response) => {
       if (response) {
         if (notiChat.current) {
@@ -56,77 +44,81 @@ const Chat: React.FC = () => {
           if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
           }
+          notiChat.current.textContent = "typing...";
           timeoutRef.current = setTimeout(() => {
             notiChat.current!.style.display = "none";
-          }, 1000);
+          }, 300);
         }
+      }
+    });
+    socket.on("individual_message", (response) => {
+      if (response) {
+        setChatContent((prevChat) => [
+          ...prevChat,
+          {
+            sender: response.sender,
+            content: response.content,
+            createAt: response.createAt,
+          },
+        ]);
+        console.log(chatContent);
+      } else {
+        console.error("Network not working...");
       }
     });
 
     return () => {
       socket.off("individual_message");
+      socket.off("individual_typing");
+      setChatContent([]);
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chatWith]);
 
-  // const handleSendMessage = async (data: object) => {
-  //   setChatContent((prevChat) => [
-  //     ...prevChat,
-  //     {
-  //       sender: "me",
-  //       content: data?.content,
-  //       createAt: Date.now().toString(),
-  //     },
-  //   ]);
-  //   try {
-  //     socket.emit(
-  //       "message:individual",
-  //       {
-  //         content: data,
-  //         recipientId: chatWith?.id,
-  //       },
-  //       (response: string) => {
-  //         alert(response);
-  //       }
-  //     );
-  //   } catch (error) {
-  //     console.error("Error sending message:", error);
-  //   }
-  // };
-
-  // const handleSendFile = async (data: object) => {
-  //   setChatContent((prevChat) => [
-  //     ...prevChat,
-  //     {
-  //       sender: "me",
-  //       content: data?.content,
-  //       createAt: Date.now().toString(),
-  //     },
-  //   ]);
-  //   try {
-  //     socket.emit(
-  //       "message:individual",
-  //       {
-  //         content: data,
-  //         recipientId: chatWith?.id,
-  //       },
-  //       (response: string) => {
-  //         alert(response);
-  //       }
-  //     );
-  //   } catch (error) {
-  //     console.error("Error sending message:", error);
-  //   }
-  // };
+  const handleInputChange = () => {
+    const data = chatWith?.id;
+    socket.emit("individual:typing", data);
+  };
 
   useEffect(() => {
     refChatArea.current?.lastElementChild?.scrollIntoView({
       behavior: "smooth",
-      block: "end",
+      block: "start",
     });
-  }, [chatContent, isChatBoxOpen]);
+  }, [chatContent]);
 
-  const handleSuccess = (response: object) => {
-    console.log(response);
+  const handleSuccess = (response: {
+    "chat-attach-file-input"?: Array<{ url: string; type: string }>;
+    content?: string;
+  }) => {
+    setChatContent((prevChat) => [
+      ...prevChat,
+      {
+        sender: me || "",
+        content: response,
+        createAt: Date.now().toString(),
+      },
+    ]);
+    console.log(chatContent);
+    try {
+      socket.emit(
+        "message:individual",
+        {
+          content: response,
+          recipientId: chatWith?.id,
+        },
+        (response: string) => {
+          if (response) {
+            if (notiChat.current) {
+              notiChat.current.style.display = "inline";
+              notiChat.current.textContent = response;
+            }
+          }
+        }
+      );
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
   };
   const handleError = (error: string) => {
     console.log(error);
@@ -144,79 +136,113 @@ const Chat: React.FC = () => {
           onClick={() => dispatch(setIsChatBoxOpen(!isChatBoxOpen))}
         />
       </div>
-      <div
-        id="chat-container"
-        className={`${isChatBoxOpen || "hidden"} fixed bottom-24 right-8 w-96`}
-      >
-        <div className="bg-white shadow-md rounded-lg max-w-lg w-full">
-          <div className="p-4 border-b bg-red-400 text-white rounded-t-lg flex justify-between items-center">
-            <div className="flex flex-row gap-2">
-              <Img src={chatWith?.avt || avt} variant="avt" />
-              <p className="text-lg font-semibold"> {chatWith?.name}</p>
+      {isChatBoxOpen && (
+        <div id="chat-container" className={`fixed bottom-24 right-8 w-96`}>
+          <div className="bg-white shadow-md rounded-lg max-w-lg w-full">
+            <div className="p-4 border-b bg-red-400 text-white rounded-t-lg flex justify-between items-center">
+              <div className="flex flex-row gap-2">
+                <Img src={chatWith?.avt || avt} variant="avt" />
+                <p className="text-lg font-semibold">
+                  {" "}
+                  {chatWith?.name ?? "Chat with ..."}
+                </p>
+              </div>
+              <Button
+                id={"close-chat"}
+                children={<CloseĨon />}
+                className="text-gray-300 hover:text-gray-400 focus:outline-none focus:text-gray-400"
+                onClick={() => dispatch(setIsChatBoxOpen(false))}
+              />
             </div>
-            <Button
-              id={"close-chat"}
-              children={<CloseĨon />}
-              className="text-gray-300 hover:text-gray-400 focus:outline-none focus:text-gray-400"
-              onClick={() => dispatch(setIsChatBoxOpen(false))}
+            <div
+              ref={refChatArea}
+              id="chatbox"
+              className="p-4 h-80 overflow-y-auto flex flex-col overflow-x-hidden"
+            >
+              {chatContent.map((content, index) => (
+                <>
+                  <div className={"flex flex-col"}>
+                    {content.content["chat-attach-file-input"] && (
+                      <div
+                        className={`${
+                          content.sender === me
+                            ? "bg-red-400 text-white self-end"
+                            : "bg-gray-200 text-gray-700"
+                        } rounded-lg py-2 px-4 inline-block max-w-[80%] text-balance hyphens-auto`}
+                      >
+                        <MediaLayout
+                          children={content.content["chat-attach-file-input"]}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {content.content["content"] && (
+                    <Paragraph
+                      key={`message-key-${index}`}
+                      id={`message-id-${index}`}
+                      wrapClassName={`${
+                        content.sender === me ? "justify-end" : "justify-start"
+                      } flex flex-row mb-2`}
+                      content={
+                        content.content["content"] && content.content["content"]
+                      }
+                      contentClassName={`${
+                        content.sender === me
+                          ? "bg-red-400 text-white"
+                          : "bg-gray-200 text-gray-700"
+                      } rounded-lg py-2 px-4 inline-block max-w-[80%] text-balance hyphens-auto`}
+                    />
+                  )}
+                </>
+              ))}
+              <span
+                ref={notiChat}
+                className="text-right italic"
+                style={{ display: "none" }}
+              ></span>
+            </div>
+            <Form
+              formVariant="w-full p-4 flex flex-row items-center"
+              inputVariant="w-full px-3 py-2 border rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              input={[
+                {
+                  types: "text",
+                  id: "content",
+                  placeholder: "message....",
+                  wrapInputVariant: "w-full",
+                },
+                {
+                  id: "chat-attach-file-input",
+                  types: "file",
+                  inputVariant: "sr-only",
+                  accept: "image/*, video/*",
+                  multiple: true,
+                  children: (
+                    <Button
+                      id={"chat-attach-file-btn"}
+                      children={
+                        <AttachFileIcon className="p-1 rounded-full text-white bg-red-600 m-1 absolute  right-28 bottom-5" />
+                      }
+                      type="button"
+                      onClick={() =>
+                        document
+                          .getElementById("chat-attach-file-input")
+                          ?.click()
+                      }
+                    />
+                  ),
+                },
+              ]}
+              onSubmitSuccess={handleSuccess}
+              onSubmitFail={handleError}
+              onInputChange={handleInputChange}
+              id={"chat-box"}
+              buttonVariant=" rounded-full text-white bg-red-600 absolute right-4 bottom-4"
             />
           </div>
-          <div
-            ref={refChatArea}
-            id="chatbox"
-            className="p-4 h-80 overflow-y-auto flex flex-col overflow-x-hidden"
-          >
-            {chatContent.map((content, index) => (
-              <Paragraph
-                key={`message-key-${index}`}
-                id={`message-id-${index}`}
-                wrapClassName={`flex flex-row mb-2 ${
-                  content.sender === "me" ? "justify-end" : "justify-start"
-                } `}
-                content={content.content}
-                contentClassName={`${
-                  content.sender === "me"
-                    ? "bg-red-400 text-white"
-                    : "bg-gray-200 text-gray-700"
-                } rounded-lg py-2 px-4 inline-block max-w-[80%] text-balance hyphens-auto`}
-              />
-            ))}
-            <span
-              ref={notiChat}
-              className="right-0"
-              style={{ display: "none" }}
-            >
-              Typing...
-            </span>
-          </div>
-          <Form
-            formVariant="w-full p-4 flex flex-row items-center"
-            inputVariant="w-full px-3 py-2 border rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            input={[
-              {
-                types: "text",
-                id: "content",
-                placeholder: "message....",
-                wrapInputVariant: "w-full",
-              },
-              {
-                id: "input-file",
-                types: "file",
-                inputVariant: "sr-only",
-                accept: "image/*, video/*",
-                multiple: true,
-                children: (
-                  <AttachFileIcon className="p-1 rounded-full text-white bg-red-600 m-1 absolute  right-28 bottom-5" />
-                ),
-              },
-            ]}
-            onSubmitSuccess={handleSuccess}
-            onSubmitFail={handleError}
-            id={"chat-box"}
-            buttonVariant=" rounded-full text-white bg-red-600 absolute  right-2 bottom-4"
-          />
         </div>
-      </div>
+      )}
     </>
   );
 };

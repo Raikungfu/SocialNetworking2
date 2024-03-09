@@ -1,39 +1,42 @@
 import React, { useRef, useState } from "react";
 import { FormProps } from "./types";
 import { API_FETCH_FILE } from "../../../../service/UploadFileToFirebase/uploadFile";
-import { FormData } from "../../../../type/API";
+import { FormDataChat } from "../../../../type/API";
 import Input from "../../Input";
 import Button from "../../Button";
 const Form: React.FC<FormProps> = (props) => {
-  const [formData, setFormData] = useState<FormData>({ "input-file": null });
+  const [formData, setFormData] = useState<FormDataChat>({
+    "chat-attach-file-input": null,
+  });
   const [process, setProcess] = useState<number>(0);
   const [isPost, setIsPost] = useState<boolean>(false);
   const formChat = useRef<HTMLFormElement>(null);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.type === "checkbox" || event.target.type === "radio") {
-      setFormData({ ...formData, [event.target.name]: event.target.id });
-    } else {
-      setFormData({ ...formData, [event.target.name]: event.target.value });
-    }
+    const { name, value, files } = event.target;
+    setFormData({
+      ...formData,
+      [name]: name === "chat-attach-file-input" ? files : value,
+    });
+    props.onInputChange();
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
       setIsPost(true);
-      const { ["input-file"]: inputFile, ...rest } = formData;
+      const { ["chat-attach-file-input"]: inputFile, content } = formData;
       if (inputFile) {
         const res = await API_FETCH_FILE(inputFile as FileList, setProcess);
         props.onSubmitSuccess({
-          ["formData"]: rest,
-          ["input-file"]: res,
+          content: content,
+          "chat-attach-file-input": res,
         });
       } else {
-        props.onSubmitSuccess(formData);
+        props.onSubmitSuccess({ content });
       }
       setIsPost(false);
-      setFormData({ "input-file": null });
+      setFormData({ "chat-attach-file-input": null });
       formChat.current?.reset();
     } catch (error) {
       setIsPost(false);

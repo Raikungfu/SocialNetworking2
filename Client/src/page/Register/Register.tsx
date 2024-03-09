@@ -128,7 +128,7 @@ function Register() {
                 variant: "flex justify-end gap-3",
               }}
             />
-            <div id="error" className="sr-only"></div>
+            <div id="error" className="sr-only text-red-500"></div>
             <div id="success" className="sr-only">
               <span>Register successful... </span>
               <Link to="/login">Login now</Link>

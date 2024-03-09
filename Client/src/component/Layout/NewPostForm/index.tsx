@@ -5,10 +5,12 @@ import Button from "../Button";
 import Textarea from "../Textarea/Textarea";
 import { H3 } from "../Text/H3";
 import { API_FETCH_FILE } from "../../../service/UploadFileToFirebase/uploadFile";
-import { FormData } from "../../../type/API";
+import { FormDataPost } from "../../../type/API";
 
 const NewPostForm: React.FC<NewPostFormProps> = (props) => {
-  const [formData, setFormData] = useState<FormData>({ "input-file": null });
+  const [formData, setFormData] = useState<FormDataPost>({
+    "input-file": null,
+  });
   const API_FETCH_FORM = props.apiFetchForm;
   const [process, setProcess] = useState<number>(0);
   const [isPost, setIsPost] = useState<boolean>(false);
