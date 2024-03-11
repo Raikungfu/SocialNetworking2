@@ -4,7 +4,6 @@ const app = express();
 const Post = require("../Modules/Post");
 
 app.post("/create", function (req, res, next) {
-  console.log(req.body);
   const data = req.body["formData"];
   const media = req.body["input-file"];
   const user = req.user;

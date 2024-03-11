@@ -13,13 +13,28 @@ interface ChatRoom {
   members: Array<[string, Member]>;
 }
 
+type ChatRoomIndividual = Record<
+  string,
+  {
+    member: {
+      _id: string;
+      name?: string;
+      avt?: string;
+    };
+    roomId: string;
+    online?: boolean;
+  }
+>;
+
 interface ChatRoomState {
-  chatRoom: ChatRoom[];
+  chatRoomIndividual: ChatRoomIndividual;
+  chatRoomGroup: ChatRoom[];
   payload: ChatRoom;
 }
 
 const initialState: ChatRoomState = {
-  chatRoom: [],
+  chatRoomIndividual: {},
+  chatRoomGroup: [],
   payload: {
     state: "",
     name: undefined,
@@ -35,9 +50,27 @@ export const chatRoomSlice = createSlice({
     setState: (state: ChatRoomState, action: PayloadAction<ChatRoom>) => {
       state.payload = action.payload;
     },
+    setRoomIndividual: (
+      state: ChatRoomState,
+      action: PayloadAction<{
+        key: string;
+        value: {
+          member: {
+            _id: string;
+            name?: string;
+            avt?: string;
+          };
+          roomId: string;
+          online?: boolean;
+        };
+      }>
+    ) => {
+      const { key, value } = action.payload;
+      state.chatRoomIndividual[key] = value;
+    },
   },
 });
 
-export const { setState } = chatRoomSlice.actions;
+export const { setState, setRoomIndividual } = chatRoomSlice.actions;
 
 export default chatRoomSlice.reducer;

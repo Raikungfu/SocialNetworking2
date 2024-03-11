@@ -3,7 +3,7 @@ import { GroupElementProps } from "./types";
 const GroupElement: React.FC<GroupElementProps> = (props) => {
   return (
     <div className={`${props.variant}`}>
-      {props.children.map((item) => item)}
+      {props.childrencomp.map((item) => item)}
     </div>
   );
 };

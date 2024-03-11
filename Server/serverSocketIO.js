@@ -2,6 +2,11 @@ const { Server } = require("socket.io");
 const checkAccess = require("./Middleware/AuthSocket");
 const chatGroup = require("./SocketIO/ChatGroup");
 const chatIndividual = require("./SocketIO/ChatIndividual");
+const {
+  openChatIndividual,
+  listChatIndividuals,
+} = require("./SocketIO/ChatIndividual");
+const friendsOnline = require("./SocketIO/FriendOnline");
 
 const allowedOrigins = [
   "http://localhost:5173",
@@ -40,13 +45,30 @@ const startSocketIOServer = (httpServer) => {
     socket.on("massage:group", (message) => {
       chatGroup(io, message);
     });
+
     socket.on("message:individual", (message, callback) => {
       chatIndividual(userSocketMap, socket, message, callback);
     });
 
-    socket.on("individual:typing", (recipt) => {
+    socket.on("open:chatIndividual", (chatIndividualUser, callback) => {
+      openChatIndividual(socket, chatIndividualUser, callback);
+    });
+
+    socket.on("friend:checkOnline", (data, callback) => {
+      friendsOnline(socket, data, userSocketMap, callback);
+    });
+
+    socket.on("chat:ListChatIndividuals", (data, callback) => {
+      listChatIndividuals(socket, callback);
+    });
+
+    socket.on("chat:ListChatGroups", (data, callback) => {
+      friendsOnline(socket, data, userSocketMap, callback);
+    });
+
+    socket.on("individual:typing", (recipient) => {
       socket
-        .to(userSocketMap.get(recipt))
+        .to(userSocketMap.get(recipient))
         .emit("individual_typing", "typing...");
     });
 

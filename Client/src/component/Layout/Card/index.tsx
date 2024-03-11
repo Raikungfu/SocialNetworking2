@@ -11,7 +11,7 @@ import MediaLayout from "../MediaLayout";
 const Card: React.FC<CardProps> = (props) => {
   return (
     <div
-      className="p-4 overflow-hidden bg-white rounded-md shadow-md text-slate-500 shadow-slate-200 my-5"
+      className="p-4 overflow-hidden bg-white rounded-md shadow-md text-slate-500 shadow-slate-200 mb-5"
       id={props.id}
     >
       <div className="p-6">
@@ -40,22 +40,22 @@ const Card: React.FC<CardProps> = (props) => {
         <p className="post-header"> {props.content || ""}</p>
       </div>
       <figure className="post-content ">
-        <MediaLayout children={props.media} />
+        <MediaLayout childrencomp={props.media} />
       </figure>
       <GroupButton
         buttonClassName="w-full inline-flex items-center justify-center h-12 gap-2 px-6 text-sm font-medium tracking-wide transition duration-300 justify-self-center hover:bg-red-100 hover:text-red-600 focus:bg-red-200 focus:text-red-700 focus-visible:outline-none disabled:cursor-not-allowed disabled:border-red-300 disabled:bg-red-100 disabled:text-red-400"
         id={`reaction`}
         buttons={[
-          { id: `like-${props.id}`, label: "Like", children: <LikeIcon /> },
+          { id: `like-${props.id}`, label: "Like", childrencomp: <LikeIcon /> },
           {
             id: `comment-${props.id}`,
             label: "Comment",
-            children: <CommentIcon />,
+            childrencomp: <CommentIcon />,
           },
           {
             id: `share-${props.id}`,
             label: "Share",
-            children: <ShareIcon />,
+            childrencomp: <ShareIcon />,
           },
         ]}
         variant={

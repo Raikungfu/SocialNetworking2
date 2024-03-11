@@ -12,11 +12,39 @@ let AccountSchema = new Schema(
     name: String,
     friendsList: [
       {
-        friend: { type: Schema.Types.ObjectId, ref: "account" },
+        friend: { type: Schema.Types.ObjectId, ref: "account", unique: true },
         state: { type: String, default: "pending" },
       },
     ],
-    friendsRequest: [{ type: Schema.Types.ObjectId, ref: "account" }],
+    friendsRequest: [
+      { type: Schema.Types.ObjectId, ref: "account", unique: true },
+    ],
+    chatIndividual: [
+      {
+        recipient: {
+          type: Schema.Types.ObjectId,
+          ref: "account",
+          required: true,
+          unique: true,
+        },
+        chatRoomId: {
+          type: Schema.Types.ObjectId,
+          required: true,
+          ref: "RoomChatIndividual",
+          unique: true,
+        },
+      },
+    ],
+    chatGroup: [
+      {
+        chatRoomId: {
+          type: Schema.Types.ObjectId,
+          required: true,
+          ref: "RoomChat",
+          unique: true,
+        },
+      },
+    ],
   },
   {
     collection: "account",

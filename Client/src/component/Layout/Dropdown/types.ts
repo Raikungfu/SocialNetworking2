@@ -2,13 +2,16 @@ import { ReactNode } from "react";
 
 export interface DropdownProps {
   variant: "drop-down";
+  handleOpenDropdown: (data: string) => void;
+  isOpen?: boolean;
   className?: string;
   id: string;
   navHeaderClassName: string;
-  children: Array<JSX.Element>;
+  childrencomp?: ReactNode;
   wrapDropdownListVariant?: string;
   wrapDropdownChildVariant?: string;
   navLinkIcon?: Array<{
+    id?: string;
     className?: string;
     variant?:
       | "nav-link-icon-dropdown"

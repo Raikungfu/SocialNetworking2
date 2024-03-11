@@ -3,7 +3,7 @@ export interface GroupButtonProps {
   buttons?: Array<{
     id: string;
     label?: string;
-    children?: React.ReactNode;
+    childrencomp?: React.ReactNode;
     className?: string;
     onClick?: () => void;
     onSubmit?: () => void;

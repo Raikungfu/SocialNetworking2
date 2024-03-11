@@ -12,7 +12,6 @@ const LoadPosts: React.FC<PostsProps> = (props) => {
   const newPost = props.newPost;
   const loadMore = async (page: number) => {
     const response = await API_USER_GET_POSTS({ page, numberPosted });
-    console.log(response);
     if (response) {
       const data = response as unknown as PostProps[];
       data.length > 0
@@ -42,10 +41,8 @@ const LoadPosts: React.FC<PostsProps> = (props) => {
       loader={<LoadingPost />}
       className="w-full"
     >
-      {posts?.map((post: PostProps, index: number) => {
-        return (
-          <Card id={`post-${index}`} key={`post-${index}-key`} {...post} />
-        );
+      {posts?.map((post: PostProps, index) => {
+        return <Card id={`post-${index}`} key={`${post._id}_key`} {...post} />;
       })}
     </InfiniteScroll>
   );

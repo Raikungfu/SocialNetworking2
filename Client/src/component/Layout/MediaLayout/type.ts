@@ -1,3 +1,3 @@
 export interface MediaLayoutProps {
-  children?: Array<{ url: string; type: string }>;
+  childrencomp?: Array<{ url: string; type: string }>;
 }

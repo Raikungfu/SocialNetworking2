@@ -1,5 +1,6 @@
 export interface CardProps {
   id?: string;
+  key?: string;
   type?: "post" | "meeting" | "story" | undefined;
   className?: string;
   variant?: string;

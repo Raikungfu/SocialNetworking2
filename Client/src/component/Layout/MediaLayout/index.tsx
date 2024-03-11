@@ -38,8 +38,8 @@ const MediaLayout: React.FC<MediaLayoutProps> = (props) => {
 
   useEffect(() => {
     const determineLayoutStyle = async () => {
-      if (props.children && props.children.length >= 2) {
-        const firstChild = props.children[0];
+      if (props.childrencomp && props.childrencomp.length >= 2) {
+        const firstChild = props.childrencomp[0];
         let mediaType;
         let getDimensions;
 
@@ -58,15 +58,14 @@ const MediaLayout: React.FC<MediaLayoutProps> = (props) => {
             setLayoutStyle(false);
           }
         }
-        console.log(layoutStyle);
       }
     };
     determineLayoutStyle();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (props.children?.length === 1) {
-    return props.children?.map((media, index) => {
+  if (props.childrencomp?.length === 1) {
+    return props.childrencomp?.map((media, index) => {
       if (media.type.startsWith("image")) {
         return <Img key={index} alt="image post" src={media.url} />;
       } else {
@@ -74,13 +73,13 @@ const MediaLayout: React.FC<MediaLayoutProps> = (props) => {
       }
     });
   } else if (
-    props.children &&
-    props.children.length % 2 === 0 &&
+    props.childrencomp &&
+    props.childrencomp.length % 2 === 0 &&
     !layoutStyle
   ) {
     return (
       <div className="flex flex-row flex-wrap -mx-2 justify-center items-center">
-        {props.children?.map((media, index) => {
+        {props.childrencomp?.map((media, index) => {
           if (media.type.startsWith("image")) {
             return (
               <Img
@@ -103,24 +102,28 @@ const MediaLayout: React.FC<MediaLayoutProps> = (props) => {
         })}
       </div>
     );
-  } else if (props.children && props.children.length === 3 && !layoutStyle) {
+  } else if (
+    props.childrencomp &&
+    props.childrencomp.length === 3 &&
+    !layoutStyle
+  ) {
     return (
       <div className="flex flex-row flex-wrap -mx-2 justify-center items-center">
-        {props.children[0].type.startsWith("image") ? (
+        {props.childrencomp[0].type.startsWith("image") ? (
           <Img
             alt="image post"
-            src={props.children[0].url}
+            src={props.childrencomp[0].url}
             className="w-full rounded-md mb-2 md:w-1/2 px-2 object-contain"
           />
         ) : (
           <video
             controls
-            src={props.children[0].url}
+            src={props.childrencomp[0].url}
             className="w-full rounded-md mb-2 md:w-1/2 px-2 object-contain"
           ></video>
         )}
         <div className="flex flex-col w-1/2 justify-center items-center">
-          {props.children.slice(1).map((child, index) => {
+          {props.childrencomp.slice(1).map((child, index) => {
             if (child.type.startsWith("image")) {
               return (
                 <Img
@@ -144,11 +147,11 @@ const MediaLayout: React.FC<MediaLayoutProps> = (props) => {
         </div>
       </div>
     );
-  } else if (props.children && props.children.length === 5) {
+  } else if (props.childrencomp && props.childrencomp.length === 5) {
     return (
       <div className="flex flex-row flex-wrap -mx-2 justify-center items-center">
         <div className="flex flex-col">
-          {props.children.slice(0, 1).map((child, index) => {
+          {props.childrencomp.slice(0, 1).map((child, index) => {
             if (child.type.startsWith("image")) {
               return (
                 <Img
@@ -171,7 +174,7 @@ const MediaLayout: React.FC<MediaLayoutProps> = (props) => {
           })}
         </div>
         <div className="flex flex-col justify-center items-center">
-          {props.children.slice(2, 5).map((child, index) => {
+          {props.childrencomp.slice(2, 5).map((child, index) => {
             if (child.type.startsWith("image")) {
               return (
                 <Img
@@ -195,10 +198,14 @@ const MediaLayout: React.FC<MediaLayoutProps> = (props) => {
         </div>
       </div>
     );
-  } else if (layoutStyle && props.children && props.children.length <= 6) {
+  } else if (
+    layoutStyle &&
+    props.childrencomp &&
+    props.childrencomp.length <= 6
+  ) {
     return (
       <div className="flex flex-row flex-wrap -mx-2 justify-center items-center">
-        {props.children.map((child, index) => {
+        {props.childrencomp.map((child, index) => {
           if (child.type.startsWith("image")) {
             return (
               <Img
@@ -224,7 +231,7 @@ const MediaLayout: React.FC<MediaLayoutProps> = (props) => {
   } else {
     return (
       <div className="flex flex-row flex-wrap -mx-2 justify-center items-center">
-        {props.children?.map((media, index) => {
+        {props.childrencomp?.map((media, index) => {
           if (media.type.startsWith("image")) {
             return (
               <Img

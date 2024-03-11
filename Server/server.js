@@ -37,6 +37,7 @@ const authentication = require("./Routers/Authenticate");
 const userPosts = require("./Routers/Post");
 const community = require("./Routers/Community");
 const auth = require("./Routers/Auth");
+const chat = require("./Routers/Chat");
 
 app.use("/User", checkAccess, userState);
 app.use("/Auth", auth);
@@ -44,6 +45,7 @@ app.use("/authentication", authentication);
 app.use("/post", checkAccess, userPosts);
 app.use("/community", checkAccess, community);
 app.use("/", checkAccess, authentication);
+app.use("/chat", checkAccess, chat);
 
 app.use(express.static(path.join(__dirname, "public")));
 
