@@ -8,7 +8,6 @@ app.post("/create", function (req, res, next) {
   const media = req.body["input-file"];
   const user = req.user;
   if (user && (data["post-content"] || media)) {
-    console.log(data);
     new Post({
       userId: user.id,
       content: data["post-content"],

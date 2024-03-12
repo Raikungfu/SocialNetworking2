@@ -2,10 +2,19 @@ import Img from "../Layout/Img";
 import logo from "../../assets/img/logo.png";
 import Input from "../Layout/Input";
 import { ChangeEvent } from "react";
+import DropdownMenu from "../Layout/Dropdown";
+import debounce from "debounce";
+import { API_SEARCH_USERS } from "../../service/Search/SearchUser";
 
 const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
-  const searchData = event.target.value;
-  console.log(searchData);
+  const data = event.target.value;
+  const res = debounce(() => {
+    if (data && data === event.target.value) {
+      const res = API_SEARCH_USERS({ data });
+      console.log(res);
+    }
+  }, 300);
+  res();
 };
 
 const HeaderLeft: React.FC = () => {
@@ -21,6 +30,11 @@ const HeaderLeft: React.FC = () => {
         id={"search-bar-header"}
         onChange={handleSearch}
         types={"text"}
+      />
+      <DropdownMenu
+        variant={"drop-down"}
+        id={"dropdown-sub"}
+        navHeaderClassName={""}
       />
     </>
   );

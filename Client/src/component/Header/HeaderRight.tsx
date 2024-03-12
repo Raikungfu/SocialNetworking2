@@ -11,6 +11,7 @@ import GroupElement from "../Layout/GroupElement";
 import ChatGroupIcon from "@mui/icons-material/ForumOutlined";
 import ChatIndividualIcon from "@mui/icons-material/ChatOutlined";
 import ListDropdown from "../Layout/List/ListDropdown/ListDropdown";
+import { useChatBox } from "../../hook/UseChatBox";
 
 const HeaderRight: React.FC = () => {
   const dispatch = useDispatch();
@@ -58,6 +59,8 @@ const HeaderRight: React.FC = () => {
     nav("/login");
   };
 
+  const { handleOpenReceptMessage } = useChatBox();
+
   return state ? (
     <div className="flex flex-row justify-end gap-2">
       <Dropdown
@@ -66,8 +69,13 @@ const HeaderRight: React.FC = () => {
         childrencomp={
           <ListDropdown
             wrapVariant="relative flex flex-row justify-end items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse"
-            wrapDropdownVariant="flex flex-col z-50 py-2 px-5 top-2 right-0 text-base absolute list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
+            wrapDropdownVariant="flex flex-col w-48 z-50 py-2 px-5 top-2 right-0 text-base absolute list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
+            wrapDropdownChildVariant="py-3 sm:py-4 cursor-pointer flex flex-row items-center gap-2"
+            wrapTextChildVariant="text-sm font-medium dark:gray-900 truncate"
+            wrapTextChildColorVariant_1="text-green-500"
+            wrapTextChildColorVariant_2="text-red-500"
             listUser={allChatIndividuals}
+            handleOpenReceptMessage={handleOpenReceptMessage}
           />
         }
         navLinkAvt={<ChatGroupIcon />}
@@ -84,8 +92,13 @@ const HeaderRight: React.FC = () => {
         childrencomp={
           <ListDropdown
             wrapVariant="relative flex flex-row justify-end items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse"
-            wrapDropdownVariant="flex flex-col z-50 py-2 px-5 top-2 right-0 text-base absolute list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
+            wrapDropdownVariant="flex flex-col w-48 z-50 py-2 px-5 top-2 right-0 text-base absolute list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
+            wrapDropdownChildVariant="py-3 sm:py-4 cursor-pointer flex flex-row items-center gap-2"
+            wrapTextChildVariant="text-sm font-medium dark:gray-900 truncate"
+            wrapTextChildColorVariant_1="text-green-500"
+            wrapTextChildColorVariant_2="text-red-500"
             listUser={allChatIndividuals}
+            handleOpenReceptMessage={handleOpenReceptMessage}
           />
         }
         navHeaderClassName={
@@ -128,6 +141,7 @@ const HeaderRight: React.FC = () => {
         navHeaderClassName={
           "flex text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
         }
+        wrapDropdownChildVariant="flex flex-row p-2 gap-2 w-36"
         handleOpenDropdown={toggleDropdown}
         isOpen={isProfileOpen}
       />

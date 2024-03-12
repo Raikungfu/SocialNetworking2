@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 
 export interface DropdownProps {
   variant: "drop-down";
-  handleOpenDropdown: (data: string) => void;
+  handleOpenDropdown?: (data: string) => void;
   isOpen?: boolean;
   className?: string;
   id: string;

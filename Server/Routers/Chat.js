@@ -7,7 +7,6 @@ const updateChat = (socket, data) => {
   const user = socket.user;
   Account.findOne();
   if (user && (data["post-content"] || media)) {
-    console.log(data);
     new Post({
       userId: user.id,
       content: data["post-content"],
