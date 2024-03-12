@@ -22,23 +22,19 @@ const ListDropdown: React.FC<ListProps> = (props) => {
                     });
                 }}
               >
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <Img
-                      alt="avt-user"
-                      src={list[item].member.avt || logo}
-                      variant="avt"
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0 ms-4">
-                    <p
-                      className={`${
-                        list[item].online ? "text-green-500" : "text-red-500"
-                      } text-sm font-medium truncate dark:gray-900`}
-                    >
-                      {list[item].member.name}
-                    </p>
-                  </div>
+                <div className="flex flex-row items-center gap-2">
+                  <Img
+                    alt="avt-user"
+                    src={list[item].member.avt || logo}
+                    variant="avt"
+                  />
+                  <p
+                    className={`${
+                      list[item].online ? "text-green-500" : "text-red-500"
+                    } text-sm font-medium dark:gray-900`}
+                  >
+                    {list[item].member.name}
+                  </p>
                 </div>
               </li>
             ))}
