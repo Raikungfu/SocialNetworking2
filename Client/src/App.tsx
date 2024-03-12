@@ -7,18 +7,19 @@ import Register from "./page/Register/Register";
 import Dashboard from "./page/Dashboard/Dashboard";
 import Community from "./page/Community/Community";
 import About from "./page/About/About";
+import ProtectedWithAuth from "./component/Protected/CheckAuthenticated";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Header />}>
-        <Route index element={<Dashboard />} />
-        <Route path="community" element={<Community />} />
-        {/* <Route index element={<Protected element={<Dashboard />} />} />
+        {/* <Route index element={<Dashboard />} />
+        <Route path="community" element={<Community />} /> */}
+        <Route index element={<ProtectedWithAuth element={<Dashboard />} />} />
         <Route
           path="community"
-          element={<Protected element={<Community />} />}
-        /> */}
+          element={<ProtectedWithAuth element={<Community />} />}
+        />
         <Route path="about" element={<About />} />
         <Route path="*" element={<Page404 />} />
       </Route>

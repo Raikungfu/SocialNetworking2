@@ -53,8 +53,8 @@ export const userSlice = createSlice({
       };
     },
     loginUser: (state: UserState, action) => {
-      Cookies.set("accessToken", action.payload.accessToken);
-      Cookies.set("refreshToken", action.payload.refreshToken);
+      Cookies.set("accessToken", action.payload.accessToken, { expires: 1 });
+      Cookies.set("refreshToken", action.payload.refreshToken, { expires: 30 });
       state.userState = action.payload;
       state.userState.state = "active";
     },

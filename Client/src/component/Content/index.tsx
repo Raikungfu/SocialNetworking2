@@ -5,7 +5,7 @@ import { PostProps } from "./Post/type";
 
 const Content = () => {
   const [newPost, setNewPost] = useState<object>();
-
+  console.log(newPost);
   return (
     <div className="w-full flex flex-col items-center justify-center md:w-8/12">
       <CreatePost

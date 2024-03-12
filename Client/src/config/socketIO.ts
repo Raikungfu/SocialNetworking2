@@ -38,7 +38,7 @@ async function refreshTokenAndReconnect() {
     );
     if (res.status === 200) {
       console.log(res.data);
-      Cookies.set("accessToken", res.data.accessToken);
+      Cookies.set("accessToken", res.data.accessToken, { expires: 1 });
       socket.io.opts.extraHeaders = {
         Authorization: `Bearer ${Cookies.get("accessToken")}`,
       };

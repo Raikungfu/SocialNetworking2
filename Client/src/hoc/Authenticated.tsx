@@ -51,6 +51,9 @@ const withAuth = (
           }
         }
       );
+      return () => {
+        socket.off("chat:ListChatIndividuals");
+      };
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loc.pathname]);
 
