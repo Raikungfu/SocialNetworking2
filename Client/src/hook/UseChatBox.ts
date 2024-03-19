@@ -27,7 +27,6 @@ export const useChatBox = () => {
         dispatch(setReceptId(data));
         dispatch(setRoomId(id.roomId));
       } else {
-        console.log(data);
         dispatch(setReceptId(data));
         socket.emit(
           "open:chatIndividual",

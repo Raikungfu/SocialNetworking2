@@ -19,7 +19,6 @@ const Form: React.FC<FormProps> = (props) => {
     event.preventDefault();
     try {
       const response = await API_FETCH_FORM(formData);
-      console.log(response);
       props.onSubmitSuccess(response);
     } catch (error) {
       props.onSubmitFail(error as string);

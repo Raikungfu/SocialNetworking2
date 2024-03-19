@@ -36,7 +36,7 @@ app.get("/profile/:userId", function (req, res, next) {
     .exec()
     .then((doc) => {
       if (!doc) {
-        return res.status(404).send().json({
+        return res.status(400).send().json({
           message: "User not found!",
         });
       }

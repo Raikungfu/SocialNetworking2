@@ -6,12 +6,8 @@ export interface ListProps {
   wrapTextChildVariant?: string;
   wrapTextChildColorVariant_1?: string;
   wrapTextChildColorVariant_2?: string;
-  handleOpenReceptMessage?: (data: {
-    id: string;
-    name?: string;
-    avt?: string;
-  }) => void;
-  listUser: Record<
+  handleOpenReceptMessage?: (data: clickUser) => void;
+  listUserRecord?: Record<
     string,
     {
       member: {
@@ -23,4 +19,32 @@ export interface ListProps {
       online?: boolean;
     }
   >;
+
+  searchUser?: Array<
+    Record<
+      string,
+      {
+        _id: string;
+        name?: string;
+        avt?: string;
+      }[]
+    >
+  >;
 }
+
+export type clickUser = {
+  id: string;
+  name?: string;
+  avt?: string;
+};
+
+export type searchUser = Array<
+  Record<
+    string,
+    {
+      _id: string;
+      name?: string;
+      avt?: string;
+    }[]
+  >
+>;

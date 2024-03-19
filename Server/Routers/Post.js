@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 
 const Post = require("../Modules/Post");
+const Comment = require("../Modules/Comment");
+const LikePost = require("../Modules/LikePost");
 
 app.post("/create", function (req, res, next) {
   const data = req.body["formData"];
@@ -20,10 +22,10 @@ app.post("/create", function (req, res, next) {
         res.status(200).json(createdPost);
       })
       .catch((err) => {
-        res.status(404).json(err);
+        res.status(400).json(err);
       });
   } else {
-    res.status(404).json(new Error("No User Found"));
+    res.status(400).json(new Error("No User Found"));
   }
 });
 
@@ -35,13 +37,94 @@ app.get("/", function (req, res, next) {
     .limit(10)
     .populate("userId", "username avt name")
     .then((docs) => {
-      if (docs.length > 0) {
-        res.status(200).json(docs);
-      } else throw new Error("Not found");
+      try {
+        if (docs.length > 0) {
+          return Promise.all(
+            docs.map(async (items) => {
+              likes = await LikePost.findOne({
+                post: items._id,
+              });
+              items._doc["isLiked"] = likes
+                ? likes.likeUsers?.includes(userID)
+                : false;
+              items._doc["likes"] = likes ? likes.likeUsers?.length : 0;
+
+              comments = await Comment.find({
+                post: items._id,
+              }).countDocuments();
+              items._doc["comments"] = comments ? comments : 0;
+              return items;
+            })
+          );
+        } else throw new Error("Not found");
+      } catch (err) {
+        console.log(err);
+      }
+    })
+    .then((docs) => {
+      res.status(200).json(docs);
     })
     .catch((err) => {
       res.status(500).json(err);
     });
+});
+
+app.get("/comment", function (req, res, next) {
+  const postId = req.query.postId;
+  const page = req.query.page;
+  Comment.find({ post: postId })
+    .skip(page * 5)
+    .limit(5)
+    .sort([["createAt", "descending"]])
+    .populate("author", "username avt name")
+    .then((data) => {
+      if (data.length > 0) {
+        res.status(200).json(data);
+      } else res.status(401).json("No comments");
+    });
+});
+
+app.post("/comment", function (req, res, next) {
+  const authorId = req.user.id;
+  const postId = req.body.postId;
+  const content = req.body.data.content;
+  const file = req.body.data["chat-attach-file-input"];
+  if (file || content) {
+    new Comment({
+      text: content,
+      media: file,
+      author: authorId,
+      post: postId,
+    })
+      .save()
+      .then((doc) => {
+        const data = {
+          text: doc.text,
+          media: doc.media,
+          author: { name: req.user.name, avt: req.user.avt },
+          post: doc.postId,
+          createAt: doc.createAt,
+          isEdited: false,
+          id: doc._id,
+        };
+        res.status(200).json(data);
+      })
+      .catch((error) => {
+        console.log(error);
+        res.status(400).send("Error creating comment");
+      });
+  }
+});
+
+app.get("/like", (req, res) => {
+  const postId = req.query.postId;
+  try {
+    LikePost.addLike(req.user.id, postId).then((data) => {
+      res.status(200).json(data ? "like" : "unlike");
+    });
+  } catch (err) {
+    res.status(403).json(err);
+  }
 });
 
 app.delete("/:id", function (req, res, next) {});

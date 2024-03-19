@@ -74,7 +74,7 @@ const HeaderRight: React.FC = () => {
             wrapTextChildVariant="text-sm font-medium dark:gray-900 truncate"
             wrapTextChildColorVariant_1="text-green-500"
             wrapTextChildColorVariant_2="text-red-500"
-            listUser={allChatIndividuals}
+            listUserRecord={allChatIndividuals}
             handleOpenReceptMessage={handleOpenReceptMessage}
           />
         }
@@ -97,7 +97,7 @@ const HeaderRight: React.FC = () => {
             wrapTextChildVariant="text-sm font-medium dark:gray-900 truncate"
             wrapTextChildColorVariant_1="text-green-500"
             wrapTextChildColorVariant_2="text-red-500"
-            listUser={allChatIndividuals}
+            listUserRecord={allChatIndividuals}
             handleOpenReceptMessage={handleOpenReceptMessage}
           />
         }

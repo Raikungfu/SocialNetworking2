@@ -3,7 +3,7 @@ const mongoose = require("./Connection");
 const Schema = mongoose.Schema;
 
 const LikePostSchema = new Schema({
-  user: { type: Schema.Types.ObjectId, ref: "User" },
+  likeUsers: { type: [Schema.Types.ObjectId], ref: "User" },
   post: {
     type: Schema.Types.ObjectId,
     ref: "Post",
@@ -15,12 +15,18 @@ const LikePostSchema = new Schema({
 LikePostSchema.index({ user: 1, post: 1 }, { unique: true });
 
 LikePostSchema.statics.addLike = function (userId, postId) {
-  return this.findOne({ user: userId, post: postId })
-    .then((existingLike) => {
-      if (existingLike) {
-        return existingLike.remove();
+  return this.findOne({ post: postId })
+    .then((data) => {
+      if (data) {
+        const existLike = data.likeUsers && data.likeUsers.includes(userId);
+        const query = existLike
+          ? { $pull: { likeUsers: userId } }
+          : { $addToSet: { likeUsers: userId } };
+        this.updateOne({ _id: data._id }, query).exec();
+        return !existLike;
       } else {
-        return this.create({ user: userId, post: postId });
+        this.create({ post: postId, likeUsers: [userId] });
+        return true;
       }
     })
     .catch((error) => {

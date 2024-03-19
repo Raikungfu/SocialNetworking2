@@ -7,7 +7,6 @@ const Axios = axios.create({
   headers: {
     Accept: "application/json",
   },
-  withCredentials: true,
 });
 
 Axios.interceptors.request.use(
@@ -25,7 +24,6 @@ Axios.interceptors.request.use(
 
 Axios.interceptors.response.use(
   (response) => {
-    console.log(response);
     return response;
   },
   async (error) => {
@@ -39,18 +37,14 @@ Axios.interceptors.response.use(
             headers: {
               Authorization: `Bearer ${refreshToken}`,
             },
-            withCredentials: true,
           }
         );
         if (res.status === 200) {
-          console.log(res.data);
-          console.log(res);
           Cookies.set("accessToken", res.data.accessToken, { expires: 1 });
           return axios.request(error.config);
         }
       } catch (error) {
         console.log("Error", error);
-
         Cookies.remove("accessToken");
         Cookies.remove("refreshToken");
         localStorage.clear();

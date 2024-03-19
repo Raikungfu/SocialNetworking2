@@ -7,14 +7,14 @@ import ChatIcon from "@mui/icons-material/QuestionAnswer";
 import AboutIcon from "@mui/icons-material/Info";
 import FeedIcon from "@mui/icons-material/Feed";
 import HeaderLeft from "./HeaderLeft";
-import Chat from "../Layout/Chat-box";
+import ChatBox from "../Layout/Chat-box";
 
 const header: React.FC = () => {
   return (
     <div className="App">
       <header className="App-header shadow-md bg-white dark:bg-slate-950 dark:text-white w-screen fixed z-50 py-2">
         <nav className="flex flex-row justify-between items-center px-2 sm:px-7 md:px-10">
-          <div className="basis-[20%] flex flex-row justify-start items-center gap-4">
+          <div className="basis-[20%]">
             <HeaderLeft />
           </div>
           <div className=" grow flex flex-row justify-start items-center">
@@ -47,7 +47,7 @@ const header: React.FC = () => {
         </nav>
       </header>
       <Outlet />
-      <Chat />
+      <ChatBox />
     </div>
   );
 };

@@ -19,7 +19,7 @@ app.get("/requests", function (req, res, next) {
     .populate("friendsRequest", "username avt name")
     .then((user) => {
       if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        return res.status(400).json({ message: "User not found" });
       }
       res.status(200).json(user.friendsRequest);
     })
@@ -36,7 +36,7 @@ app.get("/friends", function (req, res, next) {
     .populate("friendsList.friend", "username avt age gender name")
     .then((user) => {
       if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        return res.status(400).json({ message: "User not found" });
       }
       res.status(200).json(user.friendsList);
     })
@@ -91,7 +91,7 @@ app.get("/accept-request", function (req, res, next) {
     })
     .catch((err) => {
       console.log(err);
-      res.status(404).json("Add friend failed!");
+      res.status(400).json("Add friend failed!");
       return next(err);
     });
 });

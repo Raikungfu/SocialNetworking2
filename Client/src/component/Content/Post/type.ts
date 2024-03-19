@@ -1,13 +1,14 @@
 import { RefObject } from "react";
 
 export interface PostProps {
-  _id?: string;
+  _id: string;
   username?: string;
   content?: string;
   likes?: number;
   shares?: number;
   comment?: number;
   createAt?: Date;
+  isLiked?: boolean;
   isEdited?: boolean;
   media?: Array<{ url: string; type: string }>;
   userLike?: Array<{

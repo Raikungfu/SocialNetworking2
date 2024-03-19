@@ -1,3 +1,5 @@
+import { ChangeEvent } from "react";
+
 export interface errorData {
   error?: string;
   status?: number;
@@ -5,7 +7,7 @@ export interface errorData {
 
 export interface FormProps {
   onSubmit?: (api: Element) => void;
-  id: string;
+  id?: string;
   title?: string;
   wrapInputVariant?: string;
   wrapGroupInputVariant?: string;
@@ -42,7 +44,22 @@ export interface FormProps {
     content?: string;
   }) => void;
   onSubmitFail: (error: string) => void;
-  onInputChange: () => void;
+  onInputChange?: () => void;
+  onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
   button?: string;
   buttonVariant?: string;
+}
+
+export interface IndividualMessage {
+  sender: string;
+  content: {
+    "chat-attach-file-input"?: Array<{ url: string; type: string }>;
+    content?: string;
+  };
+  createAt?: string;
+}
+
+export interface IndividualSendMessage {
+  "chat-attach-file-input"?: Array<{ url: string; type: string }>;
+  content?: string;
 }

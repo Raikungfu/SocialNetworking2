@@ -18,7 +18,8 @@ const Form: React.FC<FormProps> = (props) => {
       ...formData,
       [name]: name === "chat-attach-file-input" ? files : value,
     });
-    props.onInputChange();
+    props.onInputChange && props.onInputChange();
+    props.onChange && props.onChange(event);
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {

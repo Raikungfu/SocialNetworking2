@@ -24,7 +24,6 @@ const CreatePost: React.FC<PostProps> = (props) => {
   };
 
   const handleSuccess = (data: object) => {
-    console.log(data);
     props.onSubmitSuccess(data);
   };
 

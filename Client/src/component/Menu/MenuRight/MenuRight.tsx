@@ -8,7 +8,7 @@ import { MenuRightProps } from "./type";
 import { User } from "../../Layout/List/type";
 import { useState } from "react";
 import { useChatBox } from "../../../hook/UseChatBox";
-import { API_LIST_FRIEND_ONLINE } from "../../../service/Chat/fetchMessage";
+import { API_LIST_FRIEND_ONLINE } from "../../../service/Chat/chatIndivisual";
 
 const MenuRight: React.FC<MenuRightProps> = () => {
   const [newRequestAccept, setNewRequestAccept] = useState<User>();

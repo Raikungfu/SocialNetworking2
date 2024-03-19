@@ -10,7 +10,6 @@ app.post("/refreshToken", (req, res, next) => {
       if (data) {
         genNewAccessToken(data)
           .then((data) => {
-            console.log(data);
             res.status(200).json(data);
           })
           .catch((err) => {

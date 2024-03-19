@@ -1,6 +1,7 @@
 export interface CardProps {
   id?: string;
-  key?: string;
+  key: string;
+  postId: string;
   type?: "post" | "meeting" | "story" | undefined;
   className?: string;
   variant?: string;
@@ -8,8 +9,9 @@ export interface CardProps {
   content?: string;
   onClick?: () => void;
   likes?: number;
+  isLiked?: boolean;
   shares?: number;
-  comment?: number;
+  comments?: number;
   createAt?: Date;
   isEdited?: boolean;
   media?: Array<{ url: string; type: string }>;

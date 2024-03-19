@@ -42,7 +42,14 @@ const LoadPosts: React.FC<PostsProps> = (props) => {
       className="w-full"
     >
       {posts?.map((post: PostProps, index) => {
-        return <Card id={`post-${index}`} key={`${post._id}_key`} {...post} />;
+        return (
+          <Card
+            id={`post-${index}`}
+            key={`${post._id}_key`}
+            postId={post._id}
+            {...post}
+          />
+        );
       })}
     </InfiniteScroll>
   );
