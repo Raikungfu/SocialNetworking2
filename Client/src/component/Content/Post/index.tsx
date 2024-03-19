@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { PostProps, PostsProps } from "./type";
 import Card from "../../Layout/Card";
 import InfiniteScroll from "react-infinite-scroller";
-import { API_USER_GET_POSTS } from "../../../service/Post/fetchPost";
+import { API_USER_DASHBOARD_GET_POSTS } from "../../../service/Post/fetchPost";
 import LoadingPost from "../../Layout/Skeleton/LoadingPost";
 
 const LoadPosts: React.FC<PostsProps> = (props) => {
@@ -11,7 +11,7 @@ const LoadPosts: React.FC<PostsProps> = (props) => {
   const [numberPosted, setNumberPosted] = useState<number>(0);
   const newPost = props.newPost;
   const loadMore = async (page: number) => {
-    const response = await API_USER_GET_POSTS({ page, numberPosted });
+    const response = await API_USER_DASHBOARD_GET_POSTS({ page, numberPosted });
     if (response) {
       const data = response as unknown as PostProps[];
       data.length > 0

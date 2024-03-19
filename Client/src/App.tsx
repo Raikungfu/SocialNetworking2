@@ -8,6 +8,7 @@ import Dashboard from "./page/Dashboard/Dashboard";
 import Community from "./page/Community/Community";
 import About from "./page/About/About";
 import ProtectedWithAuth from "./component/Protected/CheckAuthenticated";
+import Profile from "./page/Profile/Profile";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           element={<ProtectedWithAuth element={<Community />} />}
         />
         <Route path="about" element={<About />} />
+        <Route path={`profile/:id`} element={<Profile />} />
         <Route path="*" element={<Page404 />} />
       </Route>
       <Route path="login" element={<Login />} />

@@ -118,7 +118,7 @@ const List: React.FC<ListProps> = (props) => {
   };
 
   return (
-    <div className={props.wrapVariant + " w-full"}>
+    <>
       <div className="w-full flex items-center justify-between mb-4 overflow-y-hidden">
         <h5 className="text-xl font-bold leading-none text-gray-900 dark:gray-900">
           {props.title}
@@ -130,56 +130,62 @@ const List: React.FC<ListProps> = (props) => {
           See all
         </Link>
       </div>
-      <div className="overflow-y-auto">
-        <ul role="list" className="w-10/12">
-          <InfiniteScroll
-            hasMore={hasMore}
-            initialLoad={true}
-            isReverse={false}
-            loadMore={loadMore}
-            pageStart={0}
-            threshold={250}
-            useCapture={false}
-            useWindow={true}
-            loader={<></>}
-            className="divide-y divide-gray-200 dark:divide-gray-700"
-          >
-            {allUsers.map((item, index) => (
-              <li
-                className="py-3 sm:py-4 cursor-pointer"
-                key={`${props.title}_${index}`}
-                onClick={() => {
-                  if (props.handleOpenReceptMessage)
-                    props.handleOpenReceptMessage({
-                      id: item.id || item._id,
-                      name: item.name,
-                      avt: item.avt,
-                    });
-                }}
-              >
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <Img alt="avt-user" src={item.avt || logo} variant="avt" />
+      <div className={props.wrapVariant + " w-full"}>
+        <div className="overflow-y-auto">
+          <ul role="list" className="w-10/12">
+            <InfiniteScroll
+              hasMore={hasMore}
+              initialLoad={true}
+              isReverse={false}
+              loadMore={loadMore}
+              pageStart={0}
+              threshold={250}
+              useCapture={false}
+              useWindow={true}
+              loader={<></>}
+              className="divide-y divide-gray-200 dark:divide-gray-700"
+            >
+              {allUsers.map((item, index) => (
+                <li
+                  className="py-3 sm:py-4 cursor-pointer"
+                  key={`${props.title}_${index}`}
+                  onClick={() => {
+                    if (props.handleOpenReceptMessage)
+                      props.handleOpenReceptMessage({
+                        id: item.id || item._id,
+                        name: item.name,
+                        avt: item.avt,
+                      });
+                  }}
+                >
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0">
+                      <Img
+                        alt="avt-user"
+                        src={item.avt || logo}
+                        variant="avt"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0 ms-4">
+                      <p
+                        className={`${
+                          item.online ? "text-green-500" : "text-red-500"
+                        } text-sm font-medium truncate dark:gray-900`}
+                      >
+                        {item.name}
+                      </p>
+                    </div>
+                    <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:gray-900">
+                      {groupButton(item)}
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0 ms-4">
-                    <p
-                      className={`${
-                        item.online ? "text-green-500" : "text-red-500"
-                      } text-sm font-medium truncate dark:gray-900`}
-                    >
-                      {item.name}
-                    </p>
-                  </div>
-                  <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:gray-900">
-                    {groupButton(item)}
-                  </div>
-                </div>
-              </li>
-            ))}
-          </InfiniteScroll>
-        </ul>
+                </li>
+              ))}
+            </InfiniteScroll>
+          </ul>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

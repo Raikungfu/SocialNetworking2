@@ -7,6 +7,7 @@ let AccountSchema = new Schema(
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     avt: String,
+    cover: String,
     age: Date,
     gender: String,
     name: String,

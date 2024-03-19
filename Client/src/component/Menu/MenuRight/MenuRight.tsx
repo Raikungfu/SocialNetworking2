@@ -19,7 +19,7 @@ const MenuRight: React.FC<MenuRightProps> = () => {
       <List
         title="Requests"
         API_GET_DATA={API_GET_REQUESTS}
-        wrapVariant="flex-1 max-h-40"
+        wrapVariant="flex-1 overflow-y-auto max-h-96"
         typeList="requestsList"
         API_HANDLE_EVENT_1={API_ACCEPT_REQUEST}
         removeRecord={setNewRequestAccept}
@@ -27,7 +27,7 @@ const MenuRight: React.FC<MenuRightProps> = () => {
       <List
         title="List friends"
         API_GET_DATA={API_LIST_FRIEND_ONLINE}
-        wrapVariant="flex-1 max-h-40"
+        wrapVariant="flex-1 overflow-y-auto max-h-96"
         typeList="friendsList"
         API_HANDLE_EVENT_1={API_GET_REQUESTS}
         handleOpenReceptMessage={handleOpenReceptMessage}

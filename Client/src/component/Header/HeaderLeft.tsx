@@ -6,11 +6,13 @@ import debounce from "debounce";
 import { API_SEARCH_USERS } from "../../service/Search/SearchUser";
 import Dropdown from "../Layout/Dropdown";
 import ListDropdown from "../Layout/List/ListDropdown/ListDropdown";
-import { searchUser } from "../Layout/List/ListDropdown/type";
+import { clickUser, searchUser } from "../Layout/List/ListDropdown/type";
+import { useNavigate } from "react-router-dom";
 
 const HeaderLeft: React.FC = () => {
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>();
   const [listSearch, setListSearch] = useState<searchUser>();
+  const nav = useNavigate();
   const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
     const data = event.target.value;
     const res = debounce(async () => {
@@ -24,9 +26,14 @@ const HeaderLeft: React.FC = () => {
     }, 300);
     res();
   };
+
+  const handleOpenProfile = (data: clickUser) => {
+    nav(`/profile/${data.id}`);
+  };
+
   return (
     <div
-      // onMouseLeave={() => setIsSearchOpen(false)}
+      onMouseLeave={() => setIsSearchOpen(false)}
       className="flex flex-row justify-start items-center gap-4"
     >
       <Img src={logo} alt="logo-brand" variant="logo" />
@@ -45,11 +52,12 @@ const HeaderLeft: React.FC = () => {
         childrencomp={
           <ListDropdown
             wrapVariant="relative flex flex-row justify-end items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse"
-            wrapDropdownVariant="flex flex-col w-48 z-50 py-2 px-5 top-5 right-0 text-base absolute list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
+            wrapDropdownVariant="flex flex-col w-48 z-50 py-2 px-5 top-4 right-0 text-base absolute list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
             wrapDropdownChildVariant="py-3 sm:py-4 cursor-pointer flex flex-row items-center gap-2"
             wrapTextChildVariant="text-sm font-medium dark:gray-900 truncate"
             wrapTextChildColorVariant_1="text-gray-800"
             searchUser={listSearch}
+            handleOpenReceptMessage={handleOpenProfile}
           />
         }
         navHeaderClassName={"hidden"}

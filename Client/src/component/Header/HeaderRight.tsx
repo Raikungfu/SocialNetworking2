@@ -124,7 +124,7 @@ const HeaderRight: React.FC = () => {
         }
         navLinkIcon={[
           {
-            link: "profile",
+            link: `profile/${initialState.id}`,
             label: `${initialState.name ? initialState.name : "User"}`,
             icon: (
               <Img

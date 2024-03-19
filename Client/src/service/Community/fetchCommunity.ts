@@ -82,3 +82,17 @@ export const API_ACCEPT_REQUEST = <T>(_id: T): Promise<T> => {
       throw err;
     });
 };
+
+export const API_GET_USER_PROFILE = <T>(_id: T): Promise<T> => {
+  return AxiosApi.get<T>("/community/profile", true, _id)
+    .then((response) => {
+      if (response.data) {
+        return response.data;
+      } else {
+        throw new Error("Fail to get profile");
+      }
+    })
+    .catch((err) => {
+      throw err;
+    });
+};

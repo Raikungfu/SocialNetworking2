@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 
 const Account = require("../Modules/account");
+const Post = require("../Modules/Post");
 
 app.get("/", function (req, res, next) {
   const page = req.query.page;
@@ -22,29 +23,20 @@ app.get("/", function (req, res, next) {
   });
 });
 
-app.get("/profile/:userId", function (req, res, next) {
-  const userId = req.params.userId;
-  User.findById(userId)
-    .select("_id username avt bio name age followers following posts createdAt")
-    .populate([
-      { path: "posts", select: "-__v" },
-      {
-        path: "following",
-        select: "_id username avt name",
-      },
-    ])
-    .exec()
-    .then((doc) => {
-      if (!doc) {
-        return res.status(400).send().json({
-          message: "User not found!",
-        });
-      }
-      res.status(200).json(doc);
-    })
-    .catch((e) => {
-      return next(e);
-    });
+app.get("/profile", async function (req, res, next) {
+  try {
+    const userId = req.query.id;
+    const user = await Account.findById(userId)
+      .select("_id name avt age gender friendsList.friend")
+      .populate("friendsList.friend", "_id name gender avt")
+      .then((data) => {
+        return data;
+      })
+      .catch((err) => res.status(403).json("not-found-user"));
+    res.status(200).json(user);
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 app.put("/follow/:userId", function (req, res, next) {

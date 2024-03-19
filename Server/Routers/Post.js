@@ -3,6 +3,7 @@ const app = express();
 
 const Post = require("../Modules/Post");
 const Comment = require("../Modules/Comment");
+const Account = require("../Modules/account");
 const LikePost = require("../Modules/LikePost");
 
 app.post("/create", function (req, res, next) {
@@ -29,11 +30,64 @@ app.post("/create", function (req, res, next) {
   }
 });
 
-app.get("/", function (req, res, next) {
+app.get("/dashboard", async function (req, res, next) {
   var userID = req.user.id;
-  Post.find({ userId: userID })
+  const listFriendPost = await Account.findById(userID)
+    .select("friendsList.friend")
+    .then((data) => {
+      return data.friendsList.map((friend) => {
+        return friend.friend;
+      });
+    })
+    .catch((err) => {
+      return res.status(403).json(err);
+    });
+  listFriendPost.push(userID);
+  Post.find({ userId: { $in: listFriendPost } })
     .sort([["createAt", "descending"]])
     .skip((req.query.page - 1) * 10 + req.query.numberPosted)
+    .limit(10)
+    .populate("userId", "username avt name")
+    .then((docs) => {
+      try {
+        if (docs.length > 0) {
+          return Promise.all(
+            docs.map(async (items) => {
+              likes = await LikePost.findOne({
+                post: items._id,
+              });
+              items._doc["isLiked"] = likes
+                ? likes.likeUsers?.includes(userID)
+                : false;
+              items._doc["likes"] = likes ? likes.likeUsers?.length : 0;
+
+              comments = await Comment.find({
+                post: items._id,
+              }).countDocuments();
+              items._doc["comments"] = comments ? comments : 0;
+              return items;
+            })
+          );
+        } else throw new Error("Not found");
+      } catch (err) {
+        console.log(err);
+      }
+    })
+    .then((docs) => {
+      res.status(200).json(docs);
+    })
+    .catch((err) => {
+      res.status(500).json(err);
+    });
+});
+
+app.get("/profile", function (req, res, next) {
+  var userID = req.query.id;
+  var page = req.query.page;
+  console.log(userID + " " + page);
+  Post.find({ userId: userID })
+    .sort([["createAt", "descending"]])
+    .skip((page - 1) * 10)
     .limit(10)
     .populate("userId", "username avt name")
     .then((docs) => {

@@ -19,8 +19,28 @@ export const API_USER_POST = <T>(data: FormDataOrOther<T>): Promise<T> => {
     });
 };
 
-export const API_USER_GET_POSTS = <T>(data: FormDataOrOther<T>): Promise<T> => {
-  return AxiosApi.get<T>("/post/", true, data)
+export const API_USER_DASHBOARD_GET_POSTS = <T>(
+  data: FormDataOrOther<T>
+): Promise<T> => {
+  return AxiosApi.get<T>("/post/dashboard", true, data)
+    .then((response) => {
+      if (response.data) {
+        return response.data;
+      } else {
+        const error = response.error as AxiosError;
+        const x = error.response?.data as errorData;
+        throw new Error(x.error || "Input not correct!");
+      }
+    })
+    .catch((error) => {
+      throw error;
+    });
+};
+
+export const API_USER_PROFILE_GET_POSTS = <T>(
+  data: FormDataOrOther<T>
+): Promise<T> => {
+  return AxiosApi.get<T>("/post/profile", true, data)
     .then((response) => {
       if (response.data) {
         return response.data;

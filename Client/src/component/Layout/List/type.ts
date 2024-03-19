@@ -22,6 +22,7 @@ export interface User {
   username?: string;
   age?: Date;
   avt?: string;
+  cover?: string;
   gender?: string;
   name?: string;
   friend?: {
@@ -32,5 +33,17 @@ export interface User {
     gender?: string;
     name?: string;
   };
+  friendsList?: [
+    {
+      friend?: {
+        _id: string;
+        username?: string;
+        age?: Date;
+        avt?: string;
+        gender?: string;
+        name?: string;
+      };
+    }
+  ];
   online?: boolean;
 }
