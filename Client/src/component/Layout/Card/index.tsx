@@ -37,7 +37,6 @@ const Card: React.FC<CardProps> = (props) => {
     setListComments((prev) => [...prev, ...res]);
     setIsShowComment(true);
     setCommentPages(commentPages + 1);
-    console.log(commentPages);
   };
 
   const handleLikeClick = async () => {
@@ -130,7 +129,7 @@ const Card: React.FC<CardProps> = (props) => {
               wrapInputVariant: "w-full",
             },
             {
-              id: "chat-attach-file-input",
+              id: `${props.id}-post-attach-file-input`,
               types: "file",
               inputVariant: "sr-only",
               accept: "image/*, video/*",
@@ -143,7 +142,9 @@ const Card: React.FC<CardProps> = (props) => {
                   }
                   type="button"
                   onClick={() =>
-                    document.getElementById("chat-attach-file-input")?.click()
+                    document
+                      .getElementById(`${props.id}-post-attach-file-input`)
+                      ?.click()
                   }
                 />
               ),

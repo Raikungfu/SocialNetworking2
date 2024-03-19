@@ -12,13 +12,11 @@ export interface responseForm<T> {
   status: number | null;
 }
 
-export interface FormDataChat {
-  "chat-attach-file-input":
-    | FileList
-    | Array<{ url: string; type: string }>
-    | null;
-  content?: string;
-}
+export type FormDataChat =
+  | string
+  | FileList
+  | Array<{ url: string; type: string }>
+  | null;
 
 export interface FormDataPost {
   "input-file": FileList | Array<{ url: string; type: string }> | null;

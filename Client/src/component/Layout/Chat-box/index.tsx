@@ -10,11 +10,13 @@ import Chat from "./Chat";
 import SearchAndCreateChat from "./SearchAndCreate";
 import { clickUser, searchUser } from "../List/ListDropdown/type";
 import debounce from "debounce";
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, RefObject } from "react";
 import { API_USER_CREATE_GROUP } from "../../../service/Chat/chatGroup";
 import { API_SEARCH_USERS } from "../../../service/Search/SearchUser";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import socket from "../../../config/socketIO";
+import { IndividualSendMessage } from "../Form/FormInputWithAttachFile/types";
+import { useChatBox } from "../../../hook/UseChatBox";
 
 const ChatBox: React.FC = () => {
   const dispatch = useDispatch();
@@ -25,7 +27,8 @@ const ChatBox: React.FC = () => {
   const chatWith = useSelector((state: RootState) => state.chatBox.recept);
   const [listUserGroup, setListUserGroup] = useState<clickUser[]>([]);
   const [listSearch, setListSearch] = useState<searchUser>();
-
+  const [form, setForm] = useState<RefObject<HTMLFormElement>>();
+  const { handleOpenReceptMessage } = useChatBox();
   const openChatBox = () => {
     dispatch(setReceptId(null));
     dispatch(setIsChatBoxOpen(!isChatBoxOpen));
@@ -56,16 +59,30 @@ const ChatBox: React.FC = () => {
   const handleClickUserSeach = (data: clickUser) => {
     if (listUserGroup && !listUserGroup.some((user) => user.id === data.id)) {
       setListUserGroup((prev) => [...prev, data]);
+      form?.current?.reset();
     }
-    console.log(listUserGroup);
   };
 
-  const handleCreateGroup = async () => {
-    const listUserSend = listUserGroup.map((user) => user.id);
-    const res = await API_USER_CREATE_GROUP({
-      listUsers: listUserSend,
-    });
-    console.log(res);
+  const handleRemoveUser = (data: clickUser) => {
+    setListUserGroup(listUserGroup.filter((user) => user.id !== data.id));
+  };
+
+  const handleCreateGroup = async (response: IndividualSendMessage) => {
+    if (listUserGroup.length > 1) {
+      const listUserSend = listUserGroup.map((user) => user.id);
+      const res = await API_USER_CREATE_GROUP({
+        listUsers: listUserSend,
+        message: response,
+        name: listUserGroup[0].name + ", " + listUserGroup[1].name + "...",
+      });
+      console.log(res);
+    } else if (listUserGroup.length === 1) {
+      handleOpenReceptMessage({
+        id: listUserGroup[0].id,
+        avt: listUserGroup[0].avt,
+        name: listUserGroup[0].name,
+      });
+    }
   };
 
   return (
@@ -74,7 +91,7 @@ const ChatBox: React.FC = () => {
         <Button
           id={"bubble-chat"}
           childrencomp={<ChatIcon />}
-          className="z-20 bg-red-500 rounded-3xl py-2 px-3 text-white flex flex-col shrink-0 grow-0 justify-around 
+          className="z-20 bg-red-500 rounded-3xl py-2 px-3 text-white flex flex-col shrink-0 grow-0 justify-around
                   fixed bottom-0 right-5
                   mr-1 mb-5 lg:mr-5 lg:mb-5 xl:mr-10 xl:mb-10"
           onClick={openChatBox}
@@ -113,7 +130,7 @@ const ChatBox: React.FC = () => {
                       wrapInputVariant: "w-full",
                     },
                     {
-                      id: "chat-attach-file-input",
+                      id: "chat-file-input",
                       types: "file",
                       inputVariant: "sr-only",
                       accept: "image/*, video/*",
@@ -127,7 +144,7 @@ const ChatBox: React.FC = () => {
                           type="button"
                           onClick={() =>
                             document
-                              .getElementById("chat-attach-file-input")
+                              .getElementsByName("chat-file-input")[0]
                               ?.click()
                           }
                         />
@@ -150,6 +167,7 @@ const ChatBox: React.FC = () => {
                     "flex flex-row items-center rounded-full bg-gray-50 p-1 gap-2 text-xs text-[#121212ad] font-semibold",
                   listUser: listUserGroup,
                   button: <CloseIcon />,
+                  onClick: handleRemoveUser,
                 }}
                 searchList={{
                   wrapVariant:
@@ -176,7 +194,7 @@ const ChatBox: React.FC = () => {
                       wrapInputVariant: "w-full",
                     },
                     {
-                      id: "chat-attach-file-input",
+                      id: "search-file-input",
                       types: "file",
                       inputVariant: "sr-only",
                       accept: "image/*, video/*",
@@ -190,7 +208,7 @@ const ChatBox: React.FC = () => {
                           type="button"
                           onClick={() =>
                             document
-                              .getElementById("chat-attach-file-input")
+                              .getElementsByName("search-file-input")[0]
                               ?.click()
                           }
                         />
@@ -200,6 +218,9 @@ const ChatBox: React.FC = () => {
                   onSubmitSuccess: handleCreateGroup,
                   onSubmitFail: handleError,
                   onChange: handleSearch,
+                  onReset: (form) => {
+                    setForm(form);
+                  },
                   id: "search-chat-box",
                   buttonVariant:
                     "rounded-full text-white bg-red-600 absolute right-4 bottom-4",

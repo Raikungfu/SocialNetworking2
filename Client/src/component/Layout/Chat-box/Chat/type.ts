@@ -12,6 +12,7 @@ export interface ChatProps {
     labelVariant?: string;
     input?: Array<{
       id: string;
+      name?: string;
       value?: string;
       types: string;
       children?: JSX.Element;

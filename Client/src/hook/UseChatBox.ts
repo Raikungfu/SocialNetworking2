@@ -54,7 +54,7 @@ export const useChatBox = () => {
         );
       }
     }
-    dispatch(setIsChatBoxOpen(!isChatBoxOpen));
+    dispatch(setIsChatBoxOpen(true));
   };
 
   return { handleOpenReceptMessage, isChatBoxOpen };

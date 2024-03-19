@@ -4,7 +4,7 @@ const ObjectId = Schema.Types.ObjectId;
 
 const roomChatGroupSchema = new Schema({
   members: [{ type: ObjectId, ref: "Account", required: true }],
-  name: { type: String, default: "Group chat" },
+  name: { type: String },
   avt: { type: String, default: null },
   messages: [
     {

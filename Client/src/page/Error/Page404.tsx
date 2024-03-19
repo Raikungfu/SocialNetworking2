@@ -6,10 +6,7 @@ const Page404 = () => {
   return (
     <main className="grid min-h-full place-items-center bg-white px-6 py-24 sm:py-32 lg:px-8 w-screen h-screen">
       <div className="text-center">
-        <H1
-          className="font-extrabold font-semibold dark:text-red-600 dark:text-red-600"
-          content="404"
-        />
+        <H1 className="font-extrabold dark:text-red-600" content="404" />
         <H1
           className="text-indigo-600 dark:text-indigo-600"
           content="Page not found!"

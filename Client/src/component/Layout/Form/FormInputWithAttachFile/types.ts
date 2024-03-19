@@ -1,4 +1,4 @@
-import { ChangeEvent } from "react";
+import { ChangeEvent, RefObject } from "react";
 
 export interface errorData {
   error?: string;
@@ -16,6 +16,7 @@ export interface FormProps {
   labelVariant?: string;
   input?: Array<{
     id: string;
+    name?: string;
     value?: string;
     types: string;
     children?: JSX.Element;
@@ -46,6 +47,7 @@ export interface FormProps {
   onSubmitFail: (error: string) => void;
   onInputChange?: () => void;
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
+  onReset?: (form: RefObject<HTMLFormElement>) => void;
   button?: string;
   buttonVariant?: string;
 }

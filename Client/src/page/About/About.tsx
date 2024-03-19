@@ -30,7 +30,6 @@ const About: React.FC = () => {
         <Img
           src={logo}
           alt="logo-project"
-          variant="banner"
           id="banner-logo"
           className="transform translate-x"
         />

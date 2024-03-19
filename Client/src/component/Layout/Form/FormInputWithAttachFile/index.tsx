@@ -5,28 +5,31 @@ import { FormDataChat } from "../../../../type/API";
 import Input from "../../Input";
 import Button from "../../Button";
 const Form: React.FC<FormProps> = (props) => {
-  const [formData, setFormData] = useState<FormDataChat>({
-    "chat-attach-file-input": null,
-  });
+  const [formData, setFormData] = useState<Array<FormDataChat>>([]);
   const [process, setProcess] = useState<number>(0);
   const [isPost, setIsPost] = useState<boolean>(false);
   const formChat = useRef<HTMLFormElement>(null);
+  props.onReset && props.onReset(formChat);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, files } = event.target;
     setFormData({
       ...formData,
-      [name]: name === "chat-attach-file-input" ? files : value,
+      [name]: name.endsWith("file-input") ? files : value,
     });
     props.onInputChange && props.onInputChange();
     props.onChange && props.onChange(event);
   };
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
+      let inputFile;
+      let content;
       setIsPost(true);
-      const { ["chat-attach-file-input"]: inputFile, content } = formData;
+      for (const [key, value] of Object.entries(formData)) {
+        if (key.endsWith("file-input")) inputFile = value;
+        else content = value as string;
+      }
       if (inputFile) {
         const res = await API_FETCH_FILE(inputFile as FileList, setProcess);
         props.onSubmitSuccess({
@@ -37,7 +40,7 @@ const Form: React.FC<FormProps> = (props) => {
         props.onSubmitSuccess({ content });
       }
       setIsPost(false);
-      setFormData({ "chat-attach-file-input": null });
+      setFormData([]);
       formChat.current?.reset();
     } catch (error) {
       setIsPost(false);
@@ -63,6 +66,7 @@ const Form: React.FC<FormProps> = (props) => {
           groupInput={input.groupInput}
           value={input.value}
           children={input.children}
+          name={input.name}
           {...input}
         />
       ))}

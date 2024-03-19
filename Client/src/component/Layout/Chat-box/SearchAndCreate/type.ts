@@ -1,4 +1,4 @@
-import { ChangeEvent } from "react";
+import { ChangeEvent, RefObject } from "react";
 import { clickUser } from "../../List/ListDropdown/type";
 
 export interface SearchAndCreateChatProps {
@@ -49,6 +49,7 @@ export interface SearchAndCreateChatProps {
     labelVariant?: string;
     input?: Array<{
       id: string;
+      name?: string;
       value?: string;
       types: string;
       children?: JSX.Element;
@@ -79,6 +80,7 @@ export interface SearchAndCreateChatProps {
     onSubmitFail: (error: string) => void;
     onInputChange?: () => void;
     onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
+    onReset?: (form: RefObject<HTMLFormElement>) => void;
     button?: string;
     buttonVariant?: string;
   };

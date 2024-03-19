@@ -80,12 +80,13 @@ app.get("/chat-group", async function (req, res) {
 });
 
 app.post("/chat-group", async function (req, res) {
-  const { listUsers, message } = req.body;
+  const { listUsers, message, name } = req.body;
   const userId = req.user.id;
   listUsers.push(userId);
   new RoomChatGroup({
     members: listUsers,
-    name: message.content,
+    message: message,
+    name: "Group: " + req.user.name + ", " + name,
   })
     .save()
     .then(async (newRoom) => {

@@ -91,7 +91,7 @@ const Profile = () => {
             <div className="flex flex-row mt-28 mx-16 gap-5">
               <div className="flex flex-col gap-5 flex-1 p-2 py-10">
                 <H3 content="Friends" />
-                <div className="grid grid-flow-row grid-cols-3 gap-3">
+                <div className="flex flex-row gap-3 flex-wrap">
                   {userData.friendsList?.map((friend) => {
                     return (
                       <div
