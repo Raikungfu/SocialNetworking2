@@ -15,10 +15,11 @@ import {
 import Form from "../../Form/FormInputWithAttachFile";
 import ContentCard from "../../Card/ChatContent/Content";
 import { ChatProps } from "./type";
+import uuid from "react-native-uuid";
 
 const Chat: React.FC<ChatProps> = (props) => {
   const [hasMore, setHasMore] = useState<boolean>(true);
-  const [newPageStart, setNewPageStart] = useState<number>();
+  const [newPageStart, setNewPageStart] = useState<number>(0);
   const [chatContent, setChatContent] = useState<ChatContentProps>([]);
   const me = useSelector((state: RootState) => state.user.userState.id);
   const roomId = useSelector((state: RootState) => state.chatBox.roomId);
@@ -31,10 +32,10 @@ const Chat: React.FC<ChatProps> = (props) => {
   const isChatBoxOpen = useSelector(
     (state: RootState) => state.chatBox.isChatBoxOpen
   );
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const handleIndividualTyping = (response: IndividualMessage) => {
-      console.log(response);
       if (
         response &&
         ((chatWith?.type === "individual" &&
@@ -69,6 +70,7 @@ const Chat: React.FC<ChatProps> = (props) => {
         setChatContent((prevChat) => [
           ...prevChat,
           {
+            _id: uuid.v4().toString(),
             sender_id: response.sender,
             content: response.content,
             sent_at: response.createAt,
@@ -105,30 +107,37 @@ const Chat: React.FC<ChatProps> = (props) => {
   }, [chatWith, isChatBoxOpen]);
 
   const loadMore = async () => {
-    let response;
-    chatWith?.type === "individual"
-      ? (response = await API_USER_GET_MESSAGE_INDIVIDUAL({
-          newPageStart,
-          numberNewChat,
-          roomId,
-          chatWith,
-        }))
-      : (response = await API_USER_GET_MESSAGE_GROUP({
-          newPageStart,
-          numberNewChat,
-          roomId,
-          chatWith,
-        }));
-    if (response) {
-      console.log(response);
-      const data = response as unknown as ChatContentProps;
-      if (data && data.length > 0) {
-        setChatContent((prevChats) => [...data, ...prevChats]);
-        setNewPageStart((newPageStart || 0) + 1);
-        scrollToBottom();
-      } else {
-        setHasMore(false);
+    if (isLoading) return;
+    setIsLoading(true);
+    try {
+      let response;
+      chatWith?.type === "individual"
+        ? (response = await API_USER_GET_MESSAGE_INDIVIDUAL({
+            newPageStart,
+            numberNewChat,
+            roomId,
+            chatWith,
+          }))
+        : (response = await API_USER_GET_MESSAGE_GROUP({
+            newPageStart,
+            numberNewChat,
+            roomId,
+            chatWith,
+          }));
+      if (response) {
+        const data = response as unknown as ChatContentProps;
+        if (data && data.length > 0) {
+          setChatContent((prevChats) => [...data, ...prevChats]);
+          setNewPageStart((newPageStart || 0) + 1);
+          scrollToBottom();
+        } else {
+          setHasMore(false);
+        }
       }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -136,6 +145,7 @@ const Chat: React.FC<ChatProps> = (props) => {
     setChatContent((prevChat) => [
       ...prevChat,
       {
+        _id: uuid.v4().toString(),
         sender_id: me || "",
         content: response,
         sent_at: Date.now().toString(),

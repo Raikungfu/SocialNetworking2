@@ -47,7 +47,6 @@ function genNewAccessToken(data, req, res) {
             accessToken: accessToken,
             userName: existingUser.username,
             name: existingUser.name,
-            avt: existingUser.avt,
             id: existingUser._id,
           });
         } else {
@@ -72,7 +71,6 @@ function genAccessToken(user, role, privateKey, expiresIn, algorithm) {
     {
       username: user.username,
       name: user.name,
-      avt: user.avt,
       id: user._id,
       role: role,
     },

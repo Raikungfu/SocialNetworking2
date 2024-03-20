@@ -96,7 +96,6 @@ export const chatRoomSlice = createSlice({
       }>
     ) => {
       const { key, value } = action.payload;
-      console.log(key);
       state.chatRoomGroup[key].members[value.key] = value.member;
     },
     resetRoom: () => {

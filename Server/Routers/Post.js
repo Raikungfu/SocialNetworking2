@@ -68,7 +68,7 @@ app.get("/dashboard", async function (req, res, next) {
               return items;
             })
           );
-        } else throw new Error("Not found");
+        } else res.json(200).json(docs);
       } catch (err) {
         console.log(err);
       }

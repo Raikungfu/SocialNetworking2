@@ -89,7 +89,6 @@ export const useChatBox = () => {
           "open:chatGroup",
           data.id,
           (response: Array<{ _id: string; name: string; avt: string }>) => {
-            console.log(response);
             if (response) {
               response.map((member) => {
                 try {

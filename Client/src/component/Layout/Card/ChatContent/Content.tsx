@@ -14,13 +14,12 @@ const ChatContent: React.FC<ContentProps> = (props) => {
     (state: RootState) => state.chatBox.recept
   );
   const chatGroup = useSelector((state: RootState) => state.chatBox.members);
-  console.log(props.content);
-  console.log(props.me);
   return props.content.map((content, index) => (
     <div
       className={`${props.wrapContentCard} ${
         content.sender_id === props.me ? "justify-end" : ""
       } `}
+      id={content._id}
     >
       {content.sender_id !== props.me && (
         <Img

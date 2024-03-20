@@ -3,12 +3,12 @@ const app = express();
 
 const Account = require("../Modules/account");
 
-app.post("/upload-avt", function (req, res, next) {
+app.post("/upload-avt", async function (req, res, next) {
   const userId = req.user.id;
   const avt = req.body.data["chat-attach-file-input"][0].url;
 
   if (avt) {
-    Account.findByIdAndUpdate(userId, { avt: avt })
+    await Account.findByIdAndUpdate(userId, { avt: avt }, { new: true })
       .then((doc) => {
         res.status(200).json(doc.avt);
       })
@@ -21,11 +21,11 @@ app.post("/upload-avt", function (req, res, next) {
   }
 });
 
-app.post("/upload-cover", function (req, res, next) {
+app.post("/upload-cover", async function (req, res, next) {
   const userId = req.user.id;
   const cover = req.body.data["chat-attach-file-input"][0].url;
   if (cover) {
-    Account.findByIdAndUpdate(userId, { cover: cover })
+    await Account.findByIdAndUpdate(userId, { cover: cover }, { new: true })
       .then((doc) => {
         res.status(200).json(doc.cover);
       })
