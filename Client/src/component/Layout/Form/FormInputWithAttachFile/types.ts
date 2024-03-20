@@ -54,6 +54,7 @@ export interface FormProps {
 }
 
 export interface IndividualMessage {
+  _id: string;
   roomId: string;
   sender: string;
   content: {

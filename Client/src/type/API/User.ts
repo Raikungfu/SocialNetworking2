@@ -1,3 +1,5 @@
+import { Member } from "../../hook/ChatRoomSlice";
+
 export interface User {
   email: string;
   password: string;
@@ -37,3 +39,10 @@ export type ListChatGroup = Array<{
   sender: string;
   timeStamp: Date;
 }>;
+
+export type roomChat = {
+  id: string;
+  name?: string;
+  avt?: string;
+  members?: Record<string, Member>;
+};

@@ -78,7 +78,6 @@ const Profile: React.FC = () => {
     const res = (await API_USER_UPLOAD_AVT({
       data: response,
     })) as unknown as string;
-    alert(res);
     setUserData((prev) => ({
       ...prev,
       avt: res,

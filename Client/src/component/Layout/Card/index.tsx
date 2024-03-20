@@ -59,7 +59,6 @@ const Card: React.FC<CardProps> = (props) => {
     <div
       className="p-4 overflow-hidden bg-white rounded-md shadow-md text-slate-500 shadow-slate-200 mb-5"
       id={props.id}
-      key={props.key}
     >
       <div className="p-6">
         <header className="flex gap-4 mb-4 ">

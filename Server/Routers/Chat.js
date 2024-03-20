@@ -88,8 +88,20 @@ app.post("/chat-group", async function (req, res) {
         await Account.updateMany(
           { _id: { $in: listUsers } },
           { $push: { chatGroup: { chatRoomId: newRoom._id } } }
-        ).exec();
-        res.status(200).json({ roomId: newRoom._id, name: newRoom.name });
+        );
+        const updatedAccounts = await Account.find({ _id: { $in: listUsers } });
+
+        const members = updatedAccounts.reduce((acc, user) => {
+          acc[user._id || ""] = {
+            _id: user._id,
+            name: user.name,
+            avt: user.avt,
+          };
+          return acc;
+        }, {});
+        res
+          .status(200)
+          .json({ id: newRoom._id, name: newRoom.name, members: members });
       } catch (err) {
         console.log(err);
       }

@@ -45,9 +45,9 @@ const LoadPosts: React.FC<PostsProps> = (props) => {
         return (
           <Card
             id={`post-${index}`}
-            key={`${post._id}_key`}
             postId={post._id}
             {...post}
+            key={`${post._id}-key`}
           />
         );
       })}

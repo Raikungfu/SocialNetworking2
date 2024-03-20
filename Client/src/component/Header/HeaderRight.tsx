@@ -20,12 +20,27 @@ const HeaderRight: React.FC = () => {
   const initialState = useSelector((state: RootState) => state.user.userState);
   const [state, setState] = useState<boolean>(initialState.state === "active");
   const [isChatGroupOpen, setIsChatGroupOpen] = useState<boolean>(false);
-  const allChatIndividuals = useSelector(
+  const allChatIndividualsInitial = useSelector(
     (state: RootState) => state.chatRoom.chatRoomIndividual
   );
-  const allChatGroups = useSelector(
+
+  const allChatGroupsInitial = useSelector(
     (state: RootState) => state.chatRoom.chatRoomGroup
   );
+  const [allChatIndividuals, setAllChatIndividuals] = useState(
+    allChatIndividualsInitial
+  );
+
+  const [allChatGroups, setAllChatGroups] = useState(allChatGroupsInitial);
+
+  useEffect(() => {
+    setAllChatIndividuals(allChatIndividualsInitial);
+  }, [allChatIndividualsInitial]);
+
+  useEffect(() => {
+    setAllChatGroups(allChatGroupsInitial);
+  }, [allChatGroupsInitial]);
+
   const [isChatIndividualOpen, setIsChatIndividualOpen] =
     useState<boolean>(false);
   const [isProfileOpen, setIsProfileOpen] = useState<boolean>(false);

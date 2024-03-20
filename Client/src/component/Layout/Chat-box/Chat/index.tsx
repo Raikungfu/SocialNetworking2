@@ -128,11 +128,11 @@ const Chat: React.FC<ChatProps> = (props) => {
         const data = response as unknown as ChatContentProps;
         if (data && data.length > 0) {
           setChatContent((prevChats) => [...data, ...prevChats]);
-          setNewPageStart((newPageStart || 0) + 1);
-          scrollToBottom();
         } else {
           setHasMore(false);
         }
+        setNewPageStart((newPageStart || 0) + 1);
+        scrollToBottom();
       }
     } catch (error) {
       console.error(error);

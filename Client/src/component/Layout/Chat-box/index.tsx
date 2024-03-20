@@ -17,6 +17,8 @@ import AttachFileIcon from "@mui/icons-material/AttachFile";
 import socket from "../../../config/socketIO";
 import { IndividualSendMessage } from "../Form/FormInputWithAttachFile/types";
 import { useChatBox } from "../../../hook/UseChatBox";
+import { roomChat } from "../../../type/API/User";
+import { setRoomGroup } from "../../../hook/ChatRoomSlice";
 
 const ChatBox: React.FC = () => {
   const dispatch = useDispatch();
@@ -28,11 +30,12 @@ const ChatBox: React.FC = () => {
   const [listUserGroup, setListUserGroup] = useState<clickUser[]>([]);
   const [listSearch, setListSearch] = useState<searchUser>();
   const [form, setForm] = useState<RefObject<HTMLFormElement>>();
-  const { handleOpenReceptMessage } = useChatBox();
+  const { handleOpenReceptMessage, handleOpenGroupMessage } = useChatBox();
   const openChatBox = () => {
     dispatch(setReceptId(null));
     dispatch(setIsChatBoxOpen(!isChatBoxOpen));
   };
+  const [isLoading, setIsLoading] = useState<boolean>();
 
   const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
     const data = event.target.value;
@@ -58,7 +61,7 @@ const ChatBox: React.FC = () => {
     console.log(error);
   };
 
-  const handleClickUserSeach = (data: clickUser) => {
+  const handleClickUserSearch = (data: clickUser) => {
     if (listUserGroup && !listUserGroup.some((user) => user.id === data.id)) {
       setListUserGroup((prev) => [...prev, data]);
       form?.current?.reset();
@@ -70,20 +73,43 @@ const ChatBox: React.FC = () => {
   };
 
   const handleCreateGroup = async (response: IndividualSendMessage) => {
-    if (listUserGroup.length > 1) {
-      const listUserSend = listUserGroup.map((user) => user.id);
-      const res = await API_USER_CREATE_GROUP({
-        listUsers: listUserSend,
-        message: response,
-        name: listUserGroup[0].name + ", " + listUserGroup[1].name + "...",
-      });
-      console.log(res);
-    } else if (listUserGroup.length === 1) {
-      handleOpenReceptMessage({
-        id: listUserGroup[0].id,
-        avt: listUserGroup[0].avt,
-        name: listUserGroup[0].name,
-      });
+    if (isLoading) return;
+    setIsLoading(true);
+    try {
+      if (listUserGroup.length > 1) {
+        setIsLoading(true);
+        const listUserSend = listUserGroup.map((user) => user.id);
+        const res = (await API_USER_CREATE_GROUP({
+          listUsers: listUserSend,
+          message: response,
+          name: listUserGroup[0].name + ", " + listUserGroup[1].name + "...",
+        })) as unknown as roomChat;
+        dispatch(
+          setRoomGroup({
+            key: res.id,
+            value: {
+              roomId: res.id,
+              avt: res.avt,
+              name: res.name,
+              members: res.members || {},
+            },
+          })
+        );
+        handleOpenGroupMessage(res);
+      } else if (listUserGroup.length === 1) {
+        handleOpenReceptMessage({
+          id: listUserGroup[0].id,
+          avt: listUserGroup[0].avt,
+          name: listUserGroup[0].name,
+        });
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      dispatch(setIsChatBoxOpen(false));
+      setIsLoading(false);
+      setListUserGroup([]);
+      form?.current?.reset();
     }
   };
 
@@ -182,7 +208,7 @@ const ChatBox: React.FC = () => {
                     "text-sm font-medium dark:gray-900 truncate",
                   wrapTextChildColorVariant_1: "text-gray-800",
                   searchUser: listSearch,
-                  handleOpenReceptMessage: handleClickUserSeach,
+                  handleOpenReceptMessage: handleClickUserSearch,
                 }}
                 formInput={{
                   formVariant: "w-full p-4 flex flex-row items-center",

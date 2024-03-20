@@ -15,7 +15,7 @@ const ListDropdown: React.FC<ListProps> = (props) => {
             Object.keys(list).map((item) => (
               <li
                 className={props.wrapDropdownChildVariant}
-                key={"list-" + props.title}
+                key={"list-" + list[item].roomId}
                 onClick={() => {
                   if (props.handleOpenReceptMessage)
                     props.handleOpenReceptMessage({
@@ -64,7 +64,7 @@ const ListDropdown: React.FC<ListProps> = (props) => {
                         {item[member].map((user) => (
                           <li
                             className={props.wrapDropdownChildVariant}
-                            key={"listSearch-" + item}
+                            key={"listSearch-" + user._id}
                             onClick={() => {
                               if (props.handleOpenReceptMessage)
                                 props.handleOpenReceptMessage({
