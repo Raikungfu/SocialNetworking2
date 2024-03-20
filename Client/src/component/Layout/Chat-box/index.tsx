@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../hook/rootReducer";
 import { setIsChatBoxOpen, setReceptId } from "../../../hook/ChatBoxSlice";
 import Img from "../Img";
-import avt from "../../../assets/img/logoAvt.jpeg";
+import avt from "../../../assets/img/avtLogo.jpg";
 import Chat from "./Chat";
 import SearchAndCreateChat from "./SearchAndCreate";
 import { clickUser, searchUser } from "../List/ListDropdown/type";
@@ -49,7 +49,9 @@ const ChatBox: React.FC = () => {
 
   const handleInputChange = () => {
     const data = chatWith?.id;
-    socket.emit("individual:typing", data);
+    chatWith?.type === "individual"
+      ? socket.emit("individual:typing", data)
+      : socket.emit("group:typing", data);
   };
 
   const handleError = (error: string) => {
@@ -101,9 +103,9 @@ const ChatBox: React.FC = () => {
         <div id="chat-container" className={`fixed bottom-24 right-8 w-96`}>
           <div className="bg-white shadow-md rounded-lg max-w-lg w-full">
             <div className="p-4 border-b bg-red-400 text-white rounded-t-lg flex justify-between items-center">
-              <div className="flex flex-row gap-2">
+              <div className="flex flex-row gap-2 min-w-0">
                 <Img src={chatWith?.avt || avt} variant="avt" />
-                <p className="text-lg font-semibold">
+                <p className="text-lg font-semibold truncate">
                   {" "}
                   {chatWith?.name ?? "Chat with ..."}
                 </p>

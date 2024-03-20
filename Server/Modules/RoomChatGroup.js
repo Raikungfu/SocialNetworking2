@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 const ObjectId = Schema.Types.ObjectId;
 
 const roomChatGroupSchema = new Schema({
-  members: [{ type: ObjectId, ref: "Account", required: true }],
+  members: [{ type: ObjectId, ref: "account", required: true }],
   name: { type: String },
   avt: { type: String, default: null },
   messages: [
@@ -19,6 +19,7 @@ const roomChatGroupSchema = new Schema({
       revoke: { type: Boolean, required: true, default: false },
     },
   ],
+  sender: String,
   lastMessage: String,
   timeStamp: Date,
 });

@@ -1,6 +1,6 @@
 import Img from "../Img";
 import { ShowListProps } from "./type";
-import logo from "../../../assets/img/logoAvt.jpeg";
+import logo from "../../../assets/img/avtLogo.jpg";
 import Button from "../Button";
 
 const ShowList: React.FC<ShowListProps> = (props) => {

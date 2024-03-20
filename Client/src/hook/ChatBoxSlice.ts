@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { Member } from "./ChatRoomSlice";
 
 interface ChatBoxState {
   isChatBoxOpen: boolean;
@@ -7,7 +8,9 @@ interface ChatBoxState {
     id: string;
     avt: string;
     name: string;
+    type: string;
   };
+  members?: Record<string, Member>;
 }
 
 const initialState: ChatBoxState = {
@@ -27,10 +30,13 @@ const chatBoxSlice = createSlice({
     setReceptId(state, action) {
       state.recept = action.payload;
     },
+    setMembers(state, action) {
+      state.members = action.payload;
+    },
   },
 });
 
-export const { setIsChatBoxOpen, setRoomId, setReceptId } =
+export const { setIsChatBoxOpen, setRoomId, setReceptId, setMembers } =
   chatBoxSlice.actions;
 
 export default chatBoxSlice.reducer;

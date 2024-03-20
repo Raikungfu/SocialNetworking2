@@ -20,6 +20,9 @@ let AccountSchema = new Schema(
     friendsRequest: [
       { type: Schema.Types.ObjectId, ref: "account", unique: true },
     ],
+    friendsRequestSent: [
+      { type: Schema.Types.ObjectId, ref: "account", unique: true },
+    ],
     chatIndividual: [
       {
         recipient: {
@@ -41,7 +44,7 @@ let AccountSchema = new Schema(
         chatRoomId: {
           type: Schema.Types.ObjectId,
           required: true,
-          ref: "RoomChat",
+          ref: "RoomChatGroup",
           unique: true,
         },
       },

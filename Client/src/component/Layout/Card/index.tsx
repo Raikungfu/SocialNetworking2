@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { CardProps } from "./types";
 import Img from "../Img";
-import logo from "../../../assets/img/logoAvt.jpeg";
+import logo from "../../../assets/img/avtLogo.jpg";
 import GroupButton from "../GroupElement/GroupButton";
 import UnLikeIcon from "@mui/icons-material/ThumbUpOffAlt";
 import LikeIcon from "@mui/icons-material/ThumbUpRounded";
@@ -101,7 +101,7 @@ const Card: React.FC<CardProps> = (props) => {
           },
           {
             id: `comment-${props.id}`,
-            label: `${props.comments} Comment`,
+            label: `${props.comments || 0} Comment`,
             onClick: () => setIsShowComment(!isShowComment),
             childrencomp: <CommentIcon />,
           },
@@ -125,7 +125,7 @@ const Card: React.FC<CardProps> = (props) => {
             {
               types: "text",
               id: "content",
-              placeholder: "message....",
+              placeholder: "comment....",
               wrapInputVariant: "w-full",
             },
             {

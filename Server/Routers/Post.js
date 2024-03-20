@@ -40,7 +40,7 @@ app.get("/dashboard", async function (req, res, next) {
       });
     })
     .catch((err) => {
-      return res.status(403).json(err);
+      return res.status(404).json(err);
     });
   listFriendPost.push(userID);
   Post.find({ userId: { $in: listFriendPost } })
@@ -84,7 +84,6 @@ app.get("/dashboard", async function (req, res, next) {
 app.get("/profile", function (req, res, next) {
   var userID = req.query.id;
   var page = req.query.page;
-  console.log(userID + " " + page);
   Post.find({ userId: userID })
     .sort([["createAt", "descending"]])
     .skip((page - 1) * 10)
@@ -110,7 +109,7 @@ app.get("/profile", function (req, res, next) {
               return items;
             })
           );
-        } else throw new Error("Not found");
+        } else return docs;
       } catch (err) {
         console.log(err);
       }
@@ -149,6 +148,7 @@ app.post("/comment", function (req, res, next) {
       media: file,
       author: authorId,
       post: postId,
+      createAt: new Date(),
     })
       .save()
       .then((doc) => {
@@ -177,7 +177,7 @@ app.get("/like", (req, res) => {
       res.status(200).json(data ? "like" : "unlike");
     });
   } catch (err) {
-    res.status(403).json(err);
+    res.status(404).json(err);
   }
 });
 

@@ -57,7 +57,21 @@ app.get("/add-friend", function (req, res, next) {
       if (!result) {
         return next(new Error("No user found"));
       }
-      res.status(200).json("Add friend successfully!");
+      Account.findByIdAndUpdate(
+        { _id: req.user.id },
+        { $push: { friendsRequestSent: friendId } },
+        { new: true }
+      )
+        .then((result) => {
+          if (!result) {
+            return next(new Error("No user found"));
+          }
+          res.status(200).json("Add friend successfully!");
+        })
+        .catch((err) => {
+          console.log(err);
+          return next(err);
+        });
     })
     .catch((err) => {
       console.log(err);

@@ -4,6 +4,7 @@ import ListDropdown from "../../List/ListDropdown/ListDropdown";
 import { SearchAndCreateChatProps } from "./type";
 
 const SearchAndCreateChat: React.FC<SearchAndCreateChatProps> = (props) => {
+  console.log(props.formInput);
   return (
     <>
       <div

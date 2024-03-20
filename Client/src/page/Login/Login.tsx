@@ -53,6 +53,9 @@ function Login() {
                   types: "text",
                   required: true,
                   placeholder: "Enter your email...",
+                  pattern:
+                    "[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$",
+                  title: "Email must be a valid email address",
                 },
                 {
                   id: "password",

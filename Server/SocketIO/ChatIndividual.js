@@ -31,8 +31,8 @@ const chatIndividual = (userMap, socket, message, callback) => {
         sender_id: socket.user.id,
         content: content,
       });
-
-      chatIndividual.lastMessage = content.content || "File";
+      (chatIndividual.sender = socket.user.name),
+        (chatIndividual.lastMessage = content.content || "File");
       chatIndividual.timeStamp = Date.now();
 
       return chatIndividual.save();
@@ -40,6 +40,7 @@ const chatIndividual = (userMap, socket, message, callback) => {
     .then((savedChatIndividual) => {
       socket.to(recipientSocketId).emit("individual_message", {
         sender: socket.user.id,
+        roomId: socket.user.id,
         content: content,
         createdAt: new Date(),
       });
@@ -93,16 +94,5 @@ const openChatIndividual = async (socket, chatIndividualUser, callback) => {
   }
 };
 
-const listChatIndividuals = async (socket, callback) => {
-  const listChatIndividuals = await Account.findById(socket.user.id)
-    .populate("chatIndividual.recipient", "name _id")
-    .select("chatIndividual.recipient chatIndividual.chatRoomId")
-    .then((user) => {
-      return user.chatIndividual;
-    });
-  callback(listChatIndividuals);
-};
-
 module.exports = chatIndividual;
-module.exports.listChatIndividuals = listChatIndividuals;
 module.exports.openChatIndividual = openChatIndividual;

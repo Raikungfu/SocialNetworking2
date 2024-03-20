@@ -13,3 +13,27 @@ export interface authResponseData {
   name: string;
   status: number;
 }
+
+export type ListChatIndividual = Array<{
+  chatRoomId: {
+    _id: string;
+    lastMessage: string;
+    sender: string;
+    timeStamp: Date;
+  };
+  recipient: { name: string; _id: string };
+}>;
+
+export type ListChatGroup = Array<{
+  members?: Array<{
+    _id: string;
+    name: string;
+    avt: string;
+  }>;
+  _id: string;
+  name: string;
+  avt: string;
+  lastMessage: string;
+  sender: string;
+  timeStamp: Date;
+}>;

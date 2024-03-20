@@ -22,7 +22,10 @@ function App() {
           element={<ProtectedWithAuth element={<Community />} />}
         />
         <Route path="about" element={<About />} />
-        <Route path={`profile/:id`} element={<Profile />} />
+        <Route
+          path={`profile/:id`}
+          element={<ProtectedWithAuth element={<Profile />} />}
+        />
         <Route path="*" element={<Page404 />} />
       </Route>
       <Route path="login" element={<Login />} />

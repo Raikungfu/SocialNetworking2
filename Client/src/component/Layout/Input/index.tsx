@@ -4,6 +4,7 @@ const Input: React.FC<InputProps> = (props) => {
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     props.onChange(event);
   };
+
   return (
     <div className={`${props.wrapInputVariant}`}>
       {props.label ? (
@@ -47,6 +48,8 @@ const Input: React.FC<InputProps> = (props) => {
           accept={props.accept}
           multiple={props.multiple}
           required={props.required}
+          title={props.title}
+          pattern={props.pattern}
         />
       )}
     </div>

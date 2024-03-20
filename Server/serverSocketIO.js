@@ -2,10 +2,8 @@ const { Server } = require("socket.io");
 const checkAccess = require("./Middleware/AuthSocket");
 const chatGroup = require("./SocketIO/ChatGroup");
 const chatIndividual = require("./SocketIO/ChatIndividual");
-const {
-  openChatIndividual,
-  listChatIndividuals,
-} = require("./SocketIO/ChatIndividual");
+const { openChatIndividual } = require("./SocketIO/ChatIndividual");
+const { openChatGroup } = require("./SocketIO/ChatGroup");
 const friendsOnline = require("./SocketIO/FriendOnline");
 
 const allowedOrigins = [
@@ -42,8 +40,9 @@ const startSocketIOServer = (httpServer) => {
       console.log(message);
     });
 
-    socket.on("massage:group", (message) => {
-      chatGroup(io, message);
+    socket.on("massage:group", (message, callback) => {
+      console.log(message);
+      chatGroup(io, socket, message, callback);
     });
 
     socket.on("message:individual", (message, callback) => {
@@ -54,22 +53,22 @@ const startSocketIOServer = (httpServer) => {
       openChatIndividual(socket, chatIndividualUser, callback);
     });
 
+    socket.on("open:chatGroup", (roomId, callback) => {
+      openChatGroup(io, socket, roomId, callback);
+    });
+
     socket.on("friend:checkOnline", (data, callback) => {
-      friendsOnline(socket, data, userSocketMap, callback);
-    });
-
-    socket.on("chat:ListChatIndividuals", (data, callback) => {
-      listChatIndividuals(socket, callback);
-    });
-
-    socket.on("chat:ListChatGroups", (data, callback) => {
       friendsOnline(socket, data, userSocketMap, callback);
     });
 
     socket.on("individual:typing", (recipient) => {
       socket
         .to(userSocketMap.get(recipient))
-        .emit("individual_typing", "typing...");
+        .emit("individual_typing", { roomId: userId });
+    });
+
+    socket.on("group:typing", (roomId) => {
+      io.to(roomId).emit("group_typing", { roomId: userId });
     });
 
     socket.on("disconnect", (reason) => {

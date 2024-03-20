@@ -51,3 +51,39 @@ export const API_USER_GET_MESSAGE_GROUP = <T>(
       throw error;
     });
 };
+
+export const API_USER_GET_LIST_INDIVIDUAL = <T>(
+  data: FormDataOrOther<T>
+): Promise<T> => {
+  return AxiosApi.get<T>("/chat/listChatIndividual/", true, data)
+    .then((response) => {
+      if (response.data) {
+        return response.data;
+      } else {
+        const error = response.error as AxiosError;
+        const x = error.response?.data as errorData;
+        throw new Error(x.error || "Input not correct!");
+      }
+    })
+    .catch((error) => {
+      throw error;
+    });
+};
+
+export const API_USER_GET_LIST_GROUP = <T>(
+  data: FormDataOrOther<T>
+): Promise<T> => {
+  return AxiosApi.get<T>("/chat/listChatGroup/", true, data)
+    .then((response) => {
+      if (response.data) {
+        return response.data;
+      } else {
+        const error = response.error as AxiosError;
+        const x = error.response?.data as errorData;
+        throw new Error(x.error || "Input not correct!");
+      }
+    })
+    .catch((error) => {
+      throw error;
+    });
+};

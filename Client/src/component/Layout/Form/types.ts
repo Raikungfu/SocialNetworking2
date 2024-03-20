@@ -16,11 +16,14 @@ export interface FormProps {
     label?: string;
     value?: string;
     types: string;
+    title?: string;
+    pattern?: string;
     inputVariant?: string;
     wrapInputVariant?: string;
     labelVariant?: string;
     required?: boolean;
     placeholder?: string;
+    keyDown?: () => void;
     groupInput?: {
       labelVariant?: string;
       inputVariant?: string;

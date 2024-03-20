@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import logo from "../../assets/img/logoAvt.jpeg";
+import logo from "../../assets/img/avtLogo.jpg";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../hook/UserSlice";
 import { RootState } from "../../hook/rootReducer";
@@ -12,6 +12,7 @@ import ChatGroupIcon from "@mui/icons-material/ForumOutlined";
 import ChatIndividualIcon from "@mui/icons-material/ChatOutlined";
 import ListDropdown from "../Layout/List/ListDropdown/ListDropdown";
 import { useChatBox } from "../../hook/UseChatBox";
+import { resetRoom } from "../../hook/ChatRoomSlice";
 
 const HeaderRight: React.FC = () => {
   const dispatch = useDispatch();
@@ -21,6 +22,9 @@ const HeaderRight: React.FC = () => {
   const [isChatGroupOpen, setIsChatGroupOpen] = useState<boolean>(false);
   const allChatIndividuals = useSelector(
     (state: RootState) => state.chatRoom.chatRoomIndividual
+  );
+  const allChatGroups = useSelector(
+    (state: RootState) => state.chatRoom.chatRoomGroup
   );
   const [isChatIndividualOpen, setIsChatIndividualOpen] =
     useState<boolean>(false);
@@ -56,10 +60,11 @@ const HeaderRight: React.FC = () => {
 
   const handleLogout = () => {
     dispatch(logoutUser());
+    dispatch(resetRoom());
     nav("/login");
   };
 
-  const { handleOpenReceptMessage } = useChatBox();
+  const { handleOpenReceptMessage, handleOpenGroupMessage } = useChatBox();
 
   return state ? (
     <div className="flex flex-row justify-end gap-2">
@@ -69,13 +74,13 @@ const HeaderRight: React.FC = () => {
         childrencomp={
           <ListDropdown
             wrapVariant="relative flex flex-row justify-end items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse"
-            wrapDropdownVariant="flex flex-col w-48 z-50 py-2 px-5 top-2 right-0 text-base absolute list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
-            wrapDropdownChildVariant="py-3 sm:py-4 cursor-pointer flex flex-row items-center gap-2"
-            wrapTextChildVariant="text-sm font-medium dark:gray-900 truncate"
+            wrapDropdownVariant="flex flex-col w-60 z-50 py-2 px-5 top-2 right-0 text-base absolute list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
+            wrapDropdownChildVariant="py-3 sm:py-4 cursor-pointer flex flex-row items-center gap-3"
+            wrapTextChildVariant="text-base font-medium dark:gray-900 truncate"
             wrapTextChildColorVariant_1="text-green-500"
             wrapTextChildColorVariant_2="text-red-500"
-            listUserRecord={allChatIndividuals}
-            handleOpenReceptMessage={handleOpenReceptMessage}
+            listUserRecord={allChatGroups}
+            handleOpenReceptMessage={handleOpenGroupMessage}
           />
         }
         navLinkAvt={<ChatGroupIcon />}
@@ -92,9 +97,9 @@ const HeaderRight: React.FC = () => {
         childrencomp={
           <ListDropdown
             wrapVariant="relative flex flex-row justify-end items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse"
-            wrapDropdownVariant="flex flex-col w-48 z-50 py-2 px-5 top-2 right-0 text-base absolute list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
-            wrapDropdownChildVariant="py-3 sm:py-4 cursor-pointer flex flex-row items-center gap-2"
-            wrapTextChildVariant="text-sm font-medium dark:gray-900 truncate"
+            wrapDropdownVariant="flex flex-col w-60 z-50 py-2 px-5 top-2 right-0 text-base absolute list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
+            wrapDropdownChildVariant="py-3 sm:py-4 cursor-pointer flex flex-row items-center gap-3"
+            wrapTextChildVariant="text-base font-medium dark:gray-900 truncate"
             wrapTextChildColorVariant_1="text-green-500"
             wrapTextChildColorVariant_2="text-red-500"
             listUserRecord={allChatIndividuals}
@@ -114,7 +119,7 @@ const HeaderRight: React.FC = () => {
         variant={"drop-down"}
         id={"profile"}
         wrapDropdownListVariant={
-          "flex flex-col z-50 py-2 px-2 top-10 text-base absolute list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
+          "flex flex-col z-50 py-2 px-2 w-40 top-10 text-base absolute list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
         }
         navLinkAvt={
           <Img

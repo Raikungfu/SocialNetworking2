@@ -7,8 +7,19 @@ const Post = require("../Modules/Post");
 app.get("/", function (req, res, next) {
   const page = req.query.page;
   Account.findOne({ _id: req.user.id }).then((data) => {
+    const idFriendRequestSent = data.friendsRequestSent.map((friend) => friend);
+    const idFriendRequest = data.friendsRequest.map((friend) => friend);
     const idFriendList = data.friendsList.map((friend) => friend.friend);
-    Account.find({ _id: { $nin: [req.user.id, ...idFriendList] } })
+    Account.find({
+      _id: {
+        $nin: [
+          req.user.id,
+          ...idFriendList,
+          ...idFriendRequestSent,
+          ...idFriendRequest,
+        ],
+      },
+    })
       .sort({ name: 1, username: 1, age: 1 })
       .skip((page - 1) * 10)
       .limit(10)
@@ -32,7 +43,7 @@ app.get("/profile", async function (req, res, next) {
       .then((data) => {
         return data;
       })
-      .catch((err) => res.status(403).json("not-found-user"));
+      .catch((err) => res.status(404).json("not-found-user"));
     res.status(200).json(user);
   } catch (err) {
     console.log(err);

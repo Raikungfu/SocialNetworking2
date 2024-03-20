@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import Form from "../../component/Layout/Form";
 import { H1 } from "../../component/Layout/Text/H1";
 import { API_REG_USER } from "../../service/UserAuth/fetchUserAuth";
+import dayjs from "dayjs";
 
 function Register() {
   const handleSuccess = () => {
@@ -18,6 +19,30 @@ function Register() {
       document.getElementById("error")?.removeChild(errorMessage);
       errorDiv?.classList.add("sr-only");
     }, 3000);
+  };
+
+  const checkPassword = () => {
+    const password = document.getElementById("password") as HTMLInputElement;
+    console.log(password);
+    const confirmPassword = document.getElementById(
+      "confirm-password"
+    ) as HTMLInputElement;
+    if (password.value !== confirmPassword.value) {
+      password.setCustomValidity("Passwords Don't Match");
+      confirmPassword.setCustomValidity("Confirm Passwords Don't Match");
+    } else {
+      password.setCustomValidity("");
+      confirmPassword.setCustomValidity("");
+    }
+  };
+
+  const checkAge = () => {
+    const age = document.getElementById("age") as HTMLInputElement;
+    if (dayjs().diff(age.value, "years") < 12) {
+      age.setCustomValidity("Must be at least 12 years old.");
+    } else {
+      age.setCustomValidity("");
+    }
   };
 
   return (
@@ -44,6 +69,9 @@ function Register() {
                   types: "text",
                   required: true,
                   placeholder: "Enter your email...",
+                  pattern:
+                    "[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$",
+                  title: "Email must be a valid email address",
                 },
                 {
                   id: "password",
@@ -51,6 +79,10 @@ function Register() {
                   types: "password",
                   required: true,
                   placeholder: "••••••••",
+                  pattern: "(?=.*d)(?=.*[a-z])(?=.*[A-Z]).{8,}",
+                  title:
+                    "Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters",
+                  keyDown: checkPassword,
                 },
                 {
                   id: "confirm-password",
@@ -58,6 +90,10 @@ function Register() {
                   types: "password",
                   required: true,
                   placeholder: "••••••••",
+                  pattern: "(?=.*d)(?=.*[a-z])(?=.*[A-Z]).{8,}",
+                  title:
+                    "Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters",
+                  keyDown: checkPassword,
                 },
                 {
                   id: "gender",
@@ -89,6 +125,7 @@ function Register() {
                   label: "Age",
                   types: "date",
                   required: true,
+                  keyDown: checkAge,
                 },
                 {
                   id: "term",
@@ -132,6 +169,17 @@ function Register() {
             <div id="success" className="sr-only">
               <span>Register successful... </span>
               <Link to="/login">Login now</Link>
+            </div>
+            <div className="flex flex-col">
+              <h5>
+                Have an account?&nbsp;
+                <Link to="/login" className="text-red-500">
+                  Login here
+                </Link>
+              </h5>
+              <Link to="/" className="hover:text-red-500">
+                Dashboard
+              </Link>
             </div>
           </div>
         </div>

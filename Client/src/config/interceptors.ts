@@ -50,7 +50,6 @@ Axios.interceptors.response.use(
         localStorage.clear();
       }
     } else {
-      console.log(error);
       console.log(refreshToken && error.response.status === 403);
       console.log("Token expired");
       return Promise.reject(error.response || error.message);

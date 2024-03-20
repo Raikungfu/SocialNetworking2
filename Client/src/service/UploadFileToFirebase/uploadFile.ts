@@ -12,7 +12,7 @@ export const API_FETCH_FILE = (
 ): Promise<Array<{ url: string; type: string }>> => {
   return new Promise((resolve, reject) => {
     const uploadPromises: Promise<{ url: string; type: string }>[] = [];
-    [...files].forEach((fileItem) => {
+    [...files].forEach((fileItem, index) => {
       const storageRef = ref(storage, `files/${fileItem.name}`);
       const uploadTask = uploadBytesResumable(storageRef, fileItem);
 
@@ -22,7 +22,9 @@ export const API_FETCH_FILE = (
             "state_changed",
             (snapshot: UploadTaskSnapshot) => {
               const progress = Math.round(
-                (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                ((snapshot.bytesTransferred / snapshot.totalBytes + index) *
+                  100) /
+                  files.length
               );
               onStateChanged(progress);
             },

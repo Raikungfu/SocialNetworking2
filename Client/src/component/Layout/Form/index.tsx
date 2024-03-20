@@ -6,7 +6,6 @@ import GroupButton from "../GroupElement/GroupButton";
 const Form: React.FC<FormProps> = (props) => {
   const [formData, setFormData] = useState({});
   const API_FETCH_FORM = props.apiFetchForm;
-
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.type === "checkbox" || event.target.type === "radio") {
       setFormData({ ...formData, [event.target.name]: event.target.id });
@@ -36,7 +35,10 @@ const Form: React.FC<FormProps> = (props) => {
           inputVariant={input.inputVariant ?? props.inputVariant}
           wrapInputVariant={input.wrapInputVariant ?? props.wrapInputVariant}
           labelVariant={input.labelVariant ?? props.labelVariant}
-          onChange={handleInputChange}
+          onChange={(event) => {
+            handleInputChange(event);
+            input.keyDown && input.keyDown();
+          }}
           groupInput={input.groupInput}
           value={input.value}
           {...input}

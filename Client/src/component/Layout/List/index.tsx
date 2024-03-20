@@ -1,7 +1,7 @@
 import GroupButton from "../GroupElement/GroupButton";
 import Img from "../Img";
 import { ListProps, User } from "./type";
-import logo from "../../../assets/img/logoAvt.jpeg";
+import logo from "../../../assets/img/avtLogo.jpg";
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";

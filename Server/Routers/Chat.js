@@ -5,7 +5,7 @@ const Account = require("../Modules/account");
 const RoomChatGroup = require("../Modules/RoomChatGroup");
 
 app.get("/chat-individual", async function (req, res) {
-  let { page, chatWith, roomId } = req.query;
+  let { newPageStart, numberNewChat, chatWith, roomId } = req.query;
   const me = req.user.id;
 
   try {
@@ -29,12 +29,8 @@ app.get("/chat-individual", async function (req, res) {
     if (!room) {
       return res.status(400).json({ error: "Chat room not found" });
     }
-
-    const skip = room.messages.length - page * 10;
-    const messages = room.messages.slice(
-      Math.max(0, skip),
-      Math.max(0, skip + 10)
-    );
+    const skip = room.messages.length - newPageStart * 10 + numberNewChat * 1;
+    const messages = room.messages.slice(skip - 10, skip);
     res.status(200).json(messages);
   } catch (error) {
     console.error(error);
@@ -43,7 +39,8 @@ app.get("/chat-individual", async function (req, res) {
 });
 
 app.get("/chat-group", async function (req, res) {
-  let { page, chatWith, roomId, me } = req.query;
+  let { newPageStart, numberNewChat, chatWith, roomId } = req.query;
+  const me = req.user.id;
 
   try {
     if (!chatWith) {
@@ -54,24 +51,21 @@ app.get("/chat-group", async function (req, res) {
       if (!account) {
         return res.status(400).json({ error: "User not found" });
       }
-      const room = account.chatIndividual.find(
-        (room) => room.recipient.toString() === chatWith.id
+      const room = account.chatGroup.find(
+        (room) => room.chatRoomId.toString() === chatWith.id
       );
       if (!room) {
         return res.status(400).json({ error: "Room not found" });
       }
       roomId = room.chatRoomId;
     }
-    const room = await RoomIndividual.findById(roomId);
+    const room = await RoomChatGroup.findById(roomId);
     if (!room) {
       return res.status(400).json({ error: "Chat room not found" });
     }
 
-    const skip = room.messages.length - page * 10;
-    const messages = room.messages.slice(
-      Math.max(0, skip),
-      Math.max(0, skip + 10)
-    );
+    const skip = room.messages.length - newPageStart * 10 + numberNewChat * 1;
+    const messages = room.messages.slice(skip - 10, skip);
     res.status(200).json(messages);
   } catch (error) {
     console.error(error);
@@ -86,7 +80,7 @@ app.post("/chat-group", async function (req, res) {
   new RoomChatGroup({
     members: listUsers,
     message: message,
-    name: "Group: " + req.user.name + ", " + name,
+    name: req.user.name + ", " + name,
   })
     .save()
     .then(async (newRoom) => {
@@ -100,6 +94,43 @@ app.post("/chat-group", async function (req, res) {
         console.log(err);
       }
     });
+});
+
+app.get("/listChatIndividual", async (req, res) => {
+  Account.findById(req.user.id)
+    .populate("chatIndividual.recipient", "name _id")
+    .populate("chatIndividual.chatRoomId", "lastMessage timeStamp sender")
+    .select("chatIndividual.recipient chatIndividual.chatRoomId")
+    .then((user) => {
+      res.status(200).json(user.chatIndividual);
+    })
+    .catch((err) => {
+      res.status(404).json(err);
+    });
+});
+
+app.get("/listChatGroup", async (req, res) => {
+  try {
+    Account.findById(req.user.id)
+      .select("chatGroup")
+      .populate({
+        path: "chatGroup",
+        populate: {
+          path: "chatRoomId",
+          select: "name _id lastMessage timeStamp sender",
+        },
+      })
+      .then((account) => {
+        const chatRooms = account.chatGroup.map((group) => group.chatRoomId);
+        res.status(200).json(chatRooms);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(404).json(err);
+      });
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 module.exports = app;

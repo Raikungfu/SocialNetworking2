@@ -1,7 +1,7 @@
 import Img from "../../component/Layout/Img";
 import { H1 } from "../../component/Layout/Text/H1";
 import logo from "../../assets/img/logo.png";
-import logoAvt from "../../assets/img/avtLogo.jpg";
+import avtLogo from "../../assets/img/avtLogo.jpg";
 import Paragraph from "../../component/Layout/Text/Paragraph";
 import { useState } from "react";
 
@@ -65,7 +65,7 @@ const About: React.FC = () => {
           />
         )}
         <Img
-          src={logoAvt}
+          src={avtLogo}
           alt="logo-project"
           variant="avt"
           id="banner-avt"

@@ -1,3 +1,5 @@
+import { Member } from "../../../../hook/ChatRoomSlice";
+
 export interface ListProps {
   title?: string;
   wrapVariant?: string;
@@ -10,13 +12,19 @@ export interface ListProps {
   listUserRecord?: Record<
     string,
     {
-      member: {
+      member?: {
         _id: string;
         name?: string;
         avt?: string;
       };
       roomId: string;
+      name?: string;
+      avt?: string;
       online?: boolean;
+      lastMessage?: string;
+      timeStamp?: Date;
+      sender?: string;
+      members?: Record<string, Member>;
     }
   >;
 

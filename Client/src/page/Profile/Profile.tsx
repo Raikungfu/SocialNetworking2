@@ -46,9 +46,7 @@ const Profile = () => {
         })) as unknown as User;
         setUserData(userProfileData);
         setPageStart(1);
-        console.log(pageStart);
         setListPost([]);
-        console.log(listPost);
       } catch (error) {
         console.error("Error fetching user profile:", error);
       }
@@ -78,24 +76,24 @@ const Profile = () => {
               alt="avt"
             />
             <H1
-              className="absolute top-[17rem] left-80 text-base font-semibold"
+              className="absolute top-[17rem] left-80 text-base font-bold"
               content={userData.name || "User"}
             />
             <H3
-              variant="absolute top-[17rem] left-80 italic pt-8"
+              variant="absolute top-[17rem] left-80 italic font-semibold pt-9"
               content={userData.gender || "none"}
             />
             <p className="absolute top-[17rem] left-80 text-base italic font-semibold pt-16">
               {dayjs(userData.age).format("DD/MM/YYYY") || "User"}
             </p>
-            <div className="flex flex-row mt-28 mx-16 gap-5">
-              <div className="flex flex-col gap-5 flex-1 p-2 py-10">
+            <div className="flex flex-row mt-28 w-full justify-between">
+              <div className="flex flex-col flex-1 gap-5 p-2 py-10 px-10">
                 <H3 content="Friends" />
                 <div className="flex flex-row gap-3 flex-wrap">
                   {userData.friendsList?.map((friend) => {
                     return (
                       <div
-                        className="flex flex-col gap-3"
+                        className="flex flex-col gap-3 min-w-0"
                         onClick={() =>
                           handleOpenProfile(friend.friend?._id || "#")
                         }
@@ -105,7 +103,9 @@ const Profile = () => {
                           className="w-20 h-20"
                           src={friend.friend?.avt || avt}
                         />
-                        <p>{friend.friend?.name || "User"} </p>
+                        <p className="w-20 truncate">
+                          {friend.friend?.name || "User"}{" "}
+                        </p>
                       </div>
                     );
                   })}
@@ -121,7 +121,7 @@ const Profile = () => {
                 useCapture={false}
                 useWindow={true}
                 loader={<LoadingPost />}
-                className="w-8/12"
+                className="w-8/12 px-10"
               >
                 {listPost?.map((post: PostProps, index) => {
                   return (

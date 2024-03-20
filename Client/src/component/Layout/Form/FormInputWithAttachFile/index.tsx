@@ -20,6 +20,7 @@ const Form: React.FC<FormProps> = (props) => {
     props.onInputChange && props.onInputChange();
     props.onChange && props.onChange(event);
   };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {

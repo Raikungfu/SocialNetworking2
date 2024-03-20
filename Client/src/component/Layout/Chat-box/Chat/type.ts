@@ -14,6 +14,7 @@ export interface ChatProps {
       id: string;
       name?: string;
       value?: string;
+      style?: React.CSSProperties;
       types: string;
       children?: JSX.Element;
       inputVariant?: string;

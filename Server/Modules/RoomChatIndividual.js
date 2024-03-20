@@ -16,7 +16,7 @@ const roomIndividualSchema = new Schema({
       revoke: { type: Boolean, required: true, default: false },
     },
   ],
-  sender: [{ type: ObjectId, ref: "account" }],
+  sender: String,
   lastMessage: String,
   timeStamp: Date,
 });

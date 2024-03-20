@@ -53,6 +53,7 @@ export interface FormProps {
 }
 
 export interface IndividualMessage {
+  roomId: string;
   sender: string;
   content: {
     "chat-attach-file-input"?: Array<{ url: string; type: string }>;

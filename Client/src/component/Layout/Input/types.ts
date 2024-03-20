@@ -9,6 +9,8 @@ export interface InputProps {
   wrapGroupInputVariant?: string;
   accept?: string;
   multiple?: boolean;
+  pattern?: string;
+  title?: string;
   groupInput?: {
     labelVariant?: string;
     inputVariant?: string;
