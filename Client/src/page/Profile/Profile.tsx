@@ -87,7 +87,7 @@ const Profile: React.FC = () => {
     })) as unknown as string;
     setUserData((prev) => ({
       ...prev,
-      avt: res,
+      cover: res,
     }));
   };
 
@@ -98,7 +98,7 @@ const Profile: React.FC = () => {
           <div className=" flex-1 flex flex-col items-center pr-10">
             <Img
               className="relative"
-              src={userData.cover || cover}
+              src={userData.cover ? userData.cover : cover}
               alt="cover"
               variant="banner"
             />
@@ -136,7 +136,7 @@ const Profile: React.FC = () => {
             />
             <Img
               className="absolute top-52 left-32 avt w-40 h-40"
-              src={userData.avt || avt}
+              src={userData.avt ? userData.avt : avt}
               alt="avt"
             />
             <Form
@@ -157,7 +157,7 @@ const Profile: React.FC = () => {
                       type="button"
                       onClick={() =>
                         document
-                          .getElementById("upload-avatar-file-input")
+                          .getElementById("upload-cover-file-input")
                           ?.click()
                       }
                     />

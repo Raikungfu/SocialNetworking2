@@ -38,7 +38,7 @@ app.get("/profile", async function (req, res, next) {
   try {
     const userId = req.query.id;
     const user = await Account.findById(userId)
-      .select("_id name avt age gender friendsList.friend")
+      .select("_id name avt age gender friendsList.friend cover")
       .populate("friendsList.friend", "_id name gender avt")
       .then((data) => {
         return data;
