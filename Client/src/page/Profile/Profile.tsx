@@ -14,10 +14,18 @@ import InfiniteScroll from "react-infinite-scroller";
 import Card from "../../component/Layout/Card";
 import LoadingPost from "../../component/Layout/Skeleton/LoadingPost";
 import { API_USER_PROFILE_GET_POSTS } from "../../service/Post/fetchPost";
+import Form from "../../component/Layout/Form/FormInputWithAttachFile";
+import Button from "../../component/Layout/Button";
+import AttachFileIcon from "@mui/icons-material/AttachFile";
+import { IndividualSendMessage } from "../../component/Layout/Form/FormInputWithAttachFile/types";
+import {
+  API_USER_UPLOAD_AVT,
+  API_USER_UPLOAD_COVER,
+} from "../../service/Profile";
 
-const Profile = () => {
+const Profile: React.FC = () => {
   const { id } = useParams();
-  const [userData, setUserData] = useState<User>();
+  const [userData, setUserData] = useState<User>({ id: "", _id: "" });
   const [listPost, setListPost] = useState<PostProps[]>([]);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [pageStart, setPageStart] = useState<number>(1);
@@ -59,21 +67,108 @@ const Profile = () => {
     nav(`/profile/${id}`);
   };
 
+  const handleError = (error: string) => {
+    console.log(error);
+  };
+
+  const handleUploadAvtSuccess = async (response: IndividualSendMessage) => {
+    const res = (await API_USER_UPLOAD_AVT({
+      data: response,
+    })) as unknown as string;
+    setUserData((prev) => ({
+      ...prev,
+      avt: res,
+    }));
+  };
+
+  const handleUploadCoverSuccess = async (response: IndividualSendMessage) => {
+    const res = (await API_USER_UPLOAD_COVER({
+      data: response,
+    })) as unknown as string;
+    setUserData((prev) => ({
+      ...prev,
+      avt: res,
+    }));
+  };
+
   return (
     <>
       {userData ? (
-        <div className="flex flex-row w-screen py-16">
+        <div className=" flex flex-row w-screen py-16">
           <div className=" flex-1 flex flex-col items-center pr-10">
             <Img
               className="relative"
-              src={userData.avt || avt}
+              src={userData.cover || cover}
               alt="cover"
               variant="banner"
             />
+            <Form
+              formVariant="absolute -left-[74rem] top-[25rem] w-full p-4 items-center"
+              wrapInputVariant=" flex flex-col"
+              inputVariant="w-full px-3 py-2 border focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-e-full"
+              input={[
+                {
+                  id: "upload-avatar-file-input",
+                  types: "file",
+                  inputVariant: "sr-only",
+                  accept: "image/*",
+                  children: (
+                    <Button
+                      id={"upload-avatar-attach-file-btn"}
+                      childrencomp={
+                        <AttachFileIcon className=" p-1 rounded-full text-white bg-red-600 m-1 absolute  right-28 bottom-5" />
+                      }
+                      type="button"
+                      onClick={() =>
+                        document
+                          .getElementById("upload-avatar-file-input")
+                          ?.click()
+                      }
+                    />
+                  ),
+                },
+              ]}
+              buttonLabel="Upload Avatar..."
+              id="chat-box"
+              buttonVariant="rounded-full text-white bg-red-600 absolute -right-12 bottom-4"
+              onSubmitFail={handleError}
+              onSubmitSuccess={handleUploadAvtSuccess}
+            />
             <Img
               className="absolute top-52 left-32 avt w-40 h-40"
-              src={userData.cover || cover}
+              src={userData.avt || avt}
               alt="avt"
+            />
+            <Form
+              formVariant="absolute -left-[20rem] top-[17rem] w-full p-4 flex flex-row items-center"
+              inputVariant="w-full px-3 py-2 border focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-e-full"
+              input={[
+                {
+                  id: "upload-cover-file-input",
+                  types: "file",
+                  inputVariant: "sr-only",
+                  accept: "image/*",
+                  children: (
+                    <Button
+                      id={"upload-cover-attach-file-btn"}
+                      childrencomp={
+                        <AttachFileIcon className="p-1 rounded-full text-white bg-red-600 m-1 absolute  right-40 bottom-5" />
+                      }
+                      type="button"
+                      onClick={() =>
+                        document
+                          .getElementById("upload-avatar-file-input")
+                          ?.click()
+                      }
+                    />
+                  ),
+                },
+              ]}
+              id="chat-box"
+              buttonLabel="Upload cover..."
+              buttonVariant="rounded-full text-white bg-red-600 absolute right-2 bottom-4"
+              onSubmitFail={handleError}
+              onSubmitSuccess={handleUploadCoverSuccess}
             />
             <H1
               className="absolute top-[17rem] left-80 text-base font-bold"

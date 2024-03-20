@@ -29,7 +29,10 @@ const ChatContent: React.FC<ContentProps> = (props) => {
           src={
             chatRoomType === "individual"
               ? chatIndivisual?.avt || logo
-              : (chatGroup && chatGroup[content.sender_id].avt) || logo
+              : (chatGroup &&
+                  chatGroup[content.sender_id] &&
+                  chatGroup[content.sender_id].avt) ||
+                logo
           }
         />
       )}

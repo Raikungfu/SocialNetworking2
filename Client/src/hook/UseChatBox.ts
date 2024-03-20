@@ -83,6 +83,7 @@ export const useChatBox = () => {
         dispatch(setRoomId(id.roomId));
         dispatch(setMembers(id.members));
       } else {
+        dispatch(setReceptId({ ...data, type: "group" }));
         dispatch(setRoomId(id.roomId));
         socket.emit(
           "open:chatGroup",

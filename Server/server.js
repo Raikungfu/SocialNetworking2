@@ -39,6 +39,7 @@ const community = require("./Routers/Community");
 const auth = require("./Routers/Auth");
 const chat = require("./Routers/Chat");
 const search = require("./Routers/Search");
+const profile = require("./Routers/Profile");
 
 app.use("/User", checkAccess, userState);
 app.use("/Auth", auth);
@@ -48,6 +49,7 @@ app.use("/community", checkAccess, community);
 app.use("/", checkAccess, authentication);
 app.use("/chat", checkAccess, chat);
 app.use("/search", checkAccess, search);
+app.use("/profile", checkAccess, profile);
 
 app.use(express.static(path.join(__dirname, "public")));
 

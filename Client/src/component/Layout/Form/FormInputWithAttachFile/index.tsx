@@ -77,7 +77,11 @@ const Form: React.FC<FormProps> = (props) => {
           type="submit"
           className={"px-5 py-2 " + props.buttonVariant}
           id={"summit-btn"}
-          label={`${isPost ? "Uploading.... " + process + "%" : "Submit"}`}
+          label={`${
+            isPost
+              ? "Uploading.... " + process + "%"
+              : props.buttonLabel || "Submit"
+          }`}
         />
       </div>
     </form>
