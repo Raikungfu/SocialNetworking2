@@ -6,7 +6,11 @@ import {
   setIsChatBoxOpen,
   setMembers,
 } from "./ChatBoxSlice";
-import { setRoomGroupMembers, setRoomIndividual } from "./ChatRoomSlice";
+import {
+  setRoomGroup,
+  setRoomGroupMembers,
+  setRoomIndividual,
+} from "./ChatRoomSlice";
 import { RootState } from "./rootReducer";
 import { roomChat } from "../type/API/User";
 
@@ -106,5 +110,30 @@ export const useChatBox = () => {
     dispatch(setIsChatBoxOpen(true));
   };
 
-  return { handleOpenReceptMessage, isChatBoxOpen, handleOpenGroupMessage };
+  const handleCreateGroupMessage = (data: roomChat) => {
+    dispatch(
+      setRoomGroup({
+        key: data.id,
+        value: {
+          roomId: data.id,
+          avt: data.avt,
+          name: data.name,
+          members: data.members || {},
+        },
+      })
+    );
+    try {
+      dispatch(setReceptId({ ...data, type: "group" }));
+      dispatch(setRoomId(data.id));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  return {
+    handleOpenReceptMessage,
+    isChatBoxOpen,
+    handleOpenGroupMessage,
+    handleCreateGroupMessage,
+  };
 };

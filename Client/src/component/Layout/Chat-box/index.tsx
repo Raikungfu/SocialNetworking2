@@ -10,7 +10,7 @@ import Chat from "./Chat";
 import SearchAndCreateChat from "./SearchAndCreate";
 import { clickUser, searchUser } from "../List/ListDropdown/type";
 import debounce from "debounce";
-import { useState, ChangeEvent, RefObject } from "react";
+import { useState, ChangeEvent, RefObject, useEffect } from "react";
 import { API_USER_CREATE_GROUP } from "../../../service/Chat/chatGroup";
 import { API_SEARCH_USERS } from "../../../service/Search/SearchUser";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
@@ -18,7 +18,6 @@ import socket from "../../../config/socketIO";
 import { IndividualSendMessage } from "../Form/FormInputWithAttachFile/types";
 import { useChatBox } from "../../../hook/UseChatBox";
 import { roomChat } from "../../../type/API/User";
-import { setRoomGroup } from "../../../hook/ChatRoomSlice";
 
 const ChatBox: React.FC = () => {
   const dispatch = useDispatch();
@@ -27,10 +26,13 @@ const ChatBox: React.FC = () => {
   );
 
   const chatWith = useSelector((state: RootState) => state.chatBox.recept);
+  const [isChatWith, setIsChatWith] = useState<boolean>(
+    chatWith?.id ? true : false
+  );
   const [listUserGroup, setListUserGroup] = useState<clickUser[]>([]);
   const [listSearch, setListSearch] = useState<searchUser>();
   const [form, setForm] = useState<RefObject<HTMLFormElement>>();
-  const { handleOpenReceptMessage, handleOpenGroupMessage } = useChatBox();
+  const { handleOpenReceptMessage, handleCreateGroupMessage } = useChatBox();
   const openChatBox = () => {
     dispatch(setReceptId(null));
     dispatch(setIsChatBoxOpen(!isChatBoxOpen));
@@ -84,18 +86,7 @@ const ChatBox: React.FC = () => {
           message: response,
           name: listUserGroup[0].name + ", " + listUserGroup[1].name + "...",
         })) as unknown as roomChat;
-        dispatch(
-          setRoomGroup({
-            key: res.id,
-            value: {
-              roomId: res.id,
-              avt: res.avt,
-              name: res.name,
-              members: res.members || {},
-            },
-          })
-        );
-        handleOpenGroupMessage(res);
+        handleCreateGroupMessage(res);
       } else if (listUserGroup.length === 1) {
         handleOpenReceptMessage({
           id: listUserGroup[0].id,
@@ -106,12 +97,15 @@ const ChatBox: React.FC = () => {
     } catch (err) {
       console.log(err);
     } finally {
-      dispatch(setIsChatBoxOpen(false));
       setIsLoading(false);
       setListUserGroup([]);
       form?.current?.reset();
     }
   };
+
+  useEffect(() => {
+    setIsChatWith(chatWith ? true : false);
+  }, [chatWith]);
 
   return (
     <>
@@ -144,7 +138,7 @@ const ChatBox: React.FC = () => {
               />
             </div>
 
-            {chatWith ? (
+            {isChatWith ? (
               <Chat
                 formInput={{
                   formVariant: "w-full p-4 flex flex-row items-center",

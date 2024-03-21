@@ -7,7 +7,7 @@ export interface Member {
   isLoggedIn?: string;
 }
 
-type ChatRoomGroup = Record<
+export type ChatRoomGroup = Record<
   string,
   {
     name?: string;
@@ -19,7 +19,7 @@ type ChatRoomGroup = Record<
     members: Record<string, Member>;
   }
 >;
-type ChatRoomIndividual = Record<
+export type ChatRoomIndividual = Record<
   string,
   {
     member?: {

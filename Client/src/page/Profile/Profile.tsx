@@ -105,91 +105,93 @@ const Profile: React.FC = () => {
               alt="cover"
               variant="banner"
             />
-            {me === id && (
-              <Form
-                formVariant="absolute -left-[74rem] top-[25rem] w-full p-4 items-center"
-                wrapInputVariant=" flex flex-col"
-                inputVariant="w-full px-3 py-2 border focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-e-full"
-                input={[
-                  {
-                    id: "upload-avatar-file-input",
-                    types: "file",
-                    inputVariant: "sr-only",
-                    accept: "image/*",
-                    children: (
-                      <Button
-                        id={"upload-avatar-attach-file-btn"}
-                        childrencomp={
-                          <AttachFileIcon className=" p-1 rounded-full text-white bg-red-600 m-1 absolute  right-28 bottom-5" />
-                        }
-                        type="button"
-                        onClick={() =>
-                          document
-                            .getElementById("upload-avatar-file-input")
-                            ?.click()
-                        }
-                      />
-                    ),
-                  },
-                ]}
-                buttonLabel="Upload Avatar..."
-                id="chat-box"
-                buttonVariant="rounded-full text-white bg-red-600 absolute -right-12 bottom-4"
-                onSubmitFail={handleError}
-                onSubmitSuccess={handleUploadAvtSuccess}
-              />
-            )}
-            <Img
-              className="absolute top-52 left-32 avt w-40 h-40"
-              src={userData.avt ? userData.avt : avt}
-              alt="avt"
-            />
-            {me === id && (
-              <Form
-                formVariant="absolute -left-[20rem] top-[17rem] w-full p-4 flex flex-row items-center"
-                inputVariant="w-full px-3 py-2 border focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-e-full"
-                input={[
-                  {
-                    id: "upload-cover-file-input",
-                    types: "file",
-                    inputVariant: "sr-only",
-                    accept: "image/*",
-                    children: (
-                      <Button
-                        id={"upload-cover-attach-file-btn"}
-                        childrencomp={
-                          <AttachFileIcon className="p-1 rounded-full text-white bg-red-600 m-1 absolute  right-40 bottom-5" />
-                        }
-                        type="button"
-                        onClick={() =>
-                          document
-                            .getElementById("upload-cover-file-input")
-                            ?.click()
-                        }
-                      />
-                    ),
-                  },
-                ]}
-                id="chat-box"
-                buttonLabel="Upload cover..."
-                buttonVariant="rounded-full text-white bg-red-600 absolute right-2 bottom-4"
-                onSubmitFail={handleError}
-                onSubmitSuccess={handleUploadCoverSuccess}
-              />
-            )}
-            <H1
-              className="absolute top-[17rem] left-80 text-base font-bold"
-              content={userData.name || "User"}
-            />
-            <H3
-              variant="absolute top-[17rem] left-80 italic font-semibold pt-9"
-              content={userData.gender || "none"}
-            />
-            <p className="absolute top-[17rem] left-80 text-base italic font-semibold pt-16">
-              {dayjs(userData.age).format("DD/MM/YYYY") || "User"}
-            </p>
+            <div className="relative">
+              {me === id && (
+                <Form
+                  formVariant="absolute w-full p-4 items-center"
+                  wrapInputVariant=" flex flex-col"
+                  inputVariant="w-full px-3 py-2 border focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-e-full"
+                  input={[
+                    {
+                      id: "upload-avatar-file-input",
+                      types: "file",
+                      inputVariant: "sr-only",
+                      accept: "image/*",
+                      children: (
+                        <Button
+                          id={"upload-avatar-attach-file-btn"}
+                          childrencomp={
+                            <AttachFileIcon className=" p-1 rounded-full text-white bg-red-600 m-1" />
+                          }
+                          type="button"
+                          onClick={() =>
+                            document
+                              .getElementById("upload-avatar-file-input")
+                              ?.click()
+                          }
+                        />
+                      ),
+                    },
+                  ]}
+                  buttonLabel="Upload Avatar..."
+                  id="chat-box"
+                  buttonVariant="rounded-full text-white bg-red-600"
+                  onSubmitFail={handleError}
+                  onSubmitSuccess={handleUploadAvtSuccess}
+                />
+              )}
+              {me === id && (
+                <Form
+                  formVariant="absolute w-full p-4 items-center"
+                  inputVariant="w-full px-3 py-2 border focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-e-full top-10"
+                  input={[
+                    {
+                      id: "upload-cover-file-input",
+                      types: "file",
+                      inputVariant: "sr-only",
+                      accept: "image/*",
+                      children: (
+                        <Button
+                          id={"upload-cover-attach-file-btn"}
+                          childrencomp={
+                            <AttachFileIcon className="p-1 rounded-full text-white bg-red-600 m-1 top-10" />
+                          }
+                          type="button"
+                          onClick={() =>
+                            document
+                              .getElementById("upload-cover-file-input")
+                              ?.click()
+                          }
+                        />
+                      ),
+                    },
+                  ]}
+                  id="chat-box"
+                  buttonLabel="Upload cover..."
+                  buttonVariant="rounded-full text-white bg-red-600"
+                  onSubmitFail={handleError}
+                  onSubmitSuccess={handleUploadCoverSuccess}
+                />
+              )}
+            </div>
             <div className="flex flex-row mt-28 w-full justify-between">
               <div className="flex flex-col flex-1 gap-5 p-2 py-10 px-10">
+                <Img
+                  className="absolute top-52 left-32 avt w-40 h-40"
+                  src={userData.avt ? userData.avt : avt}
+                  alt="avt"
+                />
+                <H1
+                  className="absolute top-[17rem] left-80 text-base font-bold"
+                  content={userData.name || "User"}
+                />
+                <H3
+                  variant="absolute top-[17rem] left-80 italic font-semibold pt-9"
+                  content={userData.gender || "none"}
+                />
+                <p className="absolute top-[17rem] left-80 text-base italic font-semibold pt-16">
+                  {dayjs(userData.age).format("DD/MM/YYYY") || "User"}
+                </p>
                 <H3 content="Friends" />
                 <div className="flex flex-row gap-3 flex-wrap">
                   {userData.friendsList?.map((friend) => {
