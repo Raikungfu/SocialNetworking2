@@ -21,9 +21,11 @@ app.post("/create", function (req, res, next) {
       .then((createdPost) => {
         createdPost.userId = user;
         res.status(200).json(createdPost);
+        return;
       })
       .catch((err) => {
         res.status(400).json(err);
+        return;
       });
   } else {
     res.status(400).json(new Error("No User Found"));
@@ -31,54 +33,51 @@ app.post("/create", function (req, res, next) {
 });
 
 app.get("/dashboard", async function (req, res, next) {
-  var userID = req.user.id;
-  const listFriendPost = await Account.findById(userID)
-    .select("friendsList.friend")
-    .then((data) => {
-      return data.friendsList.map((friend) => {
-        return friend.friend;
+  try {
+    var userID = req.user.id;
+    const listFriendPost = await Account.findById(userID)
+      .select("friendsList.friend")
+      .then((data) => {
+        return data.friendsList.map((friend) => {
+          return friend.friend;
+        });
+      })
+      .catch((err) => {
+        throw err;
       });
-    })
-    .catch((err) => {
-      return res.status(404).json(err);
-    });
-  listFriendPost.push(userID);
-  Post.find({ userId: { $in: listFriendPost } })
-    .sort([["createAt", "descending"]])
-    .skip((req.query.page - 1) * 10 + req.query.numberPosted)
-    .limit(10)
-    .populate("userId", "username avt name")
-    .then((docs) => {
-      try {
-        if (docs.length > 0) {
-          return Promise.all(
-            docs.map(async (items) => {
-              likes = await LikePost.findOne({
-                post: items._id,
-              });
-              items._doc["isLiked"] = likes
-                ? likes.likeUsers?.includes(userID)
-                : false;
-              items._doc["likes"] = likes ? likes.likeUsers?.length : 0;
 
-              comments = await Comment.find({
-                post: items._id,
-              }).countDocuments();
-              items._doc["comments"] = comments ? comments : 0;
-              return items;
-            })
-          );
-        } else res.json(200).json(docs);
-      } catch (err) {
-        console.log(err);
-      }
-    })
-    .then((docs) => {
-      res.status(200).json(docs);
-    })
-    .catch((err) => {
-      res.status(500).json(err);
-    });
+    listFriendPost.push(userID);
+    const docs = await Post.find({ userId: { $in: listFriendPost } })
+      .sort([["createAt", "descending"]])
+      .skip((req.query.page - 1) * 10 + req.query.numberPosted)
+      .limit(10)
+      .populate("userId", "username avt name");
+
+    if (docs.length > 0) {
+      await Promise.all(
+        docs.map(async (items) => {
+          likes = await LikePost.findOne({
+            post: items._id,
+          });
+          items._doc["isLiked"] = likes
+            ? likes.likeUsers?.includes(userID)
+            : false;
+          items._doc["likes"] = likes ? likes.likeUsers?.length : 0;
+
+          comments = await Comment.find({
+            post: items._id,
+          }).countDocuments();
+          items._doc["comments"] = comments ? comments : 0;
+          return items;
+        })
+      );
+    }
+
+    res.status(200).json(docs);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json(err);
+  }
 });
 
 app.get("/profile", function (req, res, next) {
@@ -116,6 +115,7 @@ app.get("/profile", function (req, res, next) {
     })
     .then((docs) => {
       res.status(200).json(docs);
+      return;
     })
     .catch((err) => {
       res.status(500).json(err);
@@ -133,6 +133,7 @@ app.get("/comment", function (req, res, next) {
     .then((data) => {
       if (data.length > 0) {
         res.status(200).json(data);
+        return;
       } else res.status(401).json("No comments");
     });
 });
@@ -162,6 +163,7 @@ app.post("/comment", function (req, res, next) {
           id: doc._id,
         };
         res.status(200).json(data);
+        return;
       })
       .catch((error) => {
         console.log(error);
@@ -175,6 +177,7 @@ app.get("/like", (req, res) => {
   try {
     LikePost.addLike(req.user.id, postId).then((data) => {
       res.status(200).json(data ? "like" : "unlike");
+      return;
     });
   } catch (err) {
     res.status(404).json(err);

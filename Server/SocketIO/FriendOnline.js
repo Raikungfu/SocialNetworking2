@@ -6,7 +6,7 @@ const friendsOnline = async (socket, data, userSocketMap, callback) => {
     const user = await Account.findById(socket.user.id)
       .skip((page - 1) * 10 + numberNewRecord)
       .limit(10)
-      .populate("friendsList.friend", "username avt age gender name");
+      .populate("friendsList.friend", "_id avt name");
 
     if (!user) {
       callback({ error: "User not found" });
@@ -16,8 +16,8 @@ const friendsOnline = async (socket, data, userSocketMap, callback) => {
     const friendList = user.friendsList || [];
     const friendOnline = friendList.map((friend) => {
       return {
-        id: friend.friend._id,
-        username: friend.friend.username,
+        _id: friend.friend._id,
+        avt: friend.friend.avt,
         name: friend.friend.name,
         online: !!userSocketMap.get(friend.friend.id),
       };
@@ -30,4 +30,27 @@ const friendsOnline = async (socket, data, userSocketMap, callback) => {
   }
 };
 
+const userOnline = async (socket, userSocketMap) => {
+  try {
+    const user = await Account.findById(socket.user.id)
+      .select("_id name avt friendsList")
+      .populate("friendsList.friend", "_id");
+    user.friendsList.forEach((friend) => {
+      const friendOnline = userSocketMap.get(friend.friend.id);
+      if (friendOnline) {
+        socket.to(friendOnline).emit("noti", {
+          _id: user._id,
+          name: user.name,
+          avt: user.avt,
+          type: "friend-online",
+        });
+      }
+    });
+  } catch (err) {
+    console.log(err);
+    callback({ error: "Server error!" });
+  }
+};
+
 module.exports = friendsOnline;
+module.exports.userOnline = userOnline;

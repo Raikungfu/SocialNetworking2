@@ -26,6 +26,7 @@ const withAuth = (
     );
     const nav = useNavigate();
     const loc = useLocation();
+
     useEffect(() => {
       const checkLoginStatus = async () => {
         const response = await AxiosApi.get<RootState>("/", true);
@@ -91,6 +92,7 @@ const withAuth = (
         };
         getRoomGroup();
       }
+
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loc.pathname]);
 

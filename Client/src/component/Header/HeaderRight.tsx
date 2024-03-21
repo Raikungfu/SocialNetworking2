@@ -13,6 +13,7 @@ import ChatIndividualIcon from "@mui/icons-material/ChatOutlined";
 import ListDropdown from "../Layout/List/ListDropdown/ListDropdown";
 import { useChatBox } from "../../hook/UseChatBox";
 import { resetRoom } from "../../hook/ChatRoomSlice";
+import { clickUser } from "../Layout/List/ListDropdown/type";
 
 const HeaderRight: React.FC = () => {
   const dispatch = useDispatch();
@@ -95,7 +96,10 @@ const HeaderRight: React.FC = () => {
             wrapTextChildColorVariant_1="text-green-500"
             wrapTextChildColorVariant_2="text-red-500"
             listUserRecord={allChatGroups}
-            handleOpenReceptMessage={handleOpenGroupMessage}
+            handleOpenReceptMessage={(data: clickUser) => {
+              handleOpenGroupMessage(data);
+              toggleDropdown("");
+            }}
           />
         }
         navLinkAvt={<ChatGroupIcon />}
@@ -112,13 +116,16 @@ const HeaderRight: React.FC = () => {
         childrencomp={
           <ListDropdown
             wrapVariant="relative flex flex-row justify-end items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse"
-            wrapDropdownVariant="flex flex-col w-60 z-50 py-2 px-5 top-2 right-0 text-base absolute list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
+            wrapDropdownVariant="max-h-48 overflow-y-auto flex flex-col w-60 z-50 py-2 px-5 top-2 right-0 text-base absolute list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
             wrapDropdownChildVariant="py-3 sm:py-4 cursor-pointer flex flex-row items-center gap-3"
             wrapTextChildVariant="text-base font-medium dark:gray-900 truncate"
             wrapTextChildColorVariant_1="text-green-500"
             wrapTextChildColorVariant_2="text-red-500"
             listUserRecord={allChatIndividuals}
-            handleOpenReceptMessage={handleOpenReceptMessage}
+            handleOpenReceptMessage={(data: clickUser) => {
+              handleOpenReceptMessage(data);
+              toggleDropdown("");
+            }}
           />
         }
         navHeaderClassName={

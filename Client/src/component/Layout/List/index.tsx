@@ -7,16 +7,17 @@ import InfiniteScroll from "react-infinite-scroller";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckIcon from "@mui/icons-material/Check";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import EndOfDataComponent from "../Skeleton/EndOfDataComponent";
 
 const List: React.FC<ListProps> = (props) => {
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [numberNewRecord, setNumberNewRecord] = useState(0);
+  const nav = useNavigate();
   const API_GET_DATA = props.API_GET_DATA;
   const loadMore = async (page: number) => {
     const response = await API_GET_DATA({ page, numberNewRecord });
-
     if (response) {
       const data = response as unknown as User[];
       data && data.length > 0
@@ -150,12 +151,7 @@ const List: React.FC<ListProps> = (props) => {
                   className="py-3 sm:py-4 cursor-pointer"
                   key={`${props.title}_${index}`}
                   onClick={() => {
-                    if (props.handleOpenReceptMessage)
-                      props.handleOpenReceptMessage({
-                        id: item.id || item._id,
-                        name: item.name,
-                        avt: item.avt,
-                      });
+                    nav(`/profile/${item._id}`);
                   }}
                 >
                   <div className="flex items-center">
@@ -181,6 +177,12 @@ const List: React.FC<ListProps> = (props) => {
                   </div>
                 </li>
               ))}
+              {!hasMore && (
+                <EndOfDataComponent
+                  variant="text-base italic text-gray-400"
+                  content="No more user..."
+                />
+              )}
             </InfiniteScroll>
           </ul>
         </div>

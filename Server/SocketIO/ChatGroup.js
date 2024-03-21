@@ -10,7 +10,7 @@ const openChatGroup = async (io, socket, roomId, callback) => {
     });
 };
 
-const chatGroup = (io, socket, message, callback) => {
+const chatGroup = (io, socket, message, callback, userSocketMap) => {
   try {
     if (!message || !message.content || !message.roomId) {
       console.error("Invalid message format");
@@ -38,13 +38,29 @@ const chatGroup = (io, socket, message, callback) => {
 
         return chatGroup.save();
       })
-      .then((savedchatGroup) => {
+      .then((savedChatGroup) => {
         io.to(roomId).emit("group_message", {
           sender: socket.user.id,
           roomId: socket.user.id,
           content: content,
           createdAt: new Date(),
         });
+        try {
+          savedChatGroup.members.forEach((member) => {
+            const friendOnline = userSocketMap.get(member.toString());
+            if (friendOnline) {
+              socket.to(friendOnline).emit("noti", {
+                name: socket.user.name,
+                roomName: savedChatGroup.name,
+                message: content.content,
+                type: "message-group",
+              });
+            }
+          });
+        } catch (err) {
+          console.log(err);
+        }
+
         callback("sent");
       })
       .catch((error) => {

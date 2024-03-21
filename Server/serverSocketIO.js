@@ -5,6 +5,7 @@ const chatIndividual = require("./SocketIO/ChatIndividual");
 const { openChatIndividual } = require("./SocketIO/ChatIndividual");
 const { openChatGroup } = require("./SocketIO/ChatGroup");
 const friendsOnline = require("./SocketIO/FriendOnline");
+const { userOnline } = require("./SocketIO/FriendOnline");
 
 const allowedOrigins = [
   "http://localhost:5173",
@@ -34,6 +35,7 @@ const startSocketIOServer = (httpServer) => {
   io.on("connection", (socket) => {
     const userId = socket.user.id;
     userSocketMap.set(userId, socket.id);
+    userOnline(socket, userSocketMap);
     console.log(`A user connected: ${socket.id}`);
 
     socket.on("login", (message) => {
@@ -41,8 +43,7 @@ const startSocketIOServer = (httpServer) => {
     });
 
     socket.on("massage:group", (message, callback) => {
-      console.log(message);
-      chatGroup(io, socket, message, callback);
+      chatGroup(io, socket, message, callback, userSocketMap);
     });
 
     socket.on("message:individual", (message, callback) => {

@@ -4,6 +4,7 @@ import Card from "../../Layout/Card";
 import InfiniteScroll from "react-infinite-scroller";
 import { API_USER_DASHBOARD_GET_POSTS } from "../../../service/Post/fetchPost";
 import LoadingPost from "../../Layout/Skeleton/LoadingPost";
+import EndOfDataComponent from "../../Layout/Skeleton/EndOfDataComponent";
 
 const LoadPosts: React.FC<PostsProps> = (props) => {
   const [posts, setPosts] = useState<PostProps[]>([]);
@@ -51,6 +52,13 @@ const LoadPosts: React.FC<PostsProps> = (props) => {
           />
         );
       })}
+
+      {!hasMore && (
+        <EndOfDataComponent
+          variant="text-base italic text-gray-400"
+          content="No more post..."
+        />
+      )}
     </InfiniteScroll>
   );
 };

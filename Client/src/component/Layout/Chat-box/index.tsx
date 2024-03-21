@@ -33,6 +33,7 @@ const ChatBox: React.FC = () => {
   const [listSearch, setListSearch] = useState<searchUser>();
   const [form, setForm] = useState<RefObject<HTMLFormElement>>();
   const { handleOpenReceptMessage, handleCreateGroupMessage } = useChatBox();
+
   const openChatBox = () => {
     dispatch(setReceptId(null));
     dispatch(setIsChatBoxOpen(!isChatBoxOpen));
@@ -134,7 +135,10 @@ const ChatBox: React.FC = () => {
                 id={"close-chat"}
                 childrencomp={<CloseIcon />}
                 className="text-gray-300 hover:text-gray-400 focus:outline-none focus:text-gray-400"
-                onClick={() => dispatch(setIsChatBoxOpen(false))}
+                onClick={() => {
+                  dispatch(setIsChatBoxOpen(false));
+                  openChatBox();
+                }}
               />
             </div>
 

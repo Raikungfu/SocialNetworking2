@@ -24,6 +24,7 @@ import {
 } from "../../service/Profile";
 import { useSelector } from "react-redux";
 import { RootState } from "../../hook/rootReducer";
+import EndOfDataComponent from "../../component/Layout/Skeleton/EndOfDataComponent";
 
 const Profile: React.FC = () => {
   const { id } = useParams();
@@ -237,6 +238,12 @@ const Profile: React.FC = () => {
                     />
                   );
                 })}
+                {!hasMore && (
+                  <EndOfDataComponent
+                    variant="text-base italic text-gray-400"
+                    content="No more post..."
+                  />
+                )}
               </InfiniteScroll>
             </div>
           </div>

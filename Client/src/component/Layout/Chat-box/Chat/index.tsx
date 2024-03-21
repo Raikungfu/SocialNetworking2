@@ -16,6 +16,7 @@ import Form from "../../Form/FormInputWithAttachFile";
 import ContentCard from "../../Card/ChatContent/Content";
 import { ChatProps } from "./type";
 import uuid from "react-native-uuid";
+import EndOfDataComponent from "../../Skeleton/EndOfDataComponent";
 
 const Chat: React.FC<ChatProps> = (props) => {
   const [hasMore, setHasMore] = useState<boolean>(true);
@@ -23,6 +24,9 @@ const Chat: React.FC<ChatProps> = (props) => {
   const [chatContent, setChatContent] = useState<ChatContentProps>([]);
   const me = useSelector((state: RootState) => state.user.userState.id);
   const roomId = useSelector((state: RootState) => state.chatBox.roomId);
+  const recipientId = useSelector(
+    (state: RootState) => state.chatBox.recept?.id
+  );
   const [numberNewChat, setNumberNewChat] = useState<number>(0);
   const notificationChat = useRef<HTMLSpanElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -35,7 +39,7 @@ const Chat: React.FC<ChatProps> = (props) => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const handleIndividualTyping = (response: IndividualMessage) => {
+    const handleTyping = (response: IndividualMessage) => {
       if (
         response &&
         ((chatWith?.type === "individual" &&
@@ -60,7 +64,7 @@ const Chat: React.FC<ChatProps> = (props) => {
       }
     };
 
-    const handleIndividualMessage = (response: IndividualMessage) => {
+    const handleMessage = (response: IndividualMessage) => {
       if (
         response &&
         ((chatWith?.type === "individual" &&
@@ -86,23 +90,24 @@ const Chat: React.FC<ChatProps> = (props) => {
     setNewPageStart(0);
     setHasMore(true);
     setChatContent([]);
+    notificationChat.current!.style.display = "none";
     if (chatWith && chatWith.type === "individual") {
-      socket.on("individual_typing", handleIndividualTyping);
-      socket.on("individual_message", handleIndividualMessage);
-      socket.off("group_typing", handleIndividualTyping);
-      socket.off("group_message", handleIndividualMessage);
+      socket.on("individual_typing", handleTyping);
+      socket.on("individual_message", handleMessage);
+      socket.off("group_typing", handleTyping);
+      socket.off("group_message", handleMessage);
     } else {
-      socket.on("group_typing", handleIndividualTyping);
-      socket.on("group_message", handleIndividualMessage);
-      socket.off("individual_message", handleIndividualMessage);
-      socket.off("individual_typing", handleIndividualTyping);
+      socket.on("group_typing", handleTyping);
+      socket.on("group_message", handleMessage);
+      socket.off("individual_message", handleMessage);
+      socket.off("individual_typing", handleTyping);
     }
 
     return () => {
-      socket.off("group_typing", handleIndividualTyping);
-      socket.off("group_message", handleIndividualMessage);
-      socket.off("individual_message", handleIndividualMessage);
-      socket.off("individual_typing", handleIndividualTyping);
+      socket.off("group_typing", handleTyping);
+      socket.off("group_message", handleMessage);
+      socket.off("individual_message", handleMessage);
+      socket.off("individual_typing", handleTyping);
     };
   }, [chatWith, isChatBoxOpen]);
 
@@ -158,6 +163,7 @@ const Chat: React.FC<ChatProps> = (props) => {
             {
               content: response,
               roomId: roomId,
+              recipientId: recipientId,
             },
             (response: string) => {
               if (response) {
@@ -223,12 +229,18 @@ const Chat: React.FC<ChatProps> = (props) => {
           useWindow={true}
           loader={<>Loading...</>}
         >
+          {!hasMore && (
+            <EndOfDataComponent
+              variant="text-sm italic text-gray-400"
+              content="No more messages..."
+            />
+          )}
           <ContentCard
             content={chatContent}
             me={me}
-            wrapContentCard={"flex flex-row py-2 gap-2"}
+            wrapContentCard={"flex flex-row gap-2"}
             wrapContent={
-              " rounded-lg py-2 px-2 inline-block max-w-[80%] text-balance hyphens-auto"
+              " rounded-lg py-2 my-1 px-2 inline-block max-w-[80%] text-balance hyphens-auto"
             }
           />
         </InfiniteScroll>

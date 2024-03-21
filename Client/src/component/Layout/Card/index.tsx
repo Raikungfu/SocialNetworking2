@@ -20,6 +20,7 @@ import {
 import { useState } from "react";
 import { Comment } from "./CommentContent/type";
 import CommentContent from "./CommentContent";
+import { Link } from "react-router-dom";
 
 const Card: React.FC<CardProps> = (props) => {
   const avt = useSelector((state: RootState) => state.user.userState.avt);
@@ -62,16 +63,19 @@ const Card: React.FC<CardProps> = (props) => {
     >
       <div className="p-6">
         <header className="flex gap-4 mb-4 ">
-          <a
-            href="#"
+          <Link
+            to={`/profile/${props.userId._id}`}
             className="relative inline-flex items-center justify-center w-12 h-12 text-white rounded-full"
           >
             <Img alt="avt-user" src={props.userId.avt || logo} variant="avt" />
-          </a>
+          </Link>
           <div>
-            <h3 className="text-xl font-medium text-slate-700">
+            <Link
+              to={`/profile/${props.userId._id}`}
+              className="text-xl font-medium text-slate-700"
+            >
               {props.userId.name || props.userId.username || "User"}
-            </h3>
+            </Link>
             <p className="text-sm text-slate-400">
               {dayjs(props.createAt).format("YYYY-MM-DD HH:mm:ss") || ""}
             </p>
