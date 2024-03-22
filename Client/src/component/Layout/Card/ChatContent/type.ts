@@ -8,7 +8,7 @@ export interface ContentProps {
       "chat-attach-file-input"?: Array<{ url: string; type: string }>;
       content?: string;
     };
-    createAt?: string;
+    sent_at?: string;
     state?: string;
     file?: JSX.Element;
   }>;

@@ -3,7 +3,6 @@ import {
   API_GET_REQUESTS,
 } from "../../../service/Community/fetchCommunity";
 import List from "../../Layout/List";
-import "./style.scss";
 import { MenuRightProps } from "./type";
 import { User } from "../../Layout/List/type";
 import { useState } from "react";

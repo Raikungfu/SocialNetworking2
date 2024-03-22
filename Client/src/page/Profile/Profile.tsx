@@ -99,17 +99,55 @@ const Profile: React.FC = () => {
     <>
       {userData ? (
         <div className=" flex flex-row w-screen py-16">
-          <div className=" flex-1 flex flex-col items-center pr-10">
+          <div className="flex-1 flex flex-col items-center pr-10 w-full">
             <Img
               className="relative"
               src={userData.cover ? userData.cover : cover}
               alt="cover"
               variant="banner"
             />
-            <div className="relative">
+            {me === id && (
+              <Form
+                formVariant="absolute right-5 top-1/4 items-center flex flex-row md:right-1/4"
+                inputVariant="w-full px-3 py-2 border focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-e-full top-10"
+                input={[
+                  {
+                    id: "upload-cover-file-input",
+                    types: "file",
+                    inputVariant: "sr-only",
+                    accept: "image/*",
+                    children: (
+                      <Button
+                        id={"upload-cover-attach-file-btn"}
+                        childrencomp={
+                          <AttachFileIcon className="p-1 rounded-full text-white bg-red-600 m-1 top-10" />
+                        }
+                        type="button"
+                        onClick={() =>
+                          document
+                            .getElementById("upload-cover-file-input")
+                            ?.click()
+                        }
+                      />
+                    ),
+                  },
+                ]}
+                id="chat-box"
+                buttonLabel="Upload cover..."
+                buttonVariant="rounded-full text-white bg-red-600"
+                onSubmitFail={handleError}
+                onSubmitSuccess={handleUploadCoverSuccess}
+              />
+            )}
+            <>
+              <Img
+                className="absolute top-52 left-32 avt w-40 h-40"
+                src={userData.avt ? userData.avt : avt}
+                alt="avt"
+              />
               {me === id && (
                 <Form
-                  formVariant="absolute w-full p-4 items-center"
+                  formVariant="absolute top-[21rem] left-32 items-center"
                   wrapInputVariant=" flex flex-col"
                   inputVariant="w-full px-3 py-2 border focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-e-full"
                   input={[
@@ -122,7 +160,7 @@ const Profile: React.FC = () => {
                         <Button
                           id={"upload-avatar-attach-file-btn"}
                           childrencomp={
-                            <AttachFileIcon className=" p-1 rounded-full text-white bg-red-600 m-1" />
+                            <AttachFileIcon className="p-1 rounded-full text-white bg-red-600 m-1" />
                           }
                           type="button"
                           onClick={() =>
@@ -141,60 +179,23 @@ const Profile: React.FC = () => {
                   onSubmitSuccess={handleUploadAvtSuccess}
                 />
               )}
-              {me === id && (
-                <Form
-                  formVariant="absolute w-full p-4 items-center"
-                  inputVariant="w-full px-3 py-2 border focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-e-full top-10"
-                  input={[
-                    {
-                      id: "upload-cover-file-input",
-                      types: "file",
-                      inputVariant: "sr-only",
-                      accept: "image/*",
-                      children: (
-                        <Button
-                          id={"upload-cover-attach-file-btn"}
-                          childrencomp={
-                            <AttachFileIcon className="p-1 rounded-full text-white bg-red-600 m-1 top-10" />
-                          }
-                          type="button"
-                          onClick={() =>
-                            document
-                              .getElementById("upload-cover-file-input")
-                              ?.click()
-                          }
-                        />
-                      ),
-                    },
-                  ]}
-                  id="chat-box"
-                  buttonLabel="Upload cover..."
-                  buttonVariant="rounded-full text-white bg-red-600"
-                  onSubmitFail={handleError}
-                  onSubmitSuccess={handleUploadCoverSuccess}
-                />
-              )}
-            </div>
+              <H1
+                className="absolute top-[17rem] left-80 text-base font-bold"
+                content={userData.name || "User"}
+              />
+              <H3
+                variant="absolute top-[17rem] left-80 italic font-semibold pt-9"
+                content={userData.gender || "none"}
+              />
+              <p className="absolute top-[17rem] left-80 text-base italic font-semibold pt-16">
+                {dayjs(userData.age).format("DD/MM/YYYY") || "User"}
+              </p>
+            </>
+
             <div className="flex flex-row mt-28 w-full justify-between">
-              <div className="flex flex-col flex-1 gap-5 p-2 py-10 px-10">
-                <Img
-                  className="absolute top-52 left-32 avt w-40 h-40"
-                  src={userData.avt ? userData.avt : avt}
-                  alt="avt"
-                />
-                <H1
-                  className="absolute top-[17rem] left-80 text-base font-bold"
-                  content={userData.name || "User"}
-                />
-                <H3
-                  variant="absolute top-[17rem] left-80 italic font-semibold pt-9"
-                  content={userData.gender || "none"}
-                />
-                <p className="absolute top-[17rem] left-80 text-base italic font-semibold pt-16">
-                  {dayjs(userData.age).format("DD/MM/YYYY") || "User"}
-                </p>
+              <div className="md:flex md:flex-col hidden flex-1 gap-5 p-2 py-10 px-10">
                 <H3 content="Friends" />
-                <div className="flex flex-row gap-3 flex-wrap">
+                <div className="flex flex-row md:flex-wrap gap-3">
                   {userData.friendsList?.map((friend) => {
                     return (
                       <div
@@ -226,7 +227,7 @@ const Profile: React.FC = () => {
                 useCapture={false}
                 useWindow={true}
                 loader={<LoadingPost />}
-                className="w-8/12 px-10"
+                className="md:w-8/12 w-full px-10"
               >
                 {listPost?.map((post: PostProps, index) => {
                   return (

@@ -10,7 +10,7 @@ import Chat from "./Chat";
 import SearchAndCreateChat from "./SearchAndCreate";
 import { clickUser, searchUser } from "../List/ListDropdown/type";
 import debounce from "debounce";
-import { useState, ChangeEvent, RefObject, useEffect } from "react";
+import { useState, ChangeEvent, RefObject } from "react";
 import { API_USER_CREATE_GROUP } from "../../../service/Chat/chatGroup";
 import { API_SEARCH_USERS } from "../../../service/Search/SearchUser";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
@@ -26,9 +26,12 @@ const ChatBox: React.FC = () => {
   );
 
   const chatWith = useSelector((state: RootState) => state.chatBox.recept);
-  const [isChatWith, setIsChatWith] = useState<boolean>(
-    chatWith?.id ? true : false
-  );
+  // const [isChatWith, setIsChatWith] = useState<boolean>(!!chatWith?.id);
+
+  // useEffect(() => {
+  //   setIsChatWith(!!chatWith?.id);
+  // }, [chatWith]);
+
   const [listUserGroup, setListUserGroup] = useState<clickUser[]>([]);
   const [listSearch, setListSearch] = useState<searchUser>();
   const [form, setForm] = useState<RefObject<HTMLFormElement>>();
@@ -80,7 +83,6 @@ const ChatBox: React.FC = () => {
     setIsLoading(true);
     try {
       if (listUserGroup.length > 1) {
-        setIsLoading(true);
         const listUserSend = listUserGroup.map((user) => user.id);
         const res = (await API_USER_CREATE_GROUP({
           listUsers: listUserSend,
@@ -103,11 +105,6 @@ const ChatBox: React.FC = () => {
       form?.current?.reset();
     }
   };
-
-  useEffect(() => {
-    setIsChatWith(chatWith ? true : false);
-  }, [chatWith]);
-
   return (
     <>
       <div className="fixed bottom-0 right-0 mb-4 mr-4">
@@ -135,14 +132,11 @@ const ChatBox: React.FC = () => {
                 id={"close-chat"}
                 childrencomp={<CloseIcon />}
                 className="text-gray-300 hover:text-gray-400 focus:outline-none focus:text-gray-400"
-                onClick={() => {
-                  dispatch(setIsChatBoxOpen(false));
-                  openChatBox();
-                }}
+                onClick={() => dispatch(setIsChatBoxOpen(false))}
               />
             </div>
 
-            {isChatWith ? (
+            {chatWith ? (
               <Chat
                 formInput={{
                   formVariant: "w-full p-4 flex flex-row items-center",
