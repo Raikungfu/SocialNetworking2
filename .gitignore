@@ -22,6 +22,7 @@ package-lock.json
 
 # client specific
 client/node_modules
+client/.env
 client/npm-debug.log*
 client/yarn-debug.log*
 client/yarn-error.log*
