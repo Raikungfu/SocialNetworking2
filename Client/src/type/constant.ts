@@ -1,7 +1,13 @@
-export const API_BASE_URL =
-  import.meta.env.MODE === "development"
-    ? import.meta.env.VITE_DEV_API_URL
-    : import.meta.env.VITE_PROD_API_URL;
+export const API_BASE_URL: string = (() => {
+  const mode: string = import.meta.env.VITE_MODE;
+  const urls: Record<string, string> = {
+    DEV: import.meta.env.VITE_DEV_API_URL,
+    PROD1: import.meta.env.VITE_PROD1_API_URL,
+    PROD2: import.meta.env.VITE_PROD2_API_URL,
+  };
+
+  return urls[mode];
+})();
 
 export const firebaseConfig = {
   apiKey: "AIzaSyDaZqRHMpQZNmXh4yQFtxT26obJpYABSEw",

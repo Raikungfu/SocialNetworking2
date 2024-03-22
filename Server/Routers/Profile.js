@@ -6,8 +6,7 @@ const Account = require("../Modules/account");
 app.post("/upload-avt", async function (req, res, next) {
   const userId = req.user.id;
   const avt = req.body.data["chat-attach-file-input"][0].url;
-
-  if (avt) {
+  try {
     await Account.findByIdAndUpdate(userId, { avt: avt }, { new: true })
       .then((doc) => {
         res.status(200).json(doc.avt);
@@ -16,15 +15,16 @@ app.post("/upload-avt", async function (req, res, next) {
         console.log(error);
         res.status(400).send("Error updating avt");
       });
-  } else {
-    res.status(400).send("No avt provided");
+  } catch (err) {
+    res.status(400).send(err);
   }
 });
 
 app.post("/upload-cover", async function (req, res, next) {
   const userId = req.user.id;
   const cover = req.body.data["chat-attach-file-input"][0].url;
-  if (cover) {
+
+  try {
     await Account.findByIdAndUpdate(userId, { cover: cover }, { new: true })
       .then((doc) => {
         res.status(200).json(doc.cover);
@@ -33,8 +33,8 @@ app.post("/upload-cover", async function (req, res, next) {
         console.log(error);
         res.status(400).send("Error updating cover");
       });
-  } else {
-    res.status(400).send("No cover provided");
+  } catch (err) {
+    res.status(400).send(err);
   }
 });
 
