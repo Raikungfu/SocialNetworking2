@@ -29,8 +29,12 @@ app.get("/chat-individual", async function (req, res) {
     if (!room) {
       return res.status(400).json({ error: "Chat room not found" });
     }
-    const skip = room.messages.length - newPageStart * 10 + numberNewChat * 1;
-    const messages = room.messages.slice(skip - 10, skip);
+    const skip =
+      room.messages.length - Number(newPageStart) * 10 + Number(numberNewChat);
+    const messages = room.messages.slice(
+      Math.max(0, skip - 10),
+      Math.max(0, skip)
+    );
     res.status(200).json(messages);
   } catch (error) {
     console.error(error);
@@ -64,8 +68,12 @@ app.get("/chat-group", async function (req, res) {
       return res.status(400).json({ error: "Chat room not found" });
     }
 
-    const skip = room.messages.length - newPageStart * 10 + numberNewChat * 1;
-    const messages = room.messages.slice(skip - 10, skip);
+    const skip =
+      room.messages.length - Number(newPageStart) * 10 + Number(numberNewChat);
+    const messages = room.messages.slice(
+      Math.max(0, skip - 10),
+      Math.max(0, skip)
+    );
     res.status(200).json(messages);
   } catch (error) {
     console.error(error);

@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import InfiniteScroll from "react-infinite-scroller";
 import { useSelector } from "react-redux";
 import socket from "../../../../config/socketIO";
 import { ChatContentProps } from "../type";
@@ -17,6 +16,7 @@ import ContentCard from "../../Card/ChatContent/Content";
 import { ChatProps } from "./type";
 import uuid from "react-native-uuid";
 import EndOfDataComponent from "../../Skeleton/EndOfDataComponent";
+import InfiniteScroll from "react-infinite-scroller";
 
 const Chat: React.FC<ChatProps> = (props) => {
   const [hasMore, setHasMore] = useState<boolean>(true);
@@ -137,12 +137,12 @@ const Chat: React.FC<ChatProps> = (props) => {
           setHasMore(false);
         }
         setNewPageStart((newPageStart || 0) + 1);
-        scrollToBottom();
       }
     } catch (error) {
       console.error(error);
     } finally {
       setIsLoading(false);
+      scrollToBottom();
     }
   };
 
@@ -226,7 +226,7 @@ const Chat: React.FC<ChatProps> = (props) => {
           pageStart={newPageStart}
           threshold={250}
           useCapture={false}
-          useWindow={true}
+          useWindow={false}
           loader={<>Loading...</>}
         >
           {!hasMore && (

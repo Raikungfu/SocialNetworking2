@@ -72,6 +72,26 @@ const AxiosApi = {
     }
   },
 
+  patch: async <T>(
+    url: string,
+    isAuthorized: boolean,
+    data: T
+  ): Promise<AxiosApiResponse<T>> => {
+    try {
+      const response = isAuthorized
+        ? await Axios.patch<T>(url, data)
+        : await api.patch<T>(url, data);
+      if (response.status === 200) {
+        return { data: response.data, error: null };
+      } else return { data: null, error: null };
+    } catch (error) {
+      return {
+        data: null,
+        error: error as AxiosError,
+      };
+    }
+  },
+
   delete: async <T>(
     url: string,
     isAuthorized: boolean
