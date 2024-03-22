@@ -118,14 +118,19 @@ app.post("/chat-group", async function (req, res) {
 
 app.get("/listChatIndividual", async (req, res) => {
   Account.findById(req.user.id)
-    .populate("chatIndividual.recipient", "name _id")
+    .populate("chatIndividual.recipient", "name _id avt")
     .populate("chatIndividual.chatRoomId", "lastMessage timeStamp sender")
     .select("chatIndividual.recipient chatIndividual.chatRoomId")
+    .sort({ "chatIndividual.chatRoomId.timeStamp": -1 })
     .then((user) => {
+      user.chatIndividual.sort(
+        (a, b) => (b.chatRoomId.timeStamp || 0) - (a.chatRoomId.timeStamp || 0)
+      );
       res.status(200).json(user.chatIndividual);
     })
-    .catch((err) => {
-      res.status(404).json(err);
+    .catch((error) => {
+      console.error("Error:", error);
+      res.status(500).json({ error: "Internal Server Error" });
     });
 });
 
@@ -141,6 +146,11 @@ app.get("/listChatGroup", async (req, res) => {
         },
       })
       .then((account) => {
+        account.chatGroup.sort(
+          (a, b) =>
+            (b.chatRoomId.timeStamp || 0) - (a.chatRoomId.timeStamp || 0)
+        );
+
         const chatRooms = account.chatGroup.map((group) => group.chatRoomId);
         res.status(200).json(chatRooms);
       })

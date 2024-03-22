@@ -30,12 +30,12 @@ const ChatContent: React.FC<ContentProps> = (props) => {
             key={`message-${i}`}
           >
             {content.sender_id !== props.me && (
-              <div className="w-8 h-8 self-center">
+              <div className="w-[2.2rem]">
                 {isOne ? (
-                  <></>
+                  <div className="w-[2rem] h-[2rem] self-center"></div>
                 ) : (
                   <Img
-                    className="rounded-full"
+                    variant="avt"
                     src={
                       chatRoomType === "individual"
                         ? chatIndividual?.avt || logo

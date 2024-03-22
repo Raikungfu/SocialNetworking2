@@ -26,11 +26,6 @@ const ChatBox: React.FC = () => {
   );
 
   const chatWith = useSelector((state: RootState) => state.chatBox.recept);
-  // const [isChatWith, setIsChatWith] = useState<boolean>(!!chatWith?.id);
-
-  // useEffect(() => {
-  //   setIsChatWith(!!chatWith?.id);
-  // }, [chatWith]);
 
   const [listUserGroup, setListUserGroup] = useState<clickUser[]>([]);
   const [listSearch, setListSearch] = useState<searchUser>();

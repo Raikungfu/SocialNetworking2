@@ -67,3 +67,38 @@ AccountSchema.path("friendsRequest").validate(function (value) {
 const Account = mongoose.model("account", AccountSchema);
 
 module.exports = Account;
+
+// Account.aggregate([
+//   { $match: { _id: mongoose.Types.ObjectId(req.user.id) } },
+//   {
+//     $lookup: {
+//       from: "account",
+//       localField: "chatIndividual.recipient",
+//       foreignField: "_id",
+//       as: "recipient",
+//     },
+//   },
+//   {
+//     $lookup: {
+//       from: "roomchatindividual",
+//       localField: "chatIndividual.chatRoomId",
+//       foreignField: "_id",
+//       as: "chatRoom",
+//     },
+//   },
+//   {
+//     $unwind: "$recipient",
+//   },
+//   {
+//     $unwind: "$chatRoom",
+//   },
+//   {
+//     $sort: { "chatRoom.timeStamp": -1 },
+//   },
+//   {
+//     $project: {
+//       "chatIndividual.recipient": "$recipient",
+//       "chatIndividual.chatRoomId": "$chatRoom",
+//     },
+//   },
+// ])

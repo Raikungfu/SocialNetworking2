@@ -46,7 +46,9 @@ const ListDropdown: React.FC<ListProps> = (props) => {
                         {list[item].sender + ": " + list[item].lastMessage}
                       </span>
                       <span className="text-xs italic">
-                        {dayjs(list[item].timeStamp).format("DD/MM/YYYY")}
+                        {dayjs(list[item].timeStamp).format(
+                          "HH:mm:ss - DD/MM/YYYY"
+                        )}
                       </span>
                     </>
                   )}
