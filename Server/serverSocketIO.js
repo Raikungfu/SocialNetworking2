@@ -19,7 +19,6 @@ const startSocketIOServer = (httpServer) => {
   const io = new Server(httpServer, {
     cors: {
       origin: allowedOrigins,
-      methods: ["GET", "POST"],
       allowedHeaders: ["Authorization"],
       credentials: true,
     },

@@ -18,9 +18,6 @@ app.get("/requests", function (req, res, next) {
     .limit(10)
     .populate("friendsRequest", "username avt name")
     .then((user) => {
-      if (!user) {
-        return res.status(400).json({ message: "User not found" });
-      }
       res.status(200).json(user.friendsRequest);
     })
     .catch((err) => {
@@ -35,9 +32,6 @@ app.get("/friends", function (req, res, next) {
     .limit(10)
     .populate("friendsList.friend", "username avt age gender name")
     .then((user) => {
-      if (!user) {
-        return res.status(400).json({ message: "User not found" });
-      }
       res.status(200).json(user.friendsList);
     })
     .catch((err) => {

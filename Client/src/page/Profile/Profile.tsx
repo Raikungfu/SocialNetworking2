@@ -58,6 +58,7 @@ const Profile: React.FC = () => {
         })) as unknown as User;
         setUserData(userProfileData);
         setPageStart(1);
+        setHasMore(true);
         setListPost([]);
       } catch (error) {
         console.error("Error fetching user profile:", error);
