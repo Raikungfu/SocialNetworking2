@@ -13,6 +13,7 @@ startSocketIOServer(httpServer);
 const allowedOrigins = [
   "http://localhost:5173",
   "https://socialnetworkingclient.onrender.com",
+  "https://raiyugi-socialnetworking.onrender.com/",
 ];
 
 app.use(
