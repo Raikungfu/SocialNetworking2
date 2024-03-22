@@ -7,7 +7,11 @@ const { openChatGroup } = require("./SocketIO/ChatGroup");
 const friendsOnline = require("./SocketIO/FriendOnline");
 const { userOnline } = require("./SocketIO/FriendOnline");
 
-const allowedOrigins = process.env.WEB_ORIGIN;
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://socialnetworkingclient.onrender.com",
+  "https://raiyugi-socialnetworking.onrender.com",
+];
 
 const userSocketMap = new Map();
 
