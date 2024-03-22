@@ -10,11 +10,7 @@ const { startSocketIOServer } = require("./serverSocketIO");
 const httpServer = http.createServer(app);
 startSocketIOServer(httpServer);
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://socialnetworkingclient.onrender.com",
-  "https://raiyugi-socialnetworking.onrender.com",
-];
+const allowedOrigins = process.env.WEB_ORIGIN;
 
 app.use(
   cors({
