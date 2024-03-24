@@ -13,7 +13,7 @@ const Button: React.FC<ButtonProps> = (props) => {
       onSubmit={handleSubmit}
       onClick={(event) => {
         event.stopPropagation();
-        props.onClick!();
+        props.onClick;
       }}
       className={`${props.variant} ${props.className}`}
     >

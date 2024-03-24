@@ -95,6 +95,7 @@ const Meeting = () => {
 
         setVideosStream((prev) => [
           <StreamVideo
+            id={localStream?.id}
             stream={localStream!}
             newStream={async () => {
               const newStream = await navigator.mediaDevices.getUserMedia({
@@ -116,6 +117,20 @@ const Meeting = () => {
           console.log("Add a track to the remoteStream:", track);
           remoteStream?.addTrack(track);
         });
+        setVideosStream((prev) => [
+          <StreamVideo
+            id={localStream?.id}
+            stream={remoteStream!}
+            newStream={async () => {
+              const newStream = await navigator.mediaDevices.getUserMedia({
+                video: true,
+                audio: true,
+              });
+              return newStream;
+            }}
+          />,
+          ...prev,
+        ]);
       });
     }
   };
@@ -131,6 +146,7 @@ const Meeting = () => {
 
     setVideosStream((prev) => [
       <StreamVideo
+        id={localStream?.id}
         stream={stream}
         newStream={async () => {
           const newStream = await navigator.mediaDevices.getUserMedia({

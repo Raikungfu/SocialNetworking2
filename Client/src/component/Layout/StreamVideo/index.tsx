@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import Button from "../Button";
 
 const StreamVideo: React.FC<{
+  id?: string;
   stream: MediaStream;
   newStream: () => Promise<MediaStream>;
 }> = (props) => {
@@ -32,7 +33,7 @@ const StreamVideo: React.FC<{
 
   const handleOpenMic = () => {};
   return (
-    <div className="relative">
+    <div className="relative" key={`${props.id}_key`}>
       <video
         ref={videoRef}
         autoPlay
