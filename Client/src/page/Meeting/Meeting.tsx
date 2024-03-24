@@ -224,7 +224,7 @@ const Meeting = () => {
           sdp: offer.sdp,
         },
       };
-
+      registerPeerConnectionListeners();
       const roomRef = (await API_USER_CREATE_MEETING_ROOM(
         roomWithOffer
       )) as unknown as Meeting;
@@ -267,11 +267,7 @@ const Meeting = () => {
         );
         peerConnection = new RTCPeerConnection(configuration);
 
-        localStream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: true,
-        });
-
+        registerPeerConnectionListeners();
         localStream?.getTracks().forEach((track) => {
           peerConnection?.addTrack(track, localStream!);
         });
@@ -290,6 +286,17 @@ const Meeting = () => {
           />,
           ...prev,
         ]);
+
+        // peerConnection.addEventListener("icecandidate", (event) => {
+        //   console.log(event.candidate);
+        //   if (event.candidate) {
+        //     const newIceCandidate = new RTCIceCandidate(event.candidate);
+        //     // Gửi ICE candidate đến peer đối tác
+
+        //     console.log("ICE candidate:", newIceCandidate);
+        //     // sendIceCandidate(newIceCandidate);
+        //   }
+        // });
 
         remoteStream = new MediaStream();
         peerConnection.addEventListener("track", async (event) => {
@@ -357,6 +364,30 @@ const Meeting = () => {
       console.error("Error opening user media:", error);
     }
   };
+
+  function registerPeerConnectionListeners() {
+    peerConnection?.addEventListener("icegatheringstatechange", () => {
+      console.log(
+        `ICE gathering state changed: ${peerConnection?.iceGatheringState}`
+      );
+    });
+
+    peerConnection?.addEventListener("connectionstatechange", () => {
+      console.log(
+        `Connection state change: ${peerConnection?.connectionState}`
+      );
+    });
+
+    peerConnection?.addEventListener("signalingstatechange", () => {
+      console.log(`Signaling state change: ${peerConnection?.signalingState}`);
+    });
+
+    peerConnection?.addEventListener("iceconnectionstatechange ", () => {
+      console.log(
+        `ICE connection state change: ${peerConnection?.iceConnectionState}`
+      );
+    });
+  }
 
   return (
     <div className="p-20">
