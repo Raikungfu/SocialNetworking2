@@ -6,6 +6,8 @@ const { openChatIndividual } = require("./SocketIO/ChatIndividual");
 const { openChatGroup } = require("./SocketIO/ChatGroup");
 const friendsOnline = require("./SocketIO/FriendOnline");
 const { userOnline } = require("./SocketIO/FriendOnline");
+const createMeeting = require("./SocketIO/Meeting");
+const { joinMeeting, joinMeetingSuccess } = require("./SocketIO/Meeting");
 
 const allowedOrigins = [
   "http://localhost:5173",
@@ -55,7 +57,19 @@ const startSocketIOServer = (httpServer) => {
     });
 
     socket.on("open:chatGroup", (roomId, callback) => {
-      openChatGroup(io, socket, roomId, callback);
+      openChatGroup(socket, roomId, callback);
+    });
+
+    socket.on("create:meeting", (offer, callback) => {
+      createMeeting(socket, offer, callback);
+    });
+
+    socket.on("join:meeting", (roomId, callback) => {
+      joinMeeting(io, socket, roomId, callback);
+    });
+
+    socket.on("join:meetingSuccess", (data, callback) => {
+      joinMeetingSuccess(io, socket, data, callback);
     });
 
     socket.on("friend:checkOnline", (data, callback) => {

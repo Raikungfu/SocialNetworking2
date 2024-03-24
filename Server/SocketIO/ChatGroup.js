@@ -1,6 +1,6 @@
 const RoomChatGroup = require("../Modules/RoomChatGroup");
 
-const openChatGroup = async (io, socket, roomId, callback) => {
+const openChatGroup = async (socket, roomId, callback) => {
   socket.join(roomId);
   await RoomChatGroup.findById(roomId)
     .select("members")
