@@ -172,8 +172,8 @@ app.post("/comment", function (req, res, next) {
   }
 });
 
-app.get("/like", (req, res) => {
-  const postId = req.query.postId;
+app.patch("/like", (req, res) => {
+  const postId = req.body.postId;
   try {
     LikePost.addLike(req.user.id, postId).then((data) => {
       res.status(200).json(data ? "like" : "unlike");

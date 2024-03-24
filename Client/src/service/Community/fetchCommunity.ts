@@ -56,7 +56,7 @@ export const API_GET_REQUESTS = <T>(data: FormDataOrOther<T>): Promise<T> => {
 };
 
 export const API_USER_ADD_FRIEND = <T>(_id: T): Promise<T> => {
-  return AxiosApi.get<T>("/User/add-friend", true, _id)
+  return AxiosApi.patch<T>("/User/add-friend", true, _id)
     .then((response) => {
       if (response.data) {
         return response.data;
@@ -70,7 +70,7 @@ export const API_USER_ADD_FRIEND = <T>(_id: T): Promise<T> => {
 };
 
 export const API_ACCEPT_REQUEST = <T>(_id: T): Promise<T> => {
-  return AxiosApi.get<T>("/User/accept-request", true, _id)
+  return AxiosApi.patch<T>("/User/accept-request", true, _id)
     .then((response) => {
       if (response.data) {
         return response.data;

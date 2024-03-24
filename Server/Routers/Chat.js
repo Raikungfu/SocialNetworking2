@@ -15,19 +15,19 @@ app.get("/chat-individual", async function (req, res) {
     if (!roomId) {
       const account = await Account.findById(me);
       if (!account) {
-        return res.status(400).json({ error: "User not found" });
+        return res.status(500).json({ error: "User not found" });
       }
       const room = account.chatIndividual.find(
         (room) => room.recipient.toString() === chatWith.id
       );
       if (!room) {
-        return res.status(400).json({ error: "Room not found" });
+        return res.status(500).json({ error: "Room not found" });
       }
       roomId = room.chatRoomId;
     }
     const room = await RoomIndividual.findById(roomId);
     if (!room) {
-      return res.status(400).json({ error: "Chat room not found" });
+      return res.status(500).json({ error: "Chat room not found" });
     }
     const skip =
       room.messages.length - Number(newPageStart) * 10 + Number(numberNewChat);
@@ -48,24 +48,24 @@ app.get("/chat-group", async function (req, res) {
 
   try {
     if (!chatWith) {
-      return res.status(400);
+      return res.status(500);
     }
     if (!roomId) {
       const account = await Account.findById(me);
       if (!account) {
-        return res.status(400).json({ error: "User not found" });
+        return res.status(500).json({ error: "User not found" });
       }
       const room = account.chatGroup.find(
         (room) => room.chatRoomId.toString() === chatWith.id
       );
       if (!room) {
-        return res.status(400).json({ error: "Room not found" });
+        return res.status(500).json({ error: "Room not found" });
       }
       roomId = room.chatRoomId;
     }
     const room = await RoomChatGroup.findById(roomId);
     if (!room) {
-      return res.status(400).json({ error: "Chat room not found" });
+      return res.status(500).json({ error: "Chat room not found" });
     }
 
     const skip =

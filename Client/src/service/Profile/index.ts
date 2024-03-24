@@ -6,7 +6,7 @@ import { FormDataOrOther } from "../../type/API";
 export const API_USER_UPLOAD_AVT = <T>(
   data: FormDataOrOther<T>
 ): Promise<T> => {
-  return AxiosApi.post<T>("/profile/upload-avt", true, data)
+  return AxiosApi.patch<T>("/profile/upload-avt", true, data)
     .then((response) => {
       if (response.data) {
         return response.data;
@@ -24,7 +24,7 @@ export const API_USER_UPLOAD_AVT = <T>(
 export const API_USER_UPLOAD_COVER = <T>(
   data: FormDataOrOther<T>
 ): Promise<T> => {
-  return AxiosApi.post<T>("/profile/upload-cover", true, data)
+  return AxiosApi.patch<T>("/profile/upload-cover", true, data)
     .then((response) => {
       if (response.data) {
         return response.data;

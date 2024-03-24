@@ -100,7 +100,7 @@ const Profile: React.FC = () => {
     <>
       {userData ? (
         <div className=" flex flex-row w-screen py-16">
-          <div className="flex-1 flex flex-col items-center pr-10 w-full">
+          <div className="flex-1 flex flex-col items-center md:pr-10 w-full">
             <Img
               className="relative"
               src={userData.cover ? userData.cover : cover}
@@ -142,13 +142,13 @@ const Profile: React.FC = () => {
             )}
             <>
               <Img
-                className="absolute top-52 left-32 avt w-40 h-40"
+                className="absolute top-52 md:left-32 left-16 avt w-40 h-40"
                 src={userData.avt ? userData.avt : avt}
                 alt="avt"
               />
               {me === id && (
                 <Form
-                  formVariant="absolute top-[21rem] left-32 items-center"
+                  formVariant="absolute top-[21rem] md:left-32 left-16 items-center"
                   wrapInputVariant=" flex flex-col"
                   inputVariant="w-full px-3 py-2 border focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-e-full"
                   input={[
@@ -181,14 +181,14 @@ const Profile: React.FC = () => {
                 />
               )}
               <H1
-                className="absolute top-[17rem] left-80 text-base font-bold"
+                className="absolute top-[17rem] md:left-80 left-60 text-base font-bold"
                 content={userData.name || "User"}
               />
               <H3
-                variant="absolute top-[17rem] left-80 italic font-semibold pt-9"
+                variant="absolute top-[17rem] md:left-80 left-60 italic font-semibold pt-9"
                 content={userData.gender || "none"}
               />
-              <p className="absolute top-[17rem] left-80 text-base italic font-semibold pt-16">
+              <p className="absolute top-[17rem] md:left-80 left-60 text-base italic font-semibold pt-16">
                 {dayjs(userData.age).format("DD/MM/YYYY") || "User"}
               </p>
             </>
@@ -249,8 +249,8 @@ const Profile: React.FC = () => {
               </InfiniteScroll>
             </div>
           </div>
-          <div className="basis-[20%] right-[20vw]">
-            <MenuRight id={"menu-right-dashboard"} />
+          <div id="nav-right" className="basis-[20%] right-[20vw]">
+            <MenuRight />
           </div>
         </div>
       ) : (

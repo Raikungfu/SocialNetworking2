@@ -4,7 +4,7 @@ import FriendRequestIcon from "@mui/icons-material/GroupAddTwoTone";
 import NewsIcon from "@mui/icons-material/NewspaperTwoTone";
 import PagesIcon from "@mui/icons-material/DocumentScannerTwoTone";
 import MarketIcon from "@mui/icons-material/StorefrontTwoTone";
-import "./style.scss";
+import "../../../type/Style/MenuStyle.scss";
 
 const MenuLeft: React.FC = () => {
   return (

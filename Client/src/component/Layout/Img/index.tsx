@@ -16,6 +16,7 @@ const Img: React.FC<ImgProps> = (props) => {
       className={`${props.variant} ${props.className}`}
       onMouseLeave={handleOnMousLeave}
       onMouseEnter={handleOnMouseEnter}
+      onClick={props.onClick}
     />
   );
 };

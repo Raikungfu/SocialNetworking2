@@ -37,13 +37,13 @@ export const useChatBox = () => {
         dispatch(setReceptId({ ...data, type: "individual" }));
         dispatch(setRoomId(id.roomId));
       } else {
-        dispatch(setReceptId(data));
         socket.emit(
           "open:chatIndividual",
           data,
           (response: { chatRoomId?: string; error?: string }) => {
             if (response) {
               if (response.chatRoomId) dispatch(setRoomId(response.chatRoomId));
+              dispatch(setReceptId({ ...data, type: "individual" }));
               dispatch(
                 setRoomIndividual({
                   key: data.id,

@@ -1,5 +1,4 @@
 export interface MenuRightProps {
-  id: string;
   navChild?: Array<{
     link: string;
     context?: string;

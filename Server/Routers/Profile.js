@@ -3,7 +3,7 @@ const app = express();
 
 const Account = require("../Modules/account");
 
-app.post("/upload-avt", async function (req, res, next) {
+app.patch("/upload-avt", async function (req, res, next) {
   const userId = req.user.id;
   const avt = req.body.data["chat-attach-file-input"][0].url;
   try {
@@ -20,7 +20,7 @@ app.post("/upload-avt", async function (req, res, next) {
   }
 });
 
-app.post("/upload-cover", async function (req, res, next) {
+app.patch("/upload-cover", async function (req, res, next) {
   const userId = req.user.id;
   const cover = req.body.data["chat-attach-file-input"][0].url;
 

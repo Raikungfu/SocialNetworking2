@@ -22,7 +22,7 @@ export const API_USER_GET_MESSAGE_INDIVIDUAL = <T>(
     });
 };
 
-export const API_LIST_FRIEND_ONLINE = <T>(data: T): Promise<T> => {
+export const GET_LIST_FRIEND_ONLINE_VIA_SOCKET = <T>(data: T): Promise<T> => {
   return new Promise((resolve, reject) => {
     socket.emit("friend:checkOnline", data, (dataRes: T) => {
       if (dataRes) resolve(dataRes);

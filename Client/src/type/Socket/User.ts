@@ -6,13 +6,11 @@ export interface FriendOnline {
 
 export type MessageNoti = {
   _id?: string;
-  type?: string;
-  name?: string;
+  wrapPopupVariant?: string;
   avt?: string;
-  variant?: string;
-  title?: string;
+  header?: string;
+  information?: string;
   message?: string;
-  roomName?: string;
-  icon?: string | Element;
   variantMessage?: string;
+  type?: string;
 };

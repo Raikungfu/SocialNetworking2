@@ -41,6 +41,7 @@ const auth = require("./Routers/Auth");
 const chat = require("./Routers/Chat");
 const search = require("./Routers/Search");
 const profile = require("./Routers/Profile");
+const meeting = require("./Routers/Meeting");
 
 app.use("/User", checkAccess, userState);
 app.use("/Auth", auth);
@@ -51,6 +52,7 @@ app.use("/", checkAccess, authentication);
 app.use("/chat", checkAccess, chat);
 app.use("/search", checkAccess, search);
 app.use("/profile", checkAccess, profile);
+app.use("/meeting", checkAccess, meeting);
 
 app.use(express.static(path.join(__dirname, "public")));
 

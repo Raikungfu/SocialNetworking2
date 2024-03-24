@@ -9,6 +9,7 @@ import Community from "./page/Community/Community";
 import About from "./page/About/About";
 import ProtectedWithAuth from "./component/Protected/CheckAuthenticated";
 import Profile from "./page/Profile/Profile";
+import Meeting from "./page/Meeting/Meeting";
 
 function App() {
   return (
@@ -26,8 +27,12 @@ function App() {
           path={`profile/:id`}
           element={<ProtectedWithAuth element={<Profile />} />}
         />
-        <Route path="*" element={<Page404 />} />
+        <Route
+          path={`meetings`}
+          element={<ProtectedWithAuth element={<Meeting />} />}
+        />
       </Route>
+      <Route path="*" element={<Page404 />} />
       <Route path="login" element={<Login />} />
       <Route path="register" element={<Register />} />
     </Routes>

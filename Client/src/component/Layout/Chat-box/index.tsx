@@ -200,13 +200,13 @@ const ChatBox: React.FC = () => {
                 formInput={{
                   formVariant: "w-full p-4 flex flex-row items-center",
                   inputVariant:
-                    "w-full px-3 py-2 border focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-e-full",
+                    "w-full border focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-e-full",
                   input: [
                     {
                       types: "text",
                       id: "content",
                       placeholder: "Search...",
-                      wrapInputVariant: "w-full",
+                      wrapInputVariant: "w-full pr-[5rem]",
                     },
                     {
                       id: "search-file-input",

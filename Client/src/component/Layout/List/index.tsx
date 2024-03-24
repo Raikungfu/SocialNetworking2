@@ -14,16 +14,20 @@ const List: React.FC<ListProps> = (props) => {
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [numberNewRecord, setNumberNewRecord] = useState(0);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const nav = useNavigate();
   const API_GET_DATA = props.API_GET_DATA;
   const loadMore = async (page: number) => {
     const response = await API_GET_DATA({ page, numberNewRecord });
     if (response) {
+      if (isLoading) return;
+      setIsLoading(true);
       const data = response as unknown as User[];
       data && data.length > 0
         ? setAllUsers((prevAllUsers) => [...prevAllUsers, ...data])
         : setHasMore(false);
     }
+    setIsLoading(false);
   };
 
   const handleRequestAccept = (item: User) => {
@@ -77,11 +81,19 @@ const List: React.FC<ListProps> = (props) => {
         return (
           <GroupButton
             id={""}
-            buttonClassName="w-full rounded-full bg-red-400 p-1 text-white flex flex-row justify-between"
+            buttonClassName="w-full rounded-full bg-red-400 p-1 text-white"
             buttons={[
               {
                 id: "open-message-btn",
                 childrencomp: <ChatBubbleIcon />,
+                onClick: () => {
+                  if (props.handleOpenReceptMessage)
+                    props.handleOpenReceptMessage({
+                      id: item._id,
+                      name: item.name,
+                      avt: item.avt,
+                    });
+                },
               },
             ]}
             variant={"flex flex-row gap-1"}
@@ -91,7 +103,7 @@ const List: React.FC<ListProps> = (props) => {
         return (
           <GroupButton
             id={""}
-            buttonClassName="w-full rounded-full bg-red-400 p-1 text-white flex flex-row justify-between"
+            buttonClassName="w-full rounded-full bg-red-400 p-1 text-white"
             buttons={[
               {
                 id: "accept-request-btn",
@@ -120,7 +132,7 @@ const List: React.FC<ListProps> = (props) => {
 
   return (
     <>
-      <div className="w-full flex items-center justify-between mb-4 overflow-y-hidden">
+      <div className="w-full flex items-center justify-between my-4 overflow-y-hidden">
         <h5 className="text-xl font-bold leading-none text-gray-900 dark:gray-900">
           {props.title}
         </h5>
@@ -150,11 +162,13 @@ const List: React.FC<ListProps> = (props) => {
                 <li
                   className="py-3 sm:py-4 cursor-pointer"
                   key={`${props.title}_${index}`}
-                  onClick={() => {
-                    nav(`/profile/${item._id}`);
-                  }}
                 >
-                  <div className="flex items-center">
+                  <div
+                    className="flex items-center"
+                    onClick={() => {
+                      nav(`/profile/${item._id}`);
+                    }}
+                  >
                     <div className="flex-shrink-0">
                       <Img
                         alt="avt-user"
@@ -171,7 +185,7 @@ const List: React.FC<ListProps> = (props) => {
                         {item.name}
                       </p>
                     </div>
-                    <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:gray-900">
+                    <div className="z-1050 inline-flex items-center text-base font-semibold text-gray-900 dark:gray-900">
                       {groupButton(item)}
                     </div>
                   </div>

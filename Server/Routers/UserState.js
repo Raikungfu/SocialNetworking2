@@ -18,10 +18,9 @@ app.get("/requests", function (req, res, next) {
     .limit(10)
     .populate("friendsRequest", "username avt name")
     .then((user) => {
-      res.status(200).json(user.friendsRequest);
+      res.status(200).json(user?.friendsRequest || []);
     })
     .catch((err) => {
-      console.log(err);
       res.status(500).send("Server error!");
     });
 });
@@ -40,8 +39,8 @@ app.get("/friends", function (req, res, next) {
     });
 });
 
-app.get("/add-friend", function (req, res, next) {
-  let friendId = req.query.friendId;
+app.patch("/add-friend", function (req, res, next) {
+  let friendId = req.body.friendId;
   Account.findByIdAndUpdate(
     { _id: friendId },
     { $push: { friendsRequest: req.user.id } },
@@ -73,8 +72,8 @@ app.get("/add-friend", function (req, res, next) {
     });
 });
 
-app.get("/accept-request", function (req, res, next) {
-  let friendId = req.query.friendId;
+app.patch("/accept-request", function (req, res, next) {
+  let friendId = req.body.friendId;
   Account.updateOne(
     { _id: req.user.id },
     {

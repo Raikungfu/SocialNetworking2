@@ -38,11 +38,12 @@ const userOnline = async (socket, userSocketMap) => {
     user.friendsList.forEach((friend) => {
       const friendOnline = userSocketMap.get(friend.friend.id);
       if (friendOnline) {
+        console.log(friendOnline);
         socket.to(friendOnline).emit("noti", {
-          _id: user._id,
-          name: user.name,
           avt: user.avt,
-          type: "friend-online",
+          info: `Best friend online`,
+          message: `Best friend <strong>${user.name}</strong> online. Message now....`,
+          type: "active",
         });
       }
     });

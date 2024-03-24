@@ -62,7 +62,11 @@ AccountSchema.path("friendsList").validate(function (value) {
 
 AccountSchema.path("friendsRequest").validate(function (value) {
   return new Set(value).size === value.length;
-}, "Duplicate friends in friendsRequest");
+}, "Duplicate friend request in friends request");
+
+AccountSchema.path("friendsRequestSent").validate(function (value) {
+  return new Set(value).size === value.length;
+}, "Duplicate friends in friend request sent");
 
 const Account = mongoose.model("account", AccountSchema);
 

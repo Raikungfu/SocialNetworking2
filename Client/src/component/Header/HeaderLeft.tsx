@@ -36,7 +36,12 @@ const HeaderLeft: React.FC = () => {
       onMouseLeave={() => setIsSearchOpen(false)}
       className="flex flex-row justify-start items-center gap-4"
     >
-      <Img src={logo} alt="logo-brand" variant="logo" />
+      <Img
+        src={logo}
+        alt="logo-brand"
+        variant="logo"
+        onClick={() => nav("/")}
+      />
       <Input
         labelVariant="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
         wrapInputVariant="relative"

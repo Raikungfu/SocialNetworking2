@@ -11,8 +11,8 @@ const Dashboard = () => {
       <div className="flex-1 flex flex-col justify-start items-center">
         <Content />
       </div>
-      <div className="basis-[20%] right-[20vw]">
-        <MenuRight id={"menu-right-dashboard"} />
+      <div id="nav-right" className="basis-[20%]">
+        <MenuRight />
       </div>
     </div>
   );

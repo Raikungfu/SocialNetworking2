@@ -141,7 +141,7 @@ const HeaderRight: React.FC = () => {
         variant={"drop-down"}
         id={"profile"}
         wrapDropdownListVariant={
-          "flex flex-col z-50 py-2 px-2 w-40 top-10 text-base absolute list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
+          "flex flex-col z-50 py-2 px-2 w-44 top-10 text-base absolute list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
         }
         navLinkAvt={
           <Img
@@ -159,6 +159,7 @@ const HeaderRight: React.FC = () => {
                 variant={"avt"}
               />
             ),
+            className: `truncate`,
           },
           {
             label: "Logout",
@@ -168,7 +169,7 @@ const HeaderRight: React.FC = () => {
         navHeaderClassName={
           "flex text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
         }
-        wrapDropdownChildVariant="flex flex-row p-2 gap-2 w-36"
+        wrapDropdownChildVariant="flex flex-row p-2 gap-2 min-w-0"
         handleOpenDropdown={toggleDropdown}
         isOpen={isProfileOpen}
       />

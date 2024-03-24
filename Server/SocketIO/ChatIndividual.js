@@ -46,9 +46,10 @@ const chatIndividual = (userMap, socket, message, callback) => {
       });
 
       socket.to(recipientSocketId).emit("noti", {
-        name: socket.user.name,
-        message: content.content,
-        type: "message-individual",
+        header: "New message",
+        info: `From: <strong>${socket.user.name}</strong>`,
+        message: `Content: ${content.content || "File"}`,
+        type: "info",
       });
       callback("sent");
     })

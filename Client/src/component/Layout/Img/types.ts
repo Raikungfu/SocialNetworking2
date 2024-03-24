@@ -6,4 +6,5 @@ export interface ImgProps {
   className?: string;
   onMouseLeave?: (data: string) => void;
   onMouseEnter?: (data: string) => void;
+  onClick?: () => void;
 }

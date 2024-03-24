@@ -92,7 +92,7 @@ export const API_USER_GET_COMMENT_POSTS = <T>(
 };
 
 export const API_USER_POST_LIKE = <T>(data: FormDataOrOther<T>): Promise<T> => {
-  return AxiosApi.get<T>("/post/like", true, data)
+  return AxiosApi.patch<T>("/post/like", true, data)
     .then((response) => {
       if (response.data) {
         return response.data;

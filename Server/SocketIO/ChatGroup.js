@@ -50,10 +50,10 @@ const chatGroup = (io, socket, message, callback, userSocketMap) => {
             const friendOnline = userSocketMap.get(member.toString());
             if (friendOnline) {
               socket.to(friendOnline).emit("noti", {
-                name: socket.user.name,
-                roomName: savedChatGroup.name,
-                message: content.content,
-                type: "message-group",
+                header: "New message in Room: ${savedChatGroup.name}",
+                info: `From: <strong>${socket.user.name}</strong>`,
+                message: `Content: ${content.content || "File"}`,
+                type: "success",
               });
             }
           });
