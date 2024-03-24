@@ -46,7 +46,7 @@ const StreamVideo: React.FC<{
         id="isOpenCam"
         className="absolute bottom-2 left-2 w-20 h-10 z-20 block"
         onClick={handleOpenCamera}
-        label="kkkk"
+        label="Adjust camera"
       />
       <Button
         id="isOpenMic"
