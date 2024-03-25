@@ -113,7 +113,7 @@ const Meeting = () => {
     peerConnection = new RTCPeerConnection(configuration);
     if (!localStream) {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: false,
+        video: true,
         audio: true,
       });
 
