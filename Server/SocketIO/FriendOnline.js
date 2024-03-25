@@ -38,7 +38,6 @@ const userOnline = async (socket, userSocketMap) => {
     user.friendsList.forEach((friend) => {
       const friendOnline = userSocketMap.get(friend.friend.id);
       if (friendOnline) {
-        console.log(friendOnline);
         socket.to(friendOnline).emit("noti", {
           avt: user.avt,
           info: `Best friend online`,

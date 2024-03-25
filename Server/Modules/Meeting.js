@@ -10,7 +10,7 @@ const MeetingSchema = new Schema({
         type: { type: String, required: true },
         sdp: { type: String, required: true },
       },
-      answers: {
+      answer: {
         type: { type: String },
         sdp: { type: String },
       },

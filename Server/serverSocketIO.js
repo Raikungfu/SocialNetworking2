@@ -69,10 +69,11 @@ const startSocketIOServer = (httpServer) => {
     });
 
     socket.on("join:meetingSuccess", (data, callback) => {
+      console.log(data);
       joinMeetingSuccess(io, socket, data, callback);
     });
 
-    socket.on("ice-candidate", (data) => {
+    socket.on("ice:candidate", (data) => {
       io.to(roomId).emit("ice_candidate", data);
     });
 

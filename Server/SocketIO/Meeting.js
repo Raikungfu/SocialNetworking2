@@ -28,10 +28,14 @@ const joinMeeting = (io, socket, roomId, callback) => {
   socket.join(roomId.roomId);
   Meeting.findById(roomId.roomId)
     .then((existRoom) => {
+      const offer =
+        existRoom.users[0].id !== socket.user.id
+          ? existRoom.users[0].offer
+          : existRoom.users[1].offer;
       callback({
-        _roomId: existRoom._id,
+        _roomId: roomId.roomId,
         _userId: socket.user.id,
-        offer: existRoom.users[0].offer,
+        offer: offer,
       });
     })
     .catch((err) => {
@@ -40,23 +44,33 @@ const joinMeeting = (io, socket, roomId, callback) => {
 };
 
 const joinMeetingSuccess = (io, socket, data, callback) => {
-  Meeting.findByIdAndUpdate(data.roomId, {
-    $addToSet: {
-      users: {
-        _id: socket.user.id,
-        offer: data.answer,
+  try {
+    Meeting.findByIdAndUpdate(
+      data._roomId,
+      {
+        $addToSet: {
+          users: {
+            _id: socket.user.id,
+            offer: data.offer,
+            answer: data.answer,
+          },
+        },
       },
-    },
-  })
-    .then((existRoom) => {
-      io.to(data.roomId).emit("join_room_success", {
-        _id: socket.user.id,
-        answer: data.answer,
+      { new: true }
+    )
+      .then((existRoom) => {
+        io.to(data._roomId).emit("join_room_success", {
+          _roomId: data._roomId,
+          _userId: socket.user.id,
+          answer: data.offer,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
       });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 module.exports = createMeeting;
