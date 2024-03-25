@@ -4,8 +4,6 @@ import StreamVideo from "../../component/Layout/StreamVideo";
 import Form from "../../component/Layout/Form/FormInputWithAttachFile";
 import { IndividualSendMessage } from "../../component/Layout/Form/FormInputWithAttachFile/types";
 import socket from "../../config/socketIO";
-import { useSelector } from "react-redux";
-import { RootState } from "../../hook/rootReducer";
 
 interface Meeting {
   _id: string;
@@ -36,12 +34,12 @@ interface ICE {
 }
 
 const Meeting = () => {
-  const me = useSelector((state: RootState) => state.user.userState.id);
   const [videosStream, setVideosStream] = useState<JSX.Element[]>([]);
   let localStream: MediaStream;
   let remoteStream: MediaStream;
   const [roomId, setRoomId] = useState<string>("");
-
+  const [me, setMe] = useState<string>("");
+  const iceCandidates = [];
   const roomIdRef = useRef<HTMLSpanElement>(null);
 
   const configuration: RTCConfiguration = {
@@ -54,60 +52,6 @@ const Meeting = () => {
 
   let peerConnection: RTCPeerConnection;
 
-  // const configuration: RTCConfiguration = {
-  //   iceServers: [
-  //     { urls: "stun:stun.relay.metered.ca:80" },
-  //     {
-  //       urls: "turn:global.relay.metered.ca:80",
-  //       username: "4be13f8c832bf26e47032183",
-  //       credential: "vIAZTGWsF/apHqZU",
-  //     },
-  //     {
-  //       urls: "turn:global.relay.metered.ca:80?transport=tcp",
-  //       username: "4be13f8c832bf26e47032183",
-  //       credential: "vIAZTGWsF/apHqZU",
-  //     },
-  //     {
-  //       urls: "turn:global.relay.metered.ca:443",
-  //       username: "4be13f8c832bf26e47032183",
-  //       credential: "vIAZTGWsF/apHqZU",
-  //     },
-  //     {
-  //       urls: "turns:global.relay.metered.ca:443?transport=tcp",
-  //       username: "4be13f8c832bf26e47032183",
-  //       credential: "vIAZTGWsF/apHqZU",
-  //     },
-  //   ],
-  //   iceCandidatePoolSize: 10,
-  // };
-
-  // const configuration: RTCConfiguration = {
-  //   iceServers: [
-  //     {
-  //       urls: "stun:stun.relay.metered.ca:80",
-  //     },
-  //     {
-  //       urls: "turn:global.relay.metered.ca:80",
-  //       username: "4be13f8c832bf26e47032183",
-  //       credential: "vIAZTGWsF/apHqZU",
-  //     },
-  //     {
-  //       urls: "turn:global.relay.metered.ca:80?transport=tcp",
-  //       username: "4be13f8c832bf26e47032183",
-  //       credential: "vIAZTGWsF/apHqZU",
-  //     },
-  //     {
-  //       urls: "turn:global.relay.metered.ca:443",
-  //       username: "4be13f8c832bf26e47032183",
-  //       credential: "vIAZTGWsF/apHqZU",
-  //     },
-  //     {
-  //       urls: "turns:global.relay.metered.ca:443?transport=tcp",
-  //       username: "4be13f8c832bf26e47032183",
-  //       credential: "vIAZTGWsF/apHqZU",
-  //     },
-  //   ],
-  // };
   useEffect(() => {
     if (roomIdRef.current) {
       roomIdRef.current.textContent = "Current room: " + roomId;
@@ -133,7 +77,7 @@ const Meeting = () => {
     }
   };
 
-  const createPeerConnection = async () => {
+  const createPeerConnection = async (room: string) => {
     peerConnection = new RTCPeerConnection(configuration);
     remoteStream = new MediaStream();
     setVideosStream((prev) => [
@@ -174,62 +118,53 @@ const Meeting = () => {
 
     peerConnection.onicecandidate = async (event) => {
       if (event.candidate) {
-        const newIceCandidate = new RTCIceCandidate(event.candidate);
+        iceCandidates.push(new RTCIceCandidate(event.candidate));
         socket.emit("ice:candidate", {
-          roomId: roomId,
-          candidate: newIceCandidate,
+          _roomId: room,
+          candidate: new RTCIceCandidate(event.candidate),
         });
       }
     };
 
-    peerConnection.addEventListener("icegatheringstatechange", (event) => {
-      console.log(event);
+    peerConnection.addEventListener("icegatheringstatechange", () => {
       console.log(
         `ICE gathering state changed: ${peerConnection?.iceGatheringState}`
       );
     });
 
-    peerConnection.addEventListener("signalingstatechange", (event) => {
-      console.log(event);
+    peerConnection.addEventListener("signalingstatechange", () => {
       console.log(peerConnection.signalingState);
     });
 
-    peerConnection?.addEventListener("connectionstatechange", (event) => {
-      console.log(event);
+    peerConnection?.addEventListener("connectionstatechange", () => {
       console.log(
         `Connection state change: ${peerConnection?.connectionState}`
       );
     });
 
-    peerConnection?.addEventListener("iceconnectionstatechange ", (event) => {
-      console.log(event);
+    peerConnection?.addEventListener("iceconnectionstatechange ", () => {
       console.log(
         `ICE connection state change: ${peerConnection?.iceConnectionState}`
       );
     });
   };
 
-  const createOffer = async () => {
-    await createPeerConnection();
+  const createOffer = async (id: string) => {
+    await createPeerConnection(id);
     const offer = await peerConnection?.createOffer();
     await peerConnection?.setLocalDescription(offer);
-    socket.emit(
-      "create:meeting",
-      {
-        offer: {
-          type: offer?.type,
-          sdp: offer?.sdp,
-        },
+    socket.emit("update:meeting", {
+      _roomId: id,
+      offer: {
+        type: offer?.type,
+        sdp: offer?.sdp,
       },
-      async (roomRef: ICE) => {
-        setRoomId(roomRef._roomId);
-      }
-    );
+    });
     console.log(peerConnection);
   };
 
   const createAnswer = async (roomRef: ICE) => {
-    await createPeerConnection();
+    await createPeerConnection(roomRef._roomId);
     await peerConnection?.setRemoteDescription(roomRef.offer);
     const answer = await peerConnection?.createAnswer();
     await peerConnection?.setLocalDescription(answer);
@@ -243,9 +178,17 @@ const Meeting = () => {
   };
 
   const createRoom = async () => {
+    await init();
     try {
-      await init();
-      await createOffer();
+      socket.emit(
+        "create:meeting",
+        {},
+        async ({ _roomId, _userId }: { _roomId: string; _userId: string }) => {
+          setRoomId(_roomId);
+          setMe(_userId);
+          await createOffer(_roomId);
+        }
+      );
     } catch (error) {
       console.error("Error creating room:", error);
     }
@@ -253,6 +196,7 @@ const Meeting = () => {
 
   const joinRoomById = async (room: IndividualSendMessage) => {
     try {
+      setRoomId(room.content || "");
       await init();
       socket.emit(
         "join:meeting",
@@ -261,6 +205,7 @@ const Meeting = () => {
         },
         async (roomRef: ICE) => {
           if (roomRef._roomId) {
+            setMe(roomRef._userId);
             await createAnswer(roomRef);
           } else {
             if (roomIdRef.current)
@@ -282,11 +227,10 @@ const Meeting = () => {
           await peerConnection?.setRemoteDescription(answer);
         }
       }
-      console.log(peerConnection);
     };
 
-    const handleNewCandidate = (data: { candidate: RTCIceCandidateInit }) => {
-      const candidate = new RTCIceCandidate(data.candidate);
+    const handleNewCandidate = (data: RTCIceCandidateInit) => {
+      const candidate = new RTCIceCandidate(data);
       peerConnection
         ?.addIceCandidate(candidate)
         .then(() => {
@@ -322,56 +266,25 @@ const Meeting = () => {
       <div id="videosStream" className="flex flex-row">
         {videosStream.map((video) => video)}
       </div>
-      <div
-        className="mdc-dialog"
-        id="room-dialog"
-        role="alertdialog"
-        aria-modal="true"
-        aria-labelledby="my-dialog-title"
-        aria-describedby="my-dialog-content"
-      >
-        <div className="mdc-dialog__container">
-          <div className="mdc-dialog__surface">
-            <h2 className="mdc-dialog__title" id="my-dialog-title">
-              Join room
-            </h2>
-            <Form
-              formVariant="absolute right-5 top-1/4 items-center flex flex-row md:right-1/4"
-              inputVariant="w-full px-3 py-2 border focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-e-full top-10"
-              input={[
-                {
-                  types: "text",
-                  id: "content",
-                  placeholder: "Search...",
-                  wrapInputVariant: "w-full pr-[5rem]",
-                },
-              ]}
-              id="chat-box"
-              buttonLabel="Upload cover..."
-              buttonVariant="rounded-full text-white bg-red-600"
-              onSubmitSuccess={joinRoomById}
-              onSubmitFail={() => {}}
-            />
-            <footer className="mdc-dialog__actions">
-              <button
-                type="button"
-                className="mdc-button mdc-dialog__button"
-                data-mdc-dialog-action="no"
-              >
-                <span className="mdc-button__label">Cancel</span>
-              </button>
-              <button
-                id="confirmJoinBtn"
-                type="button"
-                className="mdc-button mdc-dialog__button"
-                data-mdc-dialog-action="yes"
-              >
-                <span className="mdc-button__label">Join</span>
-              </button>
-            </footer>
-          </div>
-        </div>
-        <span ref={roomIdRef}></span>
+      <div className="fixed bottom-20 transform right-1/2 translate-x-1/2">
+        <span className="text-base text-red-500 m-4" ref={roomIdRef}></span>
+        <Form
+          formVariant=" items-center flex flex-row w-full"
+          inputVariant="px-3 py-2 border focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-full"
+          input={[
+            {
+              types: "text",
+              id: "content",
+              placeholder: "Search...",
+              wrapInputVariant: "pr-[2rem]",
+            },
+          ]}
+          id="chat-box"
+          buttonLabel="Enter RoomId"
+          buttonVariant="rounded-full text-white bg-red-600 text-base"
+          onSubmitSuccess={joinRoomById}
+          onSubmitFail={() => {}}
+        />
       </div>
     </div>
   );

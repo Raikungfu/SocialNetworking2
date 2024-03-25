@@ -7,7 +7,12 @@ const { openChatGroup } = require("./SocketIO/ChatGroup");
 const friendsOnline = require("./SocketIO/FriendOnline");
 const { userOnline } = require("./SocketIO/FriendOnline");
 const createMeeting = require("./SocketIO/Meeting");
-const { joinMeeting, joinMeetingSuccess } = require("./SocketIO/Meeting");
+const {
+  joinMeeting,
+  joinMeetingSuccess,
+  saveCandidate,
+  updateMeeting,
+} = require("./SocketIO/Meeting");
 
 const allowedOrigins = [
   "http://localhost:5173",
@@ -64,18 +69,20 @@ const startSocketIOServer = (httpServer) => {
       createMeeting(socket, offer, callback);
     });
 
+    socket.on("update:meeting", (data, callback) => {
+      updateMeeting(socket, data);
+    });
+
     socket.on("join:meeting", (roomId, callback) => {
       joinMeeting(io, socket, roomId, callback);
     });
 
     socket.on("join:meetingSuccess", (data, callback) => {
-      console.log(data);
       joinMeetingSuccess(io, socket, data, callback);
     });
 
-    socket.on("ice:candidate", (data) => {
-      console.log(data);
-      io.to(data.roomId).emit("ice_candidate", data.candidate);
+    socket.on("ice:candidate", (data, callback) => {
+      io.to(data._roomId).emit("ice_candidate", data.candidate);
     });
 
     socket.on("friend:checkOnline", (data, callback) => {

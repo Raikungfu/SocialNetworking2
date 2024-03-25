@@ -7,8 +7,8 @@ const MeetingSchema = new Schema({
     {
       _id: { type: Schema.Types.ObjectId, ref: "account", required: true },
       offer: {
-        type: { type: String, required: true },
-        sdp: { type: String, required: true },
+        type: { type: String },
+        sdp: { type: String },
       },
       answer: {
         type: { type: String },
