@@ -79,7 +79,7 @@ function Register() {
                   types: "password",
                   required: true,
                   placeholder: "••••••••",
-                  pattern: "(?=.*d)(?=.*[a-z])(?=.*[A-Z]).{8,}",
+                  pattern: "[a-zA-Z0-9._%+\\-]{8,}$",
                   title:
                     "Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters",
                   keyDown: checkPassword,
@@ -90,7 +90,7 @@ function Register() {
                   types: "password",
                   required: true,
                   placeholder: "••••••••",
-                  pattern: "(?=.*d)(?=.*[a-z])(?=.*[A-Z]).{8,}",
+                  pattern: "[a-zA-Z0-9._%+\\-]{8,}$",
                   title:
                     "Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters",
                   keyDown: checkPassword,
