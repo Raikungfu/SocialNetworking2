@@ -3,8 +3,9 @@ import Button from "../../component/Layout/Button";
 import StreamVideo from "../../component/Layout/StreamVideo";
 import Form from "../../component/Layout/Form/FormInputWithAttachFile";
 import { IndividualSendMessage } from "../../component/Layout/Form/FormInputWithAttachFile/types";
-import { useLocation } from "react-router-dom";
 import socket from "../../config/socketIO";
+import { useSelector } from "react-redux";
+import { RootState } from "../../hook/rootReducer";
 
 interface Meeting {
   _id: string;
@@ -22,18 +23,20 @@ interface Meeting {
 }
 
 interface ICE {
-  _id: string;
+  _roomId: string;
+  _userId: string;
   offer: {
     type: RTCSdpType;
     sdp: string;
   };
-  answer?: {
+  answer: {
     type: RTCSdpType;
     sdp: string;
   };
 }
 
 const Meeting = () => {
+  const me = useSelector((state: RootState) => state.user.userState.id);
   const [videosStream, setVideosStream] = useState<JSX.Element[]>([]);
   const roomIdRef = useRef<HTMLSpanElement>(null);
   const configuration = {
@@ -51,111 +54,161 @@ const Meeting = () => {
   let peerConnection: RTCPeerConnection | null = null;
   let localStream: MediaStream | null = null;
   let remoteStream: MediaStream | null = null;
-  const loc = useLocation();
 
   useEffect(() => {
     const handleUserJoinRoom = (data: ICE) => {
-      console.log(data);
-      peerConnection?.setRemoteDescription(data.offer);
-      peerConnection?.addEventListener("track", async (event) => {
-        const [remoteStream] = event.streams;
-        setVideosStream((prev) => [
-          <StreamVideo
-            key={data._id}
-            id={data._id}
-            stream={remoteStream!}
-            newStream={async () => {
-              const newStream = await navigator.mediaDevices.getUserMedia({
-                video: true,
-                audio: true,
-              });
-              return newStream;
-            }}
-          />,
-          ...prev,
-        ]);
-      });
+      if (me !== data._userId) {
+        peerConnection?.setRemoteDescription(data.answer);
+      }
     };
 
+    const handleNewCandidate = (data: { candidate: RTCIceCandidateInit }) => {
+      const candidate = new RTCIceCandidate(data.candidate);
+      peerConnection
+        ?.addIceCandidate(candidate)
+        .then(() => {
+          console.log("ICE candidate added successfully");
+        })
+        .catch((error) => {
+          console.error("Error adding ICE candidate:", error);
+        });
+    };
+
+    socket.on("ice_candidate", handleNewCandidate);
     socket.on("join_room_success", handleUserJoinRoom);
     return () => {
+      socket.off("ice_candidate", handleNewCandidate);
       socket.off("join_room_success", handleUserJoinRoom);
     };
-  }, [loc.pathname]);
+  }, []);
+
+  function sendIceCandidate(candidate: RTCIceCandidateInit) {
+    socket.emit("ice:candidate", { candidate });
+  }
+
+  const init = async () => {
+    console.log("Create PeerConnection with configuration: ", configuration);
+    peerConnection = new RTCPeerConnection(configuration);
+
+    if (!localStream) {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
+      localStream = stream;
+    }
+
+    setVideosStream((prev) => [
+      <StreamVideo
+        key={"localStream"}
+        id={"localStream"}
+        stream={localStream!}
+      />,
+      ...prev,
+    ]);
+  };
+
+  const createOffer = async () => {
+    registerPeerConnectionListeners();
+    init();
+
+    const offer = await peerConnection?.createOffer();
+    await peerConnection?.setLocalDescription(offer);
+
+    const roomWithOffer = {
+      offer: {
+        type: offer?.type,
+        sdp: offer?.sdp,
+      },
+    };
+
+    await socket.emit(
+      "create:meeting",
+      {
+        offer: roomWithOffer.offer,
+      },
+      async (roomRef: ICE) => {
+        const roomId = roomRef._roomId;
+        if (roomIdRef.current) {
+          roomIdRef.current.textContent = "RoomId: " + roomId;
+        }
+
+        localStream?.getTracks().forEach((track) => {
+          if (localStream) peerConnection?.addTrack(track, localStream);
+        });
+
+        peerConnection?.addEventListener(
+          "icecandidate",
+          (event: RTCPeerConnectionIceEvent) => {
+            if (event.candidate) {
+              const newIceCandidate = new RTCIceCandidate(event.candidate);
+              console.log("ICE candidate:", newIceCandidate);
+              sendIceCandidate(newIceCandidate);
+            }
+          }
+        );
+
+        handleListenNewUser();
+        console.log(peerConnection);
+      }
+    );
+  };
+
+  const handleListenNewUser = () => {
+    remoteStream = new MediaStream();
+    peerConnection?.addEventListener("track", async (event) => {
+      [remoteStream] = event.streams;
+      setVideosStream((prev) => [
+        <StreamVideo
+          key={"remoteStream"}
+          id={"remoteStream"}
+          stream={remoteStream!}
+        />,
+        ...prev,
+      ]);
+    });
+  };
+
+  const createAnswer = async (roomRef: ICE) => {
+    init();
+    if (!peerConnection) peerConnection = new RTCPeerConnection(configuration);
+    await peerConnection?.setRemoteDescription(
+      new RTCSessionDescription(roomRef.offer)
+    );
+    const answer = await peerConnection?.createAnswer();
+    await peerConnection?.setLocalDescription(answer);
+
+    const roomWithAnswer = {
+      answer: {
+        type: answer?.type,
+        sdp: answer?.sdp,
+      },
+    };
+    console.log(peerConnection);
+    socket.emit("join:meetingSuccess", {
+      roomId: roomRef._roomId,
+      answer: roomWithAnswer.answer,
+    });
+
+    localStream?.getTracks().forEach((track) => {
+      if (localStream) peerConnection?.addTrack(track, localStream);
+    });
+
+    handleListenNewUser();
+  };
 
   const createRoom = async () => {
     try {
-      console.log("Create PeerConnection with configuration: ", configuration);
-
-      peerConnection = new RTCPeerConnection(configuration);
-
-      const offer = await peerConnection.createOffer();
-      await peerConnection.setLocalDescription(offer);
-
-      const roomWithOffer = {
-        offer: {
-          type: offer.type,
-          sdp: offer.sdp,
-        },
-      };
-
-      registerPeerConnectionListeners();
-      await socket.emit(
-        "create:meeting",
-        {
-          offer: roomWithOffer.offer,
-        },
-        async (roomRef: ICE) => {
-          const roomId = roomRef._id;
-          if (roomIdRef.current) {
-            roomIdRef.current.textContent = "RoomId: " + roomId;
-          }
-
-          const stream = await navigator.mediaDevices.getUserMedia({
-            video: true,
-            audio: true,
-          });
-
-          localStream = stream;
-
-          setVideosStream((prev) => [
-            <StreamVideo
-              key={roomRef._id}
-              id={roomRef._id}
-              stream={localStream!}
-              newStream={async () => {
-                const newStream = await navigator.mediaDevices.getUserMedia({
-                  video: true,
-                  audio: true,
-                });
-                return newStream;
-              }}
-            />,
-            ...prev,
-          ]);
-
-          localStream?.getTracks().forEach((track) => {
-            if (localStream) peerConnection?.addTrack(track, localStream);
-          });
-
-          peerConnection?.addEventListener("track", (event) => {
-            console.log("Got remote track:", event.streams[0]);
-            event.streams[0].getTracks().forEach((track) => {
-              console.log("Add a track to the remoteStream:", track);
-              remoteStream?.addTrack(track);
-            });
-          });
-          console.log(peerConnection);
-        }
-      );
+      init();
+      createOffer();
     } catch (error) {
       console.error("Error creating room:", error);
     }
   };
 
   const joinRoomById = async (roomId: IndividualSendMessage) => {
+    registerPeerConnectionListeners();
     try {
-      console.log(roomId);
       await socket.emit(
         "join:meeting",
         {
@@ -164,196 +217,15 @@ const Meeting = () => {
         async (roomRef: ICE) => {
           if (roomRef) {
             console.log("Joined room", roomRef);
-            if (!peerConnection)
-              peerConnection = new RTCPeerConnection(configuration);
-            const offer = roomRef.offer;
-            await peerConnection?.setRemoteDescription(offer);
-            const answer = await peerConnection?.createAnswer();
-            await peerConnection?.setLocalDescription(answer);
-
-            const roomWithAnswer = {
-              offer: {
-                type: answer?.type,
-                sdp: answer?.sdp,
-              },
-            };
-            console.log(peerConnection);
-            socket.emit("join:meetingSuccess", {
-              roomId: roomId.content,
-              offer: roomWithAnswer.offer,
-            });
-            const stream = await navigator.mediaDevices.getUserMedia({
-              video: true,
-              audio: true,
-            });
-
-            localStream = stream;
-
-            setVideosStream((prev) => [
-              <StreamVideo
-                key={roomRef._id}
-                id={roomRef._id}
-                stream={localStream!}
-                newStream={async () => {
-                  const newStream = await navigator.mediaDevices.getUserMedia({
-                    video: true,
-                    audio: true,
-                  });
-                  return newStream;
-                }}
-              />,
-              ...prev,
-            ]);
-
-            peerConnection?.addEventListener("track", async (event) => {
-              const [remoteStream] = event.streams;
-              setVideosStream((prev) => [
-                <StreamVideo
-                  key={"remoteStream"}
-                  id={"remoteStream"}
-                  stream={remoteStream!}
-                  newStream={async () => {
-                    const newStream = await navigator.mediaDevices.getUserMedia(
-                      {
-                        video: true,
-                        audio: true,
-                      }
-                    );
-                    return newStream;
-                  }}
-                />,
-                ...prev,
-              ]);
-            });
+            createAnswer(roomRef);
           } else {
             if (roomIdRef.current)
               roomIdRef.current.textContent = "Not found!!!";
           }
         }
       );
-
-      // if (roomRef) {
-      //   console.log(
-      //     "Create PeerConnection with configuration: ",
-      //     configuration
-      //   );
-      //   peerConnection = new RTCPeerConnection(configuration);
-
-      //   registerPeerConnectionListeners();
-      //   localStream?.getTracks().forEach((track) => {
-      //     peerConnection?.addTrack(track, localStream!);
-      //   });
-
-      //   setVideosStream((prev) => [
-      //     <StreamVideo
-      //       id={localStream?.id}
-      //       stream={localStream!}
-      //       newStream={async () => {
-      //         const newStream = await navigator.mediaDevices.getUserMedia({
-      //           video: true,
-      //           audio: true,
-      //         });
-      //         return newStream;
-      //       }}
-      //     />,
-      //     ...prev,
-      //   ]);
-
-      // peerConnection.addEventListener("icecandidate", (event) => {
-      //   console.log(event.candidate);
-      //   if (event.candidate) {
-      //     const newIceCandidate = new RTCIceCandidate(event.candidate);
-      //     // Gửi ICE candidate đến peer đối tác
-
-      //     console.log("ICE candidate:", newIceCandidate);
-      //     // sendIceCandidate(newIceCandidate);
-      //   }
-      // });
-
-      //     remoteStream = new MediaStream();
-
-      //     peerConnection.onicecandidate = (event) => {
-      //       if (event.candidate) {
-      //         socket.emit("ice-candidate", { candidate: event.candidate });
-      //       }
-      //     };
-
-      //     // Lắng nghe ICE candidate từ đối tác
-      //     socket.on("ice-candidate", (data) => {
-      //       const candidate = new RTCIceCandidate(data.candidate);
-      //       peerConnection
-      //         ?.addIceCandidate(candidate)
-      //         .then(() => {
-      //           console.log("ICE candidate added successfully");
-      //         })
-      //         .catch((error) => {
-      //           console.error("Error adding ICE candidate:", error);
-      //         });
-      //     });
-
-      //     peerConnection.addEventListener("track", async (event) => {
-      //       console.log("Got remote track:", event.streams[0]);
-      //       event.streams[0].getTracks().forEach((track) => {
-      //         console.log("Add a track to the remoteStream:", track);
-      //         remoteStream?.addTrack(track);
-      //       });
-
-      //       if (roomRef.offer) {
-      //         const offer = new RTCSessionDescription(roomRef.offer);
-      //         await peerConnection?.setRemoteDescription(offer);
-      //         console.log("Remote description set:", offer);
-      //       } else {
-      //         console.error("No offer found in roomRef:", roomRef);
-      //       }
-
-      //       setVideosStream((prev) => [
-      //         <StreamVideo
-      //           id={remoteStream?.id}
-      //           stream={remoteStream!}
-      //           newStream={async () => {
-      //             const newStream = await navigator.mediaDevices.getUserMedia({
-      //               video: true,
-      //               audio: true,
-      //             });
-      //             return newStream;
-      //           }}
-      //         />,
-      //         ...prev,
-      //       ]);
-      //     });
-      //     console.log(peerConnection);
-      //   }
     } catch (error) {
       console.error("Error joining room:", error);
-    }
-  };
-
-  const openUserMedia = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
-      });
-
-      localStream = stream;
-      remoteStream = new MediaStream();
-
-      setVideosStream((prev) => [
-        <StreamVideo
-          id={localStream?.id}
-          stream={stream}
-          newStream={async () => {
-            const newStream = await navigator.mediaDevices.getUserMedia({
-              video: true,
-              audio: true,
-            });
-            return newStream;
-          }}
-        />,
-        ...prev,
-      ]);
-    } catch (error) {
-      console.error("Error opening user media:", error);
     }
   };
 
@@ -387,27 +259,9 @@ const Meeting = () => {
         <Button
           id="openCamera"
           className="p-2 bg-red-500 text-white rounded-lg"
-          label="Open camera & microphone"
-          onClick={openUserMedia}
-        />
-        <Button
-          id="openCamera"
-          className="p-2 bg-red-500 text-white rounded-lg"
           label="Create new Room"
           onClick={createRoom}
         />
-        {/* <Button
-          id="openCamera"
-          className="p-2 bg-red-500 text-white rounded-lg"
-          label="Join Exist Room"
-          onClick={createRoom}
-        />
-        <Button
-          id="openCamera"
-          className="p-2 bg-red-500 text-white rounded-lg"
-          label="Close Meeting"
-          onClick={createRoom}
-        /> */}
       </div>
       <div>
         <span id="currentRoom"></span>

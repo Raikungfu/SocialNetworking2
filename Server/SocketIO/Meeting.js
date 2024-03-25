@@ -12,8 +12,12 @@ const createMeeting = async (socket, offer, callback) => {
     .save()
     .then((newRoom) => {
       try {
-        socket.join(newRoom._id);
-        callback({ _id: newRoom._id, offer: newRoom.users[0].offer });
+        socket.join(newRoom._id.toString());
+        callback({
+          _roomId: newRoom._id,
+          _userId: socket.user.id,
+          offer: newRoom.users[0].offer,
+        });
       } catch (err) {
         console.log(err);
       }
@@ -23,8 +27,12 @@ const createMeeting = async (socket, offer, callback) => {
 const joinMeeting = (io, socket, roomId, callback) => {
   socket.join(roomId.roomId);
   Meeting.findById(roomId.roomId)
-    .then((newRoom) => {
-      callback({ _id: newRoom._id, offer: newRoom.users[0].offer });
+    .then((existRoom) => {
+      callback({
+        _roomId: existRoom._id,
+        _userId: socket.user.id,
+        offer: existRoom.users[0].offer,
+      });
     })
     .catch((err) => {
       console.log(err);
@@ -36,15 +44,14 @@ const joinMeetingSuccess = (io, socket, data, callback) => {
     $addToSet: {
       users: {
         _id: socket.user.id,
-        offer: data.offer,
+        offer: data.answer,
       },
     },
   })
-    .then((newRoom) => {
-      console.log(io);
+    .then((existRoom) => {
       io.to(data.roomId).emit("join_room_success", {
-        _id: newRoom._id,
-        offer: newRoom.users[0].offer,
+        _id: socket.user.id,
+        answer: data.answer,
       });
     })
     .catch((err) => {

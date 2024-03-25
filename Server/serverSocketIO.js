@@ -72,6 +72,10 @@ const startSocketIOServer = (httpServer) => {
       joinMeetingSuccess(io, socket, data, callback);
     });
 
+    socket.on("ice-candidate", (data) => {
+      io.to(roomId).emit("ice_candidate", data);
+    });
+
     socket.on("friend:checkOnline", (data, callback) => {
       friendsOnline(socket, data, userSocketMap, callback);
     });
