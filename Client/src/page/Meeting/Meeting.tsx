@@ -135,8 +135,31 @@ const Meeting = () => {
 
   const createPeerConnection = async () => {
     peerConnection = new RTCPeerConnection(configuration);
-    if (!remoteStream) {
-      remoteStream = new MediaStream();
+    remoteStream = new MediaStream();
+    setVideosStream((prev) => [
+      ...prev,
+      <StreamVideo
+        key={"remoteStream"}
+        id={"remoteStream"}
+        stream={remoteStream!}
+      />,
+    ]);
+
+    if (!localStream) {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
+      localStream = stream;
+      if (localStream) {
+        setVideosStream([
+          <StreamVideo
+            key={"localStream"}
+            id={"localStream"}
+            stream={localStream!}
+          />,
+        ]);
+      }
     }
 
     localStream?.getTracks().forEach((track) => {
@@ -147,14 +170,6 @@ const Meeting = () => {
       event.streams[0].getTracks().forEach((track) => {
         remoteStream?.addTrack(track);
       });
-      setVideosStream((prev) => [
-        ...prev,
-        <StreamVideo
-          key={"remoteStream"}
-          id={"remoteStream"}
-          stream={remoteStream!}
-        />,
-      ]);
     };
 
     peerConnection.onicecandidate = async (event) => {
@@ -260,11 +275,7 @@ const Meeting = () => {
 
   useEffect(() => {
     const handleUserJoinRoom = async (data: ICE) => {
-      console.log(peerConnection);
-      console.log(data);
-      console.log(me);
       if (me !== data._userId) {
-        alert("sdsds");
         if (!peerConnection?.currentRemoteDescription && data.answer) {
           console.log("Set remote description: ", data.answer);
           const answer = new RTCSessionDescription(data.answer);
