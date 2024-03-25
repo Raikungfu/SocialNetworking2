@@ -74,6 +74,7 @@ const startSocketIOServer = (httpServer) => {
     });
 
     socket.on("ice:candidate", (data) => {
+      console.log(data);
       io.to(data.roomId).emit("ice_candidate", data.candidate);
     });
 

@@ -117,7 +117,7 @@ const Meeting = () => {
   const init = async () => {
     if (!localStream) {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
+        video: false,
         audio: true,
       });
       localStream = stream;
@@ -210,6 +210,7 @@ const Meeting = () => {
         setRoomId(roomRef._roomId);
       }
     );
+    console.log(peerConnection);
   };
 
   const createAnswer = async (roomRef: ICE) => {
@@ -223,12 +224,13 @@ const Meeting = () => {
       answer: answer,
     });
     setRoomId(roomRef._roomId);
+    console.log(peerConnection);
   };
 
   const createRoom = async () => {
     try {
       await init();
-      createOffer();
+      await createOffer();
     } catch (error) {
       console.error("Error creating room:", error);
     }
@@ -244,7 +246,7 @@ const Meeting = () => {
         },
         async (roomRef: ICE) => {
           if (roomRef._roomId) {
-            createAnswer(roomRef);
+            await createAnswer(roomRef);
           } else {
             if (roomIdRef.current)
               roomIdRef.current.textContent = "Not found!!!";
@@ -256,39 +258,42 @@ const Meeting = () => {
     }
   };
 
-  const handleUserJoinRoom = async (data: ICE) => {
-    console.log(peerConnection);
-    if (me !== data._userId) {
-      if (!peerConnection?.currentRemoteDescription && data.answer) {
-        console.log("Set remote description: ", data.answer);
-        const answer = new RTCSessionDescription(data.answer);
-        await peerConnection?.setRemoteDescription(answer);
-      }
-    }
-    console.log(peerConnection);
-  };
-
-  const handleNewCandidate = (data: { candidate: RTCIceCandidateInit }) => {
-    const candidate = new RTCIceCandidate(data.candidate);
-    peerConnection
-      ?.addIceCandidate(candidate)
-      .then(() => {
-        console.log("ICE candidate added successfully");
-      })
-      .catch((error) => {
-        console.error("Error adding ICE candidate:", error);
-      });
-  };
-
-  socket.on("ice_candidate", handleNewCandidate);
-  socket.on("join_room_success", handleUserJoinRoom);
-
   useEffect(() => {
+    const handleUserJoinRoom = async (data: ICE) => {
+      console.log(peerConnection);
+      console.log(data);
+      console.log(me);
+      if (me !== data._userId) {
+        alert("sdsds");
+        if (!peerConnection?.currentRemoteDescription && data.answer) {
+          console.log("Set remote description: ", data.answer);
+          const answer = new RTCSessionDescription(data.answer);
+          await peerConnection?.setRemoteDescription(answer);
+        }
+      }
+      console.log(peerConnection);
+    };
+
+    const handleNewCandidate = (data: { candidate: RTCIceCandidateInit }) => {
+      const candidate = new RTCIceCandidate(data.candidate);
+      peerConnection
+        ?.addIceCandidate(candidate)
+        .then(() => {
+          console.log("ICE candidate added successfully");
+        })
+        .catch((error) => {
+          console.error("Error adding ICE candidate:", error);
+        });
+    };
+
+    socket.on("ice_candidate", handleNewCandidate);
+    socket.on("join_room_success", handleUserJoinRoom);
+
     return () => {
       socket.off("ice_candidate", handleNewCandidate);
       socket.off("join_room_success", handleUserJoinRoom);
     };
-  }, []);
+  }, [me]);
 
   return (
     <div className="p-20">
