@@ -38,166 +38,207 @@ interface ICE {
 const Meeting = () => {
   const me = useSelector((state: RootState) => state.user.userState.id);
   const [videosStream, setVideosStream] = useState<JSX.Element[]>([]);
-  const [localStream, setLocalStream] = useState<MediaStream>();
-  const [remoteStream, setRemoteStream] = useState<MediaStream>();
+  let localStream: MediaStream;
+  let remoteStream: MediaStream;
   const [roomId, setRoomId] = useState<string>("");
 
   const roomIdRef = useRef<HTMLSpanElement>(null);
 
   const configuration: RTCConfiguration = {
     iceServers: [
-      { urls: "stun:stun.relay.metered.ca:80" },
       {
-        urls: "turn:global.relay.metered.ca:80",
-        username: "4be13f8c832bf26e47032183",
-        credential: "vIAZTGWsF/apHqZU",
-      },
-      {
-        urls: "turn:global.relay.metered.ca:80?transport=tcp",
-        username: "4be13f8c832bf26e47032183",
-        credential: "vIAZTGWsF/apHqZU",
-      },
-      {
-        urls: "turn:global.relay.metered.ca:443",
-        username: "4be13f8c832bf26e47032183",
-        credential: "vIAZTGWsF/apHqZU",
-      },
-      {
-        urls: "turns:global.relay.metered.ca:443?transport=tcp",
-        username: "4be13f8c832bf26e47032183",
-        credential: "vIAZTGWsF/apHqZU",
+        urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"],
       },
     ],
-    iceCandidatePoolSize: 10,
   };
 
   let peerConnection: RTCPeerConnection;
 
+  // const configuration: RTCConfiguration = {
+  //   iceServers: [
+  //     { urls: "stun:stun.relay.metered.ca:80" },
+  //     {
+  //       urls: "turn:global.relay.metered.ca:80",
+  //       username: "4be13f8c832bf26e47032183",
+  //       credential: "vIAZTGWsF/apHqZU",
+  //     },
+  //     {
+  //       urls: "turn:global.relay.metered.ca:80?transport=tcp",
+  //       username: "4be13f8c832bf26e47032183",
+  //       credential: "vIAZTGWsF/apHqZU",
+  //     },
+  //     {
+  //       urls: "turn:global.relay.metered.ca:443",
+  //       username: "4be13f8c832bf26e47032183",
+  //       credential: "vIAZTGWsF/apHqZU",
+  //     },
+  //     {
+  //       urls: "turns:global.relay.metered.ca:443?transport=tcp",
+  //       username: "4be13f8c832bf26e47032183",
+  //       credential: "vIAZTGWsF/apHqZU",
+  //     },
+  //   ],
+  //   iceCandidatePoolSize: 10,
+  // };
+
+  // const configuration: RTCConfiguration = {
+  //   iceServers: [
+  //     {
+  //       urls: "stun:stun.relay.metered.ca:80",
+  //     },
+  //     {
+  //       urls: "turn:global.relay.metered.ca:80",
+  //       username: "4be13f8c832bf26e47032183",
+  //       credential: "vIAZTGWsF/apHqZU",
+  //     },
+  //     {
+  //       urls: "turn:global.relay.metered.ca:80?transport=tcp",
+  //       username: "4be13f8c832bf26e47032183",
+  //       credential: "vIAZTGWsF/apHqZU",
+  //     },
+  //     {
+  //       urls: "turn:global.relay.metered.ca:443",
+  //       username: "4be13f8c832bf26e47032183",
+  //       credential: "vIAZTGWsF/apHqZU",
+  //     },
+  //     {
+  //       urls: "turns:global.relay.metered.ca:443?transport=tcp",
+  //       username: "4be13f8c832bf26e47032183",
+  //       credential: "vIAZTGWsF/apHqZU",
+  //     },
+  //   ],
+  // };
   useEffect(() => {
     if (roomIdRef.current) {
       roomIdRef.current.textContent = "Current room: " + roomId;
     }
   }, [roomId]);
 
-  useEffect(() => {
-    if (localStream) {
-      setVideosStream([
-        <StreamVideo
-          key={"localStream"}
-          id={"localStream"}
-          stream={localStream!}
-        />,
-      ]);
-    }
-  }, [localStream]);
-
-  useEffect(() => {
-    if (remoteStream) {
-      setVideosStream((prev) => [
-        ...prev,
-        <StreamVideo
-          key={"remoteStream"}
-          id={"remoteStream"}
-          stream={remoteStream!}
-        />,
-      ]);
-    }
-  }, [remoteStream]);
-
-  function sendIceCandidate(candidate: RTCIceCandidateInit) {
-    alert("Sending candidate");
-    socket.emit("ice:candidate", { candidate });
-  }
-
   const init = async () => {
-    peerConnection = new RTCPeerConnection(configuration);
     if (!localStream) {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
+        video: false,
         audio: true,
       });
-
-      setLocalStream(stream);
+      localStream = stream;
+      if (localStream) {
+        setVideosStream([
+          <StreamVideo
+            key={"localStream"}
+            id={"localStream"}
+            stream={localStream!}
+          />,
+        ]);
+      }
     }
   };
 
-  const createOffer = async () => {
-    const offer = await peerConnection?.createOffer();
-    await peerConnection?.setLocalDescription(offer);
-    return {
-      offer: {
-        type: offer?.type,
-        sdp: offer?.sdp,
-      },
-    };
-  };
-
-  const handleJoinRoom = async () => {
+  const createPeerConnection = async () => {
+    peerConnection = new RTCPeerConnection(configuration);
     if (!remoteStream) {
-      setRemoteStream(new MediaStream());
+      remoteStream = new MediaStream();
     }
 
     localStream?.getTracks().forEach((track) => {
       peerConnection.addTrack(track, localStream);
     });
 
-    peerConnection?.addEventListener("track", async (event) => {
-      if (event.streams && event.streams.length > 0) {
-        event.streams[0].getTracks().forEach((track) => {
-          remoteStream?.addTrack(track);
+    peerConnection.ontrack = (event) => {
+      event.streams[0].getTracks().forEach((track) => {
+        remoteStream?.addTrack(track);
+      });
+      if (remoteStream) {
+        setVideosStream((prev) => [
+          ...prev,
+          <StreamVideo
+            key={"remoteStream"}
+            id={"remoteStream"}
+            stream={remoteStream!}
+          />,
+        ]);
+      }
+    };
+
+    peerConnection.onicecandidate = async (event) => {
+      if (event.candidate) {
+        const newIceCandidate = new RTCIceCandidate(event.candidate);
+        socket.emit("ice:candidate", {
+          roomId: roomId,
+          candidate: newIceCandidate,
         });
       }
+    };
+
+    peerConnection.addEventListener("icegatheringstatechange", (event) => {
+      console.log(event);
+      console.log(
+        `ICE gathering state changed: ${peerConnection?.iceGatheringState}`
+      );
     });
 
-    peerConnection?.addEventListener(
-      "icecandidate",
-      (event: RTCPeerConnectionIceEvent) => {
-        if (event.candidate) {
-          const newIceCandidate = new RTCIceCandidate(event.candidate);
-          console.log("ICE candidate:", newIceCandidate);
-          sendIceCandidate(newIceCandidate);
-        }
+    peerConnection.addEventListener("signalingstatechange", (event) => {
+      console.log(event);
+      console.log(peerConnection.signalingState);
+    });
+
+    peerConnection?.addEventListener("connectionstatechange", (event) => {
+      console.log(event);
+      console.log(
+        `Connection state change: ${peerConnection?.connectionState}`
+      );
+    });
+
+    peerConnection?.addEventListener("iceconnectionstatechange ", (event) => {
+      console.log(event);
+      console.log(
+        `ICE connection state change: ${peerConnection?.iceConnectionState}`
+      );
+    });
+  };
+
+  const createOffer = async () => {
+    await createPeerConnection();
+    const offer = await peerConnection?.createOffer();
+    await peerConnection?.setLocalDescription(offer);
+    socket.emit(
+      "create:meeting",
+      {
+        offer: {
+          type: offer?.type,
+          sdp: offer?.sdp,
+        },
+      },
+      async (roomRef: ICE) => {
+        setRoomId(roomRef._roomId);
       }
     );
   };
 
   const createAnswer = async (roomRef: ICE) => {
-    if (!peerConnection) peerConnection = new RTCPeerConnection(configuration);
-    await peerConnection?.setRemoteDescription(
-      new RTCSessionDescription(roomRef.offer)
-    );
+    await createPeerConnection();
+    await peerConnection?.setRemoteDescription(roomRef.offer);
     const answer = await peerConnection?.createAnswer();
     await peerConnection?.setLocalDescription(answer);
-
-    return {
-      offer: peerConnection.currentLocalDescription,
-      answer: peerConnection.currentRemoteDescription,
-    };
+    socket.emit("join:meetingSuccess", {
+      _roomId: roomRef._roomId,
+      offer: roomRef.offer,
+      answer: answer,
+    });
+    setRoomId(roomRef._roomId);
   };
 
   const createRoom = async () => {
     try {
-      await registerPeerConnectionListeners();
-      console.log(peerConnection);
-      const roomWithOffer = await createOffer();
-      socket.emit(
-        "create:meeting",
-        {
-          offer: roomWithOffer.offer,
-        },
-        (roomRef: ICE) => {
-          setRoomId(roomRef._roomId);
-        }
-      );
+      await init();
+      createOffer();
     } catch (error) {
       console.error("Error creating room:", error);
     }
   };
 
   const joinRoomById = async (room: IndividualSendMessage) => {
-    await registerPeerConnectionListeners();
-    console.log(peerConnection);
     try {
+      await init();
       socket.emit(
         "join:meeting",
         {
@@ -205,13 +246,7 @@ const Meeting = () => {
         },
         async (roomRef: ICE) => {
           if (roomRef._roomId) {
-            const dataUpdate = await createAnswer(roomRef);
-            socket.emit("join:meetingSuccess", {
-              _roomId: roomRef._roomId,
-              offer: dataUpdate.offer,
-              answer: dataUpdate.answer,
-            });
-            setRoomId(roomRef._roomId);
+            createAnswer(roomRef);
           } else {
             if (roomIdRef.current)
               roomIdRef.current.textContent = "Not found!!!";
@@ -224,6 +259,7 @@ const Meeting = () => {
   };
 
   const handleUserJoinRoom = async (data: ICE) => {
+    console.log(peerConnection);
     if (me !== data._userId) {
       if (!peerConnection?.currentRemoteDescription && data.answer) {
         console.log("Set remote description: ", data.answer);
@@ -231,8 +267,7 @@ const Meeting = () => {
         await peerConnection?.setRemoteDescription(answer);
       }
     }
-    await handleJoinRoom();
-    console.log(await peerConnection);
+    console.log(peerConnection);
   };
 
   const handleNewCandidate = (data: { candidate: RTCIceCandidateInit }) => {
@@ -245,31 +280,6 @@ const Meeting = () => {
       .catch((error) => {
         console.error("Error adding ICE candidate:", error);
       });
-  };
-
-  const registerPeerConnectionListeners = async () => {
-    await init();
-    peerConnection?.addEventListener("icegatheringstatechange", () => {
-      console.log(
-        `ICE gathering state changed: ${peerConnection?.iceGatheringState}`
-      );
-    });
-
-    peerConnection?.addEventListener("connectionstatechange", () => {
-      console.log(
-        `Connection state change: ${peerConnection?.connectionState}`
-      );
-    });
-
-    peerConnection?.addEventListener("signalingstatechange", () => {
-      console.log(`Signaling state change: ${peerConnection?.signalingState}`);
-    });
-
-    peerConnection?.addEventListener("iceconnectionstatechange ", () => {
-      console.log(
-        `ICE connection state change: ${peerConnection?.iceConnectionState}`
-      );
-    });
   };
 
   socket.on("ice_candidate", handleNewCandidate);

@@ -74,7 +74,7 @@ const startSocketIOServer = (httpServer) => {
     });
 
     socket.on("ice:candidate", (data) => {
-      io.to(roomId).emit("ice_candidate", data);
+      io.to(data.roomId).emit("ice_candidate", data.candidate);
     });
 
     socket.on("friend:checkOnline", (data, callback) => {

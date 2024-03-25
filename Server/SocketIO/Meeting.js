@@ -29,7 +29,7 @@ const joinMeeting = (io, socket, roomId, callback) => {
   Meeting.findById(roomId.roomId)
     .then((existRoom) => {
       const offer =
-        existRoom.users[0].id !== socket.user.id
+        existRoom.users[0]._id !== socket.user.id
           ? existRoom.users[0].offer
           : existRoom.users[1].offer;
       callback({
