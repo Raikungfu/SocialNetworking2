@@ -56,6 +56,11 @@ const joinMeeting = async (io, socket, roomId, callback) => {
 
 const joinMeetingSuccess = async (io, socket, data, callback) => {
   try {
+    socket.to(data._roomId).emit("join_room_success", {
+      _roomId: data._roomId,
+      _userId: socket.user.id,
+      answer: data.answer,
+    });
     await Meeting.findByIdAndUpdate(
       data._roomId,
       {
@@ -69,13 +74,7 @@ const joinMeetingSuccess = async (io, socket, data, callback) => {
       },
       { new: true }
     )
-      .then((existRoom) => {
-        socket.to(data._roomId).emit("join_room_success", {
-          _roomId: data._roomId,
-          _userId: socket.user.id,
-          answer: data.answer,
-        });
-      })
+      .then((existRoom) => {})
       .catch((err) => {
         console.log(err);
       });

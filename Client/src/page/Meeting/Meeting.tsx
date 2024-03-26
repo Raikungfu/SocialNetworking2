@@ -41,42 +41,43 @@ const Meeting = () => {
   const iceCandidates: RTCIceCandidate[] = [];
   const roomIdRef = useRef<HTMLSpanElement>(null);
 
+  // const configuration: RTCConfiguration = {
+  //   iceServers: [
+  //     {
+  //       urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"],
+  //     },
+  //   ],
+  //   iceCandidatePoolSize: 100,
+  // };
+
   const configuration: RTCConfiguration = {
     iceServers: [
       {
-        urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"],
+        urls: "stun:stun.relay.metered.ca:80",
+      },
+      {
+        urls: "turn:global.relay.metered.ca:80",
+        username: "4be13f8c832bf26e47032183",
+        credential: "vIAZTGWsF/apHqZU",
+      },
+      {
+        urls: "turn:global.relay.metered.ca:80?transport=tcp",
+        username: "4be13f8c832bf26e47032183",
+        credential: "vIAZTGWsF/apHqZU",
+      },
+      {
+        urls: "turn:global.relay.metered.ca:443",
+        username: "4be13f8c832bf26e47032183",
+        credential: "vIAZTGWsF/apHqZU",
+      },
+      {
+        urls: "turns:global.relay.metered.ca:443?transport=tcp",
+        username: "4be13f8c832bf26e47032183",
+        credential: "vIAZTGWsF/apHqZU",
       },
     ],
     iceCandidatePoolSize: 10,
   };
-
-  // const configuration: RTCConfiguration = {
-  //   iceServers: [
-  //     {
-  //       urls: "stun:stun.relay.metered.ca:80",
-  //     },
-  //     {
-  //       urls: "turn:global.relay.metered.ca:80",
-  //       username: "4be13f8c832bf26e47032183",
-  //       credential: "vIAZTGWsF/apHqZU",
-  //     },
-  //     {
-  //       urls: "turn:global.relay.metered.ca:80?transport=tcp",
-  //       username: "4be13f8c832bf26e47032183",
-  //       credential: "vIAZTGWsF/apHqZU",
-  //     },
-  //     {
-  //       urls: "turn:global.relay.metered.ca:443",
-  //       username: "4be13f8c832bf26e47032183",
-  //       credential: "vIAZTGWsF/apHqZU",
-  //     },
-  //     {
-  //       urls: "turns:global.relay.metered.ca:443?transport=tcp",
-  //       username: "4be13f8c832bf26e47032183",
-  //       credential: "vIAZTGWsF/apHqZU",
-  //     },
-  //   ],
-  // };
 
   let peerConnection: RTCPeerConnection;
 
@@ -223,7 +224,6 @@ const Meeting = () => {
 
   const joinRoomById = async (room: IndividualSendMessage) => {
     try {
-      setRoomId(room.content || "");
       await init();
       socket.emit(
         "join:meeting",
@@ -232,6 +232,7 @@ const Meeting = () => {
         },
         async (roomRef: ICE) => {
           if (roomRef._roomId) {
+            setRoomId(roomRef._roomId);
             await createAnswer(roomRef);
           } else {
             if (roomIdRef.current)
