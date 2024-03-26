@@ -195,7 +195,7 @@ const Meeting = () => {
   const joinRoomById = async (room: IndividualSendMessage) => {
     try {
       // await init();
-      const stream = await navigator.mediaDevices.getDisplayMedia({
+      const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true,
       });
