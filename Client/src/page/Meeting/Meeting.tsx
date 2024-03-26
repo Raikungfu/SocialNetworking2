@@ -39,11 +39,20 @@ const Meeting = () => {
   let remoteStream: MediaStream;
   const [roomId, setRoomId] = useState<string>("");
   let room: string = "";
-  const iceCandidates: RTCIceCandidate[] = [];
   const roomIdRef = useRef<HTMLSpanElement>(null);
 
   const configuration: RTCConfiguration = {
     iceServers: [
+      {
+        urls: "turn:global.relay.metered.ca:80?transport=tcp",
+        username: "4be13f8c832bf26e47032183",
+        credential: "vIAZTGWsF/apHqZU",
+      },
+      {
+        urls: "turns:global.relay.metered.ca:443?transport=tcp",
+        username: "4be13f8c832bf26e47032183",
+        credential: "vIAZTGWsF/apHqZU",
+      },
       {
         urls: "stun:stun.relay.metered.ca:80",
       },
@@ -53,17 +62,7 @@ const Meeting = () => {
         credential: "vIAZTGWsF/apHqZU",
       },
       {
-        urls: "turn:global.relay.metered.ca:80?transport=tcp",
-        username: "4be13f8c832bf26e47032183",
-        credential: "vIAZTGWsF/apHqZU",
-      },
-      {
         urls: "turn:global.relay.metered.ca:443",
-        username: "4be13f8c832bf26e47032183",
-        credential: "vIAZTGWsF/apHqZU",
-      },
-      {
-        urls: "turns:global.relay.metered.ca:443?transport=tcp",
         username: "4be13f8c832bf26e47032183",
         credential: "vIAZTGWsF/apHqZU",
       },
@@ -101,30 +100,13 @@ const Meeting = () => {
   const createPeerConnection = async (room: string) => {
     peerConnection = new RTCPeerConnection(configuration);
 
-    if (!localStream) {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
-      });
-      localStream = stream;
-      if (localStream) {
-        setVideosStream([
-          <StreamVideo
-            key={"localStream"}
-            id={"localStream"}
-            stream={localStream!}
-          />,
-        ]);
-      }
-    }
-
     remoteStream = new MediaStream();
     setVideosStream((prev) => [
       ...prev,
       <StreamVideo
         key={"remoteStream"}
         id={"remoteStream"}
-        stream={remoteStream!}
+        stream={remoteStream}
       />,
     ]);
 
@@ -134,7 +116,7 @@ const Meeting = () => {
 
     peerConnection.ontrack = (event) => {
       event.streams[0].getTracks().forEach((track) => {
-        remoteStream?.addTrack(track);
+        remoteStream.addTrack(track);
       });
     };
 
@@ -156,15 +138,6 @@ const Meeting = () => {
 
     peerConnection.addEventListener("signalingstatechange", () => {
       console.log(peerConnection.signalingState);
-      if (peerConnection.signalingState === "stable") {
-        iceCandidates.forEach((candidate) => {
-          socket.emit("ice:candidate", {
-            _roomId: room,
-            candidate: new RTCIceCandidate(candidate),
-          });
-        });
-      }
-      console.log(peerConnection);
     });
 
     peerConnection?.addEventListener("connectionstatechange", () => {
@@ -221,7 +194,24 @@ const Meeting = () => {
 
   const joinRoomById = async (room: IndividualSendMessage) => {
     try {
-      await init();
+      // await init();
+      if (!localStream) {
+        const stream = await navigator.mediaDevices.getDisplayMedia({
+          video: {
+            displaySurface: "browser",
+          },
+        });
+        localStream = stream;
+        if (localStream) {
+          setVideosStream([
+            <StreamVideo
+              key={"localStream"}
+              id={"localStream"}
+              stream={localStream!}
+            />,
+          ]);
+        }
+      }
       socket.emit(
         "join:meeting",
         {
@@ -251,6 +241,7 @@ const Meeting = () => {
           "get:iceCandidateSuccess",
           { _roomId: room, answer: data.answer },
           (data: RTCIceCandidate[]) => {
+            console.log(data);
             data.forEach((dt) =>
               peerConnection
                 ?.addIceCandidate(dt)
@@ -261,6 +252,7 @@ const Meeting = () => {
                   console.error("Error adding ICE candidate:", error);
                 })
             );
+            console.log(peerConnection.iceGatheringState);
           }
         );
       }
