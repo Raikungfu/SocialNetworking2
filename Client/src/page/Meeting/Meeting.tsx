@@ -38,17 +38,9 @@ const Meeting = () => {
   let localStream: MediaStream;
   let remoteStream: MediaStream;
   const [roomId, setRoomId] = useState<string>("");
+  let room: string = "";
   const iceCandidates: RTCIceCandidate[] = [];
   const roomIdRef = useRef<HTMLSpanElement>(null);
-
-  // const configuration: RTCConfiguration = {
-  //   iceServers: [
-  //     {
-  //       urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"],
-  //     },
-  //   ],
-  //   iceCandidatePoolSize: 100,
-  // };
 
   const configuration: RTCConfiguration = {
     iceServers: [
@@ -90,7 +82,7 @@ const Meeting = () => {
   const init = async () => {
     if (!localStream) {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
+        video: false,
         audio: true,
       });
       localStream = stream;
@@ -111,7 +103,7 @@ const Meeting = () => {
 
     if (!localStream) {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
+        video: false,
         audio: true,
       });
       localStream = stream;
@@ -148,7 +140,10 @@ const Meeting = () => {
 
     peerConnection.onicecandidate = async (event) => {
       if (event.candidate) {
-        iceCandidates.push(new RTCIceCandidate(event.candidate));
+        socket.emit("ice:candidate", {
+          _roomId: room,
+          candidate: new RTCIceCandidate(event.candidate),
+        });
       }
     };
 
@@ -188,6 +183,7 @@ const Meeting = () => {
   };
 
   const createOffer = async (id: string) => {
+    room = id;
     await createPeerConnection(id);
     const offer = await peerConnection?.createOffer();
     await peerConnection?.setLocalDescription(offer);
@@ -198,6 +194,7 @@ const Meeting = () => {
   };
 
   const createAnswer = async (roomRef: ICE) => {
+    room = roomRef._roomId;
     await createPeerConnection(roomRef._roomId);
     await peerConnection?.setRemoteDescription(roomRef.offer);
     const answer = await peerConnection?.createAnswer();
@@ -250,6 +247,22 @@ const Meeting = () => {
       if (!peerConnection.currentRemoteDescription && data.answer) {
         console.log(data.answer);
         await peerConnection.setRemoteDescription(data.answer);
+        socket.emit(
+          "get:iceCandidateSuccess",
+          { _roomId: room, answer: data.answer },
+          (data: RTCIceCandidate[]) => {
+            data.forEach((dt) =>
+              peerConnection
+                ?.addIceCandidate(dt)
+                .then(() => {
+                  console.log("ICE candidate added successfully");
+                })
+                .catch((error) => {
+                  console.error("Error adding ICE candidate:", error);
+                })
+            );
+          }
+        );
       }
     } catch (err) {
       console.log(err);

@@ -12,6 +12,7 @@ const {
   joinMeetingSuccess,
   saveCandidate,
   updateMeeting,
+  getCandidate,
 } = require("./SocketIO/Meeting");
 
 const allowedOrigins = [
@@ -83,6 +84,11 @@ const startSocketIOServer = (httpServer) => {
 
     socket.on("ice:candidate", (data, callback) => {
       socket.to(data._roomId).emit("ice_candidate", data.candidate);
+      saveCandidate(socket, data);
+    });
+
+    socket.on("get:iceCandidateSuccess", (data, callback) => {
+      getCandidate(socket, data, callback);
     });
 
     socket.on("friend:checkOnline", (data, callback) => {

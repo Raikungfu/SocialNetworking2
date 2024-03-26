@@ -16,7 +16,6 @@ const createMeeting = async (socket, offer, callback) => {
 
 const updateMeeting = async (socket, data) => {
   try {
-    console.log(data);
     await Meeting.findOneAndUpdate(
       {
         _id: data._roomId,
@@ -83,26 +82,48 @@ const joinMeetingSuccess = async (io, socket, data, callback) => {
   }
 };
 
-const saveCandidate = async (socket, data, callback) => {
-  // try {
-  //   Candidate.findOneAndUpdate(
-  //     { userId: socket.user.id },
-  //     { $addToSet: { candidate: data.candidate } },
-  //     { upsert: true, new: true }
-  //   )
-  //     .then((updatedCandidate) => {})
-  //     .catch((error) => {});
-  // } catch (err) {
-  //   console.log(err);
-  // }
+const saveCandidate = async (socket, data) => {
+  try {
+    Candidate.findOneAndUpdate(
+      { roomId: data._roomId, userId: socket.user.id },
+      { $addToSet: { candidate: data.candidate } },
+      { upsert: true, new: true }
+    ).catch((error) => {
+      console.log(error);
+    });
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 const getCandidate = async (socket, data, callback) => {
   try {
-    await Candidate.findOne({ userId: socket.user.id })
+    await Candidate.findOne({
+      roomId: data._roomId,
+      userId: { $ne: socket.user.id },
+    })
+      .sort({ _id: -1 })
       .then((existMeeting) => {
         if (existMeeting) {
-          callback(existMeeting);
+          if (
+            existMeeting &&
+            existMeeting.candidate &&
+            Array.isArray(existMeeting.candidate)
+          ) {
+            const candidates = existMeeting.candidate.map((meeting) => {
+              return {
+                candidate: meeting.candidate,
+                sdpMid: meeting.sdpMid,
+                sdpMLineIndex: meeting.sdpMLineIndex,
+                usernameFragment: meeting.usernameFragment,
+              };
+            });
+            callback(candidates);
+          } else {
+            console.log(existMeeting);
+            console.log(existMeeting.candidate);
+            console.log("Error...");
+          }
         }
       })
       .catch((error) => {
@@ -118,3 +139,4 @@ module.exports.joinMeeting = joinMeeting;
 module.exports.joinMeetingSuccess = joinMeetingSuccess;
 module.exports.saveCandidate = saveCandidate;
 module.exports.updateMeeting = updateMeeting;
+module.exports.getCandidate = getCandidate;
