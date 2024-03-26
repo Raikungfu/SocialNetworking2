@@ -42,14 +42,41 @@ const Meeting = () => {
   const iceCandidates = [];
   const roomIdRef = useRef<HTMLSpanElement>(null);
 
+  // const configuration: RTCConfiguration = {
+  //   iceServers: [
+  //     {
+  //       urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"],
+  //     },
+  //   ],
+  // };
+
   const configuration: RTCConfiguration = {
     iceServers: [
       {
-        urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"],
+        urls: "stun:stun.relay.metered.ca:80",
+      },
+      {
+        urls: "turn:global.relay.metered.ca:80",
+        username: "4be13f8c832bf26e47032183",
+        credential: "vIAZTGWsF/apHqZU",
+      },
+      {
+        urls: "turn:global.relay.metered.ca:80?transport=tcp",
+        username: "4be13f8c832bf26e47032183",
+        credential: "vIAZTGWsF/apHqZU",
+      },
+      {
+        urls: "turn:global.relay.metered.ca:443",
+        username: "4be13f8c832bf26e47032183",
+        credential: "vIAZTGWsF/apHqZU",
+      },
+      {
+        urls: "turns:global.relay.metered.ca:443?transport=tcp",
+        username: "4be13f8c832bf26e47032183",
+        credential: "vIAZTGWsF/apHqZU",
       },
     ],
   };
-
   let peerConnection: RTCPeerConnection;
 
   useEffect(() => {
@@ -130,22 +157,26 @@ const Meeting = () => {
       console.log(
         `ICE gathering state changed: ${peerConnection?.iceGatheringState}`
       );
+      console.log(peerConnection);
     });
 
     peerConnection.addEventListener("signalingstatechange", () => {
       console.log(peerConnection.signalingState);
+      console.log(peerConnection);
     });
 
     peerConnection?.addEventListener("connectionstatechange", () => {
       console.log(
         `Connection state change: ${peerConnection?.connectionState}`
       );
+      console.log(peerConnection);
     });
 
     peerConnection?.addEventListener("iceconnectionstatechange ", () => {
       console.log(
         `ICE connection state change: ${peerConnection?.iceConnectionState}`
       );
+      console.log(peerConnection);
     });
   };
 
@@ -155,12 +186,8 @@ const Meeting = () => {
     await peerConnection?.setLocalDescription(offer);
     socket.emit("update:meeting", {
       _roomId: id,
-      offer: {
-        type: offer?.type,
-        sdp: offer?.sdp,
-      },
+      offer: offer,
     });
-    console.log(peerConnection);
   };
 
   const createAnswer = async (roomRef: ICE) => {
@@ -174,7 +201,6 @@ const Meeting = () => {
       answer: answer,
     });
     setRoomId(roomRef._roomId);
-    console.log(peerConnection);
   };
 
   const createRoom = async () => {
@@ -218,29 +244,36 @@ const Meeting = () => {
     }
   };
 
-  useEffect(() => {
-    const handleUserJoinRoom = async (data: ICE) => {
+  const handleUserJoinRoom = async (data: ICE) => {
+    try {
       if (me !== data._userId) {
-        if (!peerConnection?.currentRemoteDescription && data.answer) {
-          console.log("Set remote description: ", data.answer);
-          const answer = new RTCSessionDescription(data.answer);
-          await peerConnection?.setRemoteDescription(answer);
+        if (peerConnection && me !== data._userId) {
+          if (!peerConnection.currentRemoteDescription && data.answer) {
+            console.log(data.answer);
+            await peerConnection.setRemoteDescription(
+              new RTCSessionDescription(data.answer)
+            );
+          }
         }
       }
-    };
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-    const handleNewCandidate = (data: RTCIceCandidateInit) => {
-      const candidate = new RTCIceCandidate(data);
-      peerConnection
-        ?.addIceCandidate(candidate)
-        .then(() => {
-          console.log("ICE candidate added successfully");
-        })
-        .catch((error) => {
-          console.error("Error adding ICE candidate:", error);
-        });
-    };
+  const handleNewCandidate = (data: RTCIceCandidateInit) => {
+    const candidate = new RTCIceCandidate(data);
+    peerConnection
+      ?.addIceCandidate(candidate)
+      .then(() => {
+        console.log("ICE candidate added successfully");
+      })
+      .catch((error) => {
+        console.error("Error adding ICE candidate:", error);
+      });
+  };
 
+  useEffect(() => {
     socket.on("ice_candidate", handleNewCandidate);
     socket.on("join_room_success", handleUserJoinRoom);
 
