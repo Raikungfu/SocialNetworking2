@@ -82,7 +82,7 @@ const Meeting = () => {
   const init = async () => {
     if (!localStream) {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: false,
+        video: true,
         audio: true,
       });
       localStream = stream;
@@ -103,7 +103,7 @@ const Meeting = () => {
 
     if (!localStream) {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: false,
+        video: true,
         audio: true,
       });
       localStream = stream;
