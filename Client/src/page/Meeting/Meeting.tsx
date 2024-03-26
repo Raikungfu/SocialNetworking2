@@ -44,6 +44,31 @@ const Meeting = () => {
   const configuration: RTCConfiguration = {
     iceServers: [
       {
+        urls: "turn:numb.viagenie.ca?transport=tls",
+        credential: "muazkh",
+        username: "webrtc@live.com",
+      },
+      {
+        urls: "turn:192.158.29.39:3478?transport=tls",
+        credential: "JZEOEt2V3Qb0y27GRntt2u2PAYA=",
+        username: "28224511:1379330808",
+      },
+      {
+        urls: "turn:192.158.29.39:3478?transport=tls",
+        credential: "JZEOEt2V3Qb0y27GRntt2u2PAYA=",
+        username: "28224511:1379330808",
+      },
+      {
+        urls: "turn:global.relay.metered.ca:80",
+        username: "4be13f8c832bf26e47032183",
+        credential: "vIAZTGWsF/apHqZU",
+      },
+      {
+        urls: "turn:global.relay.metered.ca:80?transport=tls",
+        username: "4be13f8c832bf26e47032183",
+        credential: "vIAZTGWsF/apHqZU",
+      },
+      {
         urls: "turn:global.relay.metered.ca:80?transport=tcp",
         username: "4be13f8c832bf26e47032183",
         credential: "vIAZTGWsF/apHqZU",
@@ -52,6 +77,28 @@ const Meeting = () => {
         urls: "turns:global.relay.metered.ca:443?transport=tcp",
         username: "4be13f8c832bf26e47032183",
         credential: "vIAZTGWsF/apHqZU",
+      },
+      { urls: "stun:stun01.sipphone.com" },
+      { urls: "stun:stun.ekiga.net" },
+      { urls: "stun:stun.fwdnet.net" },
+      { urls: "stun:stun.ideasip.com" },
+      { urls: "stun:stun.iptel.org" },
+      { urls: "stun:stun.rixtelecom.se" },
+      { urls: "stun:stun.schlund.de" },
+      { urls: "stun:stun.l.google.com:19302" },
+      { urls: "stun:stun1.l.google.com:19302" },
+      { urls: "stun:stun2.l.google.com:19302" },
+      { urls: "stun:stun3.l.google.com:19302" },
+      { urls: "stun:stun4.l.google.com:19302" },
+      { urls: "stun:stunserver.org" },
+      { urls: "stun:stun.softjoys.com" },
+      { urls: "stun:stun.voiparound.com" },
+      { urls: "stun:stun.voipbuster.com" },
+      { urls: "stun:stun.voipstunt.com" },
+      { urls: "stun:stun.voxgratia.org" },
+      { urls: "stun:stun.xten.com" },
+      {
+        urls: "stun:stun.relay.metered.ca:80",
       },
       {
         urls: "stun:stun.relay.metered.ca:80",
@@ -196,7 +243,7 @@ const Meeting = () => {
     try {
       // await init();
       if (!localStream) {
-        const stream = await navigator.mediaDevices.getDisplayMedia({
+        const stream = await navigator.mediaDevices.getUserMedia({
           video: {
             displaySurface: "browser",
           },
