@@ -1,4 +1,5 @@
 const RoomChatGroup = require("../Modules/RoomChatGroup");
+const mongoose = require("mongoose");
 const Meeting = require("../Modules/Meeting");
 const Candidate = require("../Modules/Candidate");
 const createMeeting = async (socket, offer, callback) => {
@@ -35,21 +36,32 @@ const updateMeeting = async (socket, data) => {
 };
 
 const joinMeeting = async (io, socket, roomId, callback) => {
-  socket.join(roomId.roomId);
   await Meeting.findById(roomId.roomId)
     .then((existRoom) => {
-      const offer =
-        existRoom.users[0]._id !== socket.user.id
-          ? existRoom.users[0].offer
-          : existRoom.users[1].offer;
-      callback({
-        _roomId: roomId.roomId,
-        _userId: socket.user.id,
-        offer: offer,
-      });
+      if (existRoom) {
+        socket.join(roomId.roomId);
+        socket.to(roomId.roomId).emit("new-user-join", socket.user.id);
+        callback({
+          _roomId: roomId.roomId,
+          _userId: socket.user.id,
+        });
+        // const offer =
+        //   existRoom.users[0]._id !== socket.user.id
+        //     ? existRoom.users[0].offer
+        //     : existRoom.users[1].offer;
+        // callback({
+        //   _roomId: roomId.roomId,
+        //   _userId: socket.user.id,
+        //   offer: offer,
+        // });
+        return;
+      } else {
+        callback(new Error(`Invalid roomId ${roomId}`));
+        return;
+      }
     })
     .catch((err) => {
-      console.log(err);
+      callback(err);
     });
 };
 
@@ -67,7 +79,6 @@ const joinMeetingSuccess = async (io, socket, data, callback) => {
           users: {
             _id: socket.user.id,
             offer: data.offer,
-            answer: data.answer,
           },
         },
       },
@@ -84,6 +95,7 @@ const joinMeetingSuccess = async (io, socket, data, callback) => {
 
 const saveCandidate = async (socket, data) => {
   try {
+    console.log(data);
     Candidate.findOneAndUpdate(
       { roomId: data._roomId, userId: socket.user.id },
       { $addToSet: { candidate: data.candidate } },
@@ -98,6 +110,7 @@ const saveCandidate = async (socket, data) => {
 
 const getCandidate = async (socket, data, callback) => {
   try {
+    console.log(data);
     await Candidate.findOne({
       roomId: data._roomId,
       userId: { $ne: socket.user.id },
@@ -133,6 +146,29 @@ const getCandidate = async (socket, data, callback) => {
     console.log(err);
   }
 };
+
+// const getCandidate = async (socket, data, callback) => {
+//   await Candidate.aggregate([
+//     {
+//       $match: { roomId: data._roomId, userId: { $ne: socket.user.id } }
+//     },
+//     {
+//       $sort: { _id: -1 }
+//     },
+//     {
+//       $group: {
+//         _id: { roomId: "$roomId", userId: "$userId" },
+//         latestCandidate: { $first: "$$ROOT" }
+//       }
+//     },
+//     {
+//       $replaceRoot: { newRoot: "$latestCandidate" }
+//     }
+//   ]).then((data) => {
+
+//   })
+
+// }
 
 module.exports = createMeeting;
 module.exports.joinMeeting = joinMeeting;

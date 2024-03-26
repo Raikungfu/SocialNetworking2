@@ -4,13 +4,50 @@ import VideocamOffIcon from "@mui/icons-material/VideocamOff";
 import VideocamIcon from "@mui/icons-material/Videocam";
 import MicIcon from "@mui/icons-material/KeyboardVoice";
 import MicOffIcon from "@mui/icons-material/MicOff";
+import { ICE, ICEUnit, peer } from "../../../page/Meeting/type";
+import socket from "../../../config/socketIO";
 
 const StreamVideo: React.FC<{
   id?: string;
   stream: MediaStream;
+  room: string;
+  peerConnection?: peer;
 }> = (props) => {
   const [isCamOpen, setIsCamOpen] = useState<boolean>(true);
   const [isMicOpen, setIsMicOpen] = useState<boolean>(false);
+
+  const handleUserJoinRoom = async (data: ICE) => {
+    console.log(data);
+    try {
+      if (
+        !props.peerConnection?.rtcPeer.currentRemoteDescription &&
+        data.answer
+      ) {
+        console.log(data.answer);
+        await props.peerConnection?.rtcPeer.setRemoteDescription(data.answer);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleNewCandidate = (data: ICEUnit) => {
+    if (data._userId === props.peerConnection?.userId)
+      props.peerConnection?.listCandidate.push(
+        new RTCIceCandidate(data.candidate)
+      );
+    console.log(props.peerConnection);
+  };
+
+  useEffect(() => {
+    socket.on("ice_candidate", handleNewCandidate);
+    socket.on("join_room_success", handleUserJoinRoom);
+
+    return () => {
+      socket.off("ice_candidate", handleNewCandidate);
+      socket.off("join_room_success", handleUserJoinRoom);
+    };
+  }, []);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   useEffect(() => {

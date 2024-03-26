@@ -43,7 +43,7 @@ export interface FormProps {
   formVariant?: string;
   onSubmitSuccess: (data: {
     "chat-attach-file-input"?: Array<{ url: string; type: string }>;
-    content?: string;
+    content: string;
   }) => void;
   onSubmitFail: (error: string) => void;
   onInputChange?: () => void;
@@ -66,5 +66,5 @@ export interface IndividualMessage {
 
 export interface IndividualSendMessage {
   "chat-attach-file-input"?: Array<{ url: string; type: string }>;
-  content?: string;
+  content: string;
 }

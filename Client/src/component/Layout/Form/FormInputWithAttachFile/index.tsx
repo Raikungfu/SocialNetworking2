@@ -28,21 +28,22 @@ const Form: React.FC<FormProps> = (props) => {
       let content;
       setIsPost(true);
       for (const [key, value] of Object.entries(formData)) {
+        console.log(key, value);
         if (key.endsWith("file-input")) inputFile = value;
         else content = value as string;
       }
       if (inputFile) {
         const res = await API_FETCH_FILE(inputFile as FileList, setProcess);
         props.onSubmitSuccess({
-          content: content,
+          content: content || "",
           "chat-attach-file-input": res,
         });
       } else {
-        props.onSubmitSuccess({ content });
+        props.onSubmitSuccess({ content: content || "" });
       }
       setIsPost(false);
-      setFormData([]);
       formChat.current?.reset();
+      setFormData([]);
     } catch (error) {
       setIsPost(false);
       props.onSubmitFail(error as string);

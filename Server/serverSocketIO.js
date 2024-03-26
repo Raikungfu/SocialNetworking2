@@ -70,8 +70,13 @@ const startSocketIOServer = (httpServer) => {
       createMeeting(socket, offer, callback);
     });
 
-    socket.on("update:meeting", (data, callback) => {
-      updateMeeting(socket, data);
+    socket.on("send:offer", (data, callback) => {
+      io.to(userSocketMap.get(data._userId)).emit("receive-offer", {
+        _userId: socket.user.id,
+        _roomId: data._roomId,
+        offer: data.offer,
+      });
+      // updateMeeting(socket, data);
     });
 
     socket.on("join:meeting", (roomId, callback) => {
@@ -79,16 +84,25 @@ const startSocketIOServer = (httpServer) => {
     });
 
     socket.on("join:meetingSuccess", (data, callback) => {
-      joinMeetingSuccess(io, socket, data, callback);
+      // joinMeetingSuccess(io, socket, data, callback);
+      io.to(userSocketMap.get(data._userId)).emit("join_room_success", {
+        _roomId: data._roomId,
+        _userId: socket.user.id,
+        answer: data.answer,
+      });
     });
 
     socket.on("ice:candidate", (data, callback) => {
-      socket.to(data._roomId).emit("ice_candidate", data.candidate);
-      saveCandidate(socket, data);
+      socket.to(data._roomId).emit("ice_candidate", {
+        _userId: socket.user.id,
+        candidate: data.candidate,
+      });
+      console.log(data);
+      // saveCandidate(socket, data);
     });
 
     socket.on("get:iceCandidateSuccess", (data, callback) => {
-      getCandidate(socket, data, callback);
+      // getCandidate(socket, data, callback);
     });
 
     socket.on("friend:checkOnline", (data, callback) => {
