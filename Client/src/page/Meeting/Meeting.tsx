@@ -41,41 +41,42 @@ const Meeting = () => {
   const iceCandidates: RTCIceCandidate[] = [];
   const roomIdRef = useRef<HTMLSpanElement>(null);
 
-  // const configuration: RTCConfiguration = {
-  //   iceServers: [
-  //     {
-  //       urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"],
-  //     },
-  //   ],
-  // };
-
   const configuration: RTCConfiguration = {
     iceServers: [
       {
-        urls: "stun:stun.relay.metered.ca:80",
-      },
-      {
-        urls: "turn:global.relay.metered.ca:80",
-        username: "4be13f8c832bf26e47032183",
-        credential: "vIAZTGWsF/apHqZU",
-      },
-      {
-        urls: "turn:global.relay.metered.ca:80?transport=tcp",
-        username: "4be13f8c832bf26e47032183",
-        credential: "vIAZTGWsF/apHqZU",
-      },
-      {
-        urls: "turn:global.relay.metered.ca:443",
-        username: "4be13f8c832bf26e47032183",
-        credential: "vIAZTGWsF/apHqZU",
-      },
-      {
-        urls: "turns:global.relay.metered.ca:443?transport=tcp",
-        username: "4be13f8c832bf26e47032183",
-        credential: "vIAZTGWsF/apHqZU",
+        urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"],
       },
     ],
+    iceCandidatePoolSize: 10,
   };
+
+  // const configuration: RTCConfiguration = {
+  //   iceServers: [
+  //     {
+  //       urls: "stun:stun.relay.metered.ca:80",
+  //     },
+  //     {
+  //       urls: "turn:global.relay.metered.ca:80",
+  //       username: "4be13f8c832bf26e47032183",
+  //       credential: "vIAZTGWsF/apHqZU",
+  //     },
+  //     {
+  //       urls: "turn:global.relay.metered.ca:80?transport=tcp",
+  //       username: "4be13f8c832bf26e47032183",
+  //       credential: "vIAZTGWsF/apHqZU",
+  //     },
+  //     {
+  //       urls: "turn:global.relay.metered.ca:443",
+  //       username: "4be13f8c832bf26e47032183",
+  //       credential: "vIAZTGWsF/apHqZU",
+  //     },
+  //     {
+  //       urls: "turns:global.relay.metered.ca:443?transport=tcp",
+  //       username: "4be13f8c832bf26e47032183",
+  //       credential: "vIAZTGWsF/apHqZU",
+  //     },
+  //   ],
+  // };
 
   let peerConnection: RTCPeerConnection;
 
