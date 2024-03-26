@@ -7,10 +7,7 @@ const createMeeting = async (socket, offer, callback) => {
     .then((newRoom) => {
       try {
         socket.join(newRoom._id.toString());
-        callback({
-          _roomId: newRoom._id,
-          _userId: socket.user.id,
-        });
+        callback(newRoom._id);
       } catch (err) {
         console.log(err);
       }
@@ -73,10 +70,10 @@ const joinMeetingSuccess = async (io, socket, data, callback) => {
       { new: true }
     )
       .then((existRoom) => {
-        io.to(data._roomId).emit("join_room_success", {
+        socket.to(data._roomId).emit("join_room_success", {
           _roomId: data._roomId,
           _userId: socket.user.id,
-          answer: data.offer,
+          answer: data.answer,
         });
       })
       .catch((err) => {

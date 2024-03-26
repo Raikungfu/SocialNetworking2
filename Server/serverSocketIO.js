@@ -82,7 +82,7 @@ const startSocketIOServer = (httpServer) => {
     });
 
     socket.on("ice:candidate", (data, callback) => {
-      io.to(data._roomId).emit("ice_candidate", data.candidate);
+      socket.to(data._roomId).emit("ice_candidate", data.candidate);
     });
 
     socket.on("friend:checkOnline", (data, callback) => {

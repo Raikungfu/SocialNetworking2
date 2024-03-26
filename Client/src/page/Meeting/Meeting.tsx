@@ -38,45 +38,44 @@ const Meeting = () => {
   let localStream: MediaStream;
   let remoteStream: MediaStream;
   const [roomId, setRoomId] = useState<string>("");
-  const [me, setMe] = useState<string>("");
   const iceCandidates = [];
   const roomIdRef = useRef<HTMLSpanElement>(null);
-
-  // const configuration: RTCConfiguration = {
-  //   iceServers: [
-  //     {
-  //       urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"],
-  //     },
-  //   ],
-  // };
 
   const configuration: RTCConfiguration = {
     iceServers: [
       {
-        urls: "stun:stun.relay.metered.ca:80",
-      },
-      {
-        urls: "turn:global.relay.metered.ca:80",
-        username: "4be13f8c832bf26e47032183",
-        credential: "vIAZTGWsF/apHqZU",
-      },
-      {
-        urls: "turn:global.relay.metered.ca:80?transport=tcp",
-        username: "4be13f8c832bf26e47032183",
-        credential: "vIAZTGWsF/apHqZU",
-      },
-      {
-        urls: "turn:global.relay.metered.ca:443",
-        username: "4be13f8c832bf26e47032183",
-        credential: "vIAZTGWsF/apHqZU",
-      },
-      {
-        urls: "turns:global.relay.metered.ca:443?transport=tcp",
-        username: "4be13f8c832bf26e47032183",
-        credential: "vIAZTGWsF/apHqZU",
+        urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"],
       },
     ],
   };
+
+  // const configuration: RTCConfiguration = {
+  //   iceServers: [
+  //     {
+  //       urls: "stun:stun.relay.metered.ca:80",
+  //     },
+  //     {
+  //       urls: "turn:global.relay.metered.ca:80",
+  //       username: "4be13f8c832bf26e47032183",
+  //       credential: "vIAZTGWsF/apHqZU",
+  //     },
+  //     {
+  //       urls: "turn:global.relay.metered.ca:80?transport=tcp",
+  //       username: "4be13f8c832bf26e47032183",
+  //       credential: "vIAZTGWsF/apHqZU",
+  //     },
+  //     {
+  //       urls: "turn:global.relay.metered.ca:443",
+  //       username: "4be13f8c832bf26e47032183",
+  //       credential: "vIAZTGWsF/apHqZU",
+  //     },
+  //     {
+  //       urls: "turns:global.relay.metered.ca:443?transport=tcp",
+  //       username: "4be13f8c832bf26e47032183",
+  //       credential: "vIAZTGWsF/apHqZU",
+  //     },
+  //   ],
+  // };
   let peerConnection: RTCPeerConnection;
 
   useEffect(() => {
@@ -206,15 +205,10 @@ const Meeting = () => {
   const createRoom = async () => {
     await init();
     try {
-      socket.emit(
-        "create:meeting",
-        {},
-        async ({ _roomId, _userId }: { _roomId: string; _userId: string }) => {
-          setRoomId(_roomId);
-          setMe(_userId);
-          await createOffer(_roomId);
-        }
-      );
+      socket.emit("create:meeting", {}, async (_roomId: string) => {
+        setRoomId(_roomId);
+        await createOffer(_roomId);
+      });
     } catch (error) {
       console.error("Error creating room:", error);
     }
@@ -231,7 +225,6 @@ const Meeting = () => {
         },
         async (roomRef: ICE) => {
           if (roomRef._roomId) {
-            setMe(roomRef._userId);
             await createAnswer(roomRef);
           } else {
             if (roomIdRef.current)
@@ -246,15 +239,9 @@ const Meeting = () => {
 
   const handleUserJoinRoom = async (data: ICE) => {
     try {
-      if (me !== data._userId) {
-        if (peerConnection && me !== data._userId) {
-          if (!peerConnection.currentRemoteDescription && data.answer) {
-            console.log(data.answer);
-            await peerConnection.setRemoteDescription(
-              new RTCSessionDescription(data.answer)
-            );
-          }
-        }
+      if (!peerConnection.currentRemoteDescription && data.answer) {
+        console.log(data.answer);
+        await peerConnection.setRemoteDescription(data.answer);
       }
     } catch (err) {
       console.log(err);
@@ -281,7 +268,7 @@ const Meeting = () => {
       socket.off("ice_candidate", handleNewCandidate);
       socket.off("join_room_success", handleUserJoinRoom);
     };
-  }, [me]);
+  }, []);
 
   return (
     <div className="p-20">
