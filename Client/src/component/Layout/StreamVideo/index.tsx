@@ -9,8 +9,8 @@ import ScreenShareIcon from "@mui/icons-material/ScreenShare";
 
 const StreamVideo: React.FC<{
   id?: string;
-  mediaStream: MediaStream;
-  displayStream?: MediaStream;
+  mediaStream?: MediaStream;
+  displayStream: MediaStream;
 }> = (props) => {
   const [isCamOpen, setIsCamOpen] = useState<boolean>(true);
   const [isMicOpen, setIsMicOpen] = useState<boolean>(false);
@@ -20,20 +20,22 @@ const StreamVideo: React.FC<{
   useEffect(() => {
     const handleOpenVideoStream = async () => {
       if (videoRef.current) {
-        videoRef.current.srcObject = isMediaStream
-          ? props.mediaStream
-          : props.displayStream || props.mediaStream;
+        videoRef.current.srcObject = props.displayStream;
+        // = isMediaStream
+        //   ? props.mediaStream
+        //   : props.displayStream || props.mediaStream;
       }
     };
     handleOpenVideoStream();
   }, [isMediaStream, props.displayStream, props.mediaStream]);
 
   const handleOpenCamera = async () => {
-    const videoTracks = isMediaStream
-      ? props.mediaStream.getVideoTracks()
-      : props.displayStream?.getVideoTracks() ||
-        props.mediaStream.getVideoTracks();
-    const videoTrack = videoTracks.find(
+    // const videoTracks = isMediaStream
+    //   ? props.mediaStream.getVideoTracks()
+    //   : props.displayStream?.getVideoTracks() ||
+    //     props.mediaStream.getVideoTracks();
+    const videoTracks = props.displayStream?.getVideoTracks();
+    const videoTrack = videoTracks?.find(
       (track) => track.id === videoTracks[0].id
     );
     if (videoRef.current && videoTrack) {
@@ -48,11 +50,12 @@ const StreamVideo: React.FC<{
   };
 
   const handleOpenMic = async () => {
-    const audioTracks = isMediaStream
-      ? props.mediaStream.getAudioTracks()
-      : props.displayStream?.getAudioTracks() ||
-        props.mediaStream.getAudioTracks();
-    const audioTrack = audioTracks.find(
+    // const audioTracks = isMediaStream
+    //   ? props.mediaStream.getAudioTracks()
+    //   : props.displayStream?.getAudioTracks() ||
+    //     props.mediaStream.getAudioTracks();
+    const audioTracks = props.displayStream?.getAudioTracks();
+    const audioTrack = audioTracks?.find(
       (track) => track.id === audioTracks[0].id
     );
     if (videoRef.current && audioTrack) {

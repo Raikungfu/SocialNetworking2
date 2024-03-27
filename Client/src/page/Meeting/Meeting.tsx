@@ -66,10 +66,10 @@ const Meeting = () => {
 
   const init = async () => {
     if (!localMediaStream) {
-      localMediaStream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
-      });
+      // localMediaStream = await navigator.mediaDevices.getUserMedia({
+      //   video: true,
+      //   audio: true,
+      // });
       localMediaStream2 = await navigator.mediaDevices.getDisplayMedia({
         video: true,
         audio: true,
@@ -94,7 +94,8 @@ const Meeting = () => {
       <StreamVideo
         key={"remoteStream"}
         id={"remoteStream"}
-        mediaStream={remoteMediaStream}
+        // mediaStream={remoteMediaStream}
+        displayStream={remoteMediaStream}
       />,
     ]);
 
