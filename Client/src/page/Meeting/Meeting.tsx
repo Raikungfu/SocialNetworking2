@@ -80,7 +80,7 @@ const Meeting = () => {
 
   const init = async () => {
     if (!localStream) {
-      const stream = await navigator.mediaDevices.getUserMedia({
+      const stream = await navigator.mediaDevices.getDisplayMedia({
         video: true,
         audio: true,
       });
@@ -260,7 +260,6 @@ const Meeting = () => {
   };
 
   const handleNewCandidate = (data: RTCIceCandidateInit) => {
-    console.log("============================");
     const candidate = new RTCIceCandidate(data);
     console.log(candidate);
     peerConnection
