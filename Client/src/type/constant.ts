@@ -19,31 +19,91 @@ export const firebaseConfig = {
   measurementId: "G-M8054GGQZX",
 };
 
+// export const configuration: RTCConfiguration = {
+//   iceServers: [
+//     {
+//       urls: "stun:stun.relay.metered.ca:80",
+//     },
+//     {
+//       urls: "turn:global.relay.metered.ca:80",
+//       username: "b065ccdcce956621e3669e28",
+//       credential: "IbFzixRned1OJTn5",
+//     },
+//     {
+//       urls: "turn:global.relay.metered.ca:80?transport=tcp",
+//       username: "b065ccdcce956621e3669e28",
+//       credential: "IbFzixRned1OJTn5",
+//     },
+//     {
+//       urls: "turn:global.relay.metered.ca:443",
+//       username: "b065ccdcce956621e3669e28",
+//       credential: "IbFzixRned1OJTn5",
+//     },
+//     {
+//       urls: "turns:global.relay.metered.ca:443?transport=tcp",
+//       username: "b065ccdcce956621e3669e28",
+//       credential: "IbFzixRned1OJTn5",
+//     },
+//   ],
+//   iceCandidatePoolSize: 10,
+// };
+
+// export const configuration: RTCConfiguration = {
+//   iceServers: [
+//     { urls: "stun:stun.relay.metered.ca:80" },
+//     {
+//       urls: "turn:global.relay.metered.ca:80",
+//       username: "4be13f8c832bf26e47032183",
+//       credential: "vIAZTGWsF/apHqZU",
+//     },
+//     {
+//       urls: "turn:global.relay.metered.ca:80?transport=tcp",
+//       username: "4be13f8c832bf26e47032183",
+//       credential: "vIAZTGWsF/apHqZU",
+//     },
+//     {
+//       urls: "turn:global.relay.metered.ca:443",
+//       username: "4be13f8c832bf26e47032183",
+//       credential: "vIAZTGWsF/apHqZU",
+//     },
+//     {
+//       urls: "turns:global.relay.metered.ca:443?transport=tcp",
+//       username: "4be13f8c832bf26e47032183",
+//       credential: "vIAZTGWsF/apHqZU",
+//     },
+//   ],
+//   iceCandidatePoolSize: 250,
+// };
+
 export const configuration: RTCConfiguration = {
   iceServers: [
+    { urls: "stun:stun01.sipphone.com" },
+    { urls: "stun:stun.ekiga.net" },
+    { urls: "stun:stun.fwdnet.net" },
+    { urls: "stun:stun.ideasip.com" },
+    { urls: "stun:stun.iptel.org" },
+    { urls: "stun:stun.rixtelecom.se" },
+    { urls: "stun:stun.schlund.de" },
+    { urls: "stun:stun.l.google.com:19302" },
+    { urls: "stun:stun1.l.google.com:19302" },
+    { urls: "stun:stun2.l.google.com:19302" },
+    { urls: "stun:stun3.l.google.com:19302" },
+    { urls: "stun:stun4.l.google.com:19302" },
+    { urls: "stun:stunserver.org" },
+    { urls: "stun:stun.softjoys.com" },
+    { urls: "stun:stun.voiparound.com" },
+    { urls: "stun:stun.voipbuster.com" },
+    { urls: "stun:stun.voipstunt.com" },
+    { urls: "stun:stun.voxgratia.org" },
+    { urls: "stun:stun.xten.com" },
     {
       urls: "stun:stun.relay.metered.ca:80",
     },
     {
       urls: "turn:global.relay.metered.ca:80",
-      username: "b065ccdcce956621e3669e28",
-      credential: "IbFzixRned1OJTn5",
-    },
-    {
-      urls: "turn:global.relay.metered.ca:80?transport=tcp",
-      username: "b065ccdcce956621e3669e28",
-      credential: "IbFzixRned1OJTn5",
-    },
-    {
-      urls: "turn:global.relay.metered.ca:443",
-      username: "b065ccdcce956621e3669e28",
-      credential: "IbFzixRned1OJTn5",
-    },
-    {
-      urls: "turns:global.relay.metered.ca:443?transport=tcp",
-      username: "b065ccdcce956621e3669e28",
-      credential: "IbFzixRned1OJTn5",
+      username: "4be13f8c832bf26e47032183",
+      credential: "vIAZTGWsF/apHqZU",
     },
   ],
-  iceCandidatePoolSize: 10,
+  iceCandidatePoolSize: 250,
 };

@@ -28,6 +28,7 @@ const Meeting = () => {
         remoteStream,
         listCandidate: [],
       });
+      console.log(listPeerConnection);
       await createOffer(roomCurrent, listPeerConnection.slice(-1)[0], userId);
     };
 
@@ -147,10 +148,10 @@ const Meeting = () => {
     peerConnection.rtcPeer.onicecandidate = async (event) => {
       if (event.candidate) {
         socket.emit("ice:candidate", {
+          _userId: peerConnection.userId,
           _roomId: room,
           candidate: new RTCIceCandidate(event.candidate),
         });
-        console.log(event.candidate);
       }
     };
 
@@ -158,30 +159,27 @@ const Meeting = () => {
       console.log(
         `ICE gathering state changed: ${peerConnection?.rtcPeer.iceGatheringState}`
       );
-
-      console.log(peerConnection);
+      if (peerConnection?.rtcPeer.iceGatheringState === "complete") {
+        console.log(peerConnection);
+      }
     });
 
     peerConnection?.rtcPeer.addEventListener("signalingstatechange", () => {
       console.log(peerConnection?.rtcPeer.signalingState);
       if (
         peerConnection?.listCandidate &&
-        peerConnection?.rtcPeer.iceGatheringState === "gathering"
+        peerConnection?.rtcPeer.signalingState === "stable"
       ) {
-        console.log(peerConnection?.listCandidate);
         peerConnection.listCandidate?.forEach((candidate) => {
           peerConnection?.rtcPeer.addIceCandidate(candidate);
         });
-        console.log(peerConnection.listCandidate);
       }
-      console.log(peerConnection);
     });
 
     peerConnection?.rtcPeer.addEventListener("connectionstatechange", () => {
       console.log(
         `Connection state change: ${peerConnection?.rtcPeer.connectionState}`
       );
-      console.log(peerConnection);
     });
 
     peerConnection?.rtcPeer.addEventListener(
@@ -190,7 +188,6 @@ const Meeting = () => {
         console.log(
           `ICE connection state change: ${peerConnection?.rtcPeer.iceConnectionState}`
         );
-        console.log(peerConnection);
       }
     );
   };
@@ -213,7 +210,7 @@ const Meeting = () => {
 
   const createAnswer = async (roomRef: ICE, peerConnection: peer) => {
     try {
-      console.log(roomRef);
+      alert("createAnswer");
       await createPeerConnection(peerConnection, roomRef._roomId);
       await peerConnection?.rtcPeer.setRemoteDescription(roomRef.offer);
       const answer = await peerConnection?.rtcPeer.createAnswer();
@@ -226,7 +223,6 @@ const Meeting = () => {
     } catch (e) {
       console.log(e);
     }
-    console.log(listPeerConnection);
   };
 
   return (

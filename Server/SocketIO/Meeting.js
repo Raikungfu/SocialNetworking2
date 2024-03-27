@@ -45,15 +45,6 @@ const joinMeeting = async (io, socket, roomId, callback) => {
           _roomId: roomId.roomId,
           _userId: socket.user.id,
         });
-        // const offer =
-        //   existRoom.users[0]._id !== socket.user.id
-        //     ? existRoom.users[0].offer
-        //     : existRoom.users[1].offer;
-        // callback({
-        //   _roomId: roomId.roomId,
-        //   _userId: socket.user.id,
-        //   offer: offer,
-        // });
         return;
       } else {
         callback(new Error(`Invalid roomId ${roomId}`));

@@ -17,18 +17,10 @@ const StreamVideo: React.FC<{
   const [isMicOpen, setIsMicOpen] = useState<boolean>(false);
 
   const handleUserJoinRoom = async (data: ICE) => {
-    console.log(data);
-    try {
-      if (
-        !props.peerConnection?.rtcPeer.currentRemoteDescription &&
-        data.answer
-      ) {
-        console.log(data.answer);
-        await props.peerConnection?.rtcPeer.setRemoteDescription(data.answer);
-      }
-    } catch (err) {
-      console.log(err);
-    }
+    alert("sdsdsd");
+    await props.peerConnection?.rtcPeer.setRemoteDescription(
+      data.answer as RTCSessionDescription
+    );
   };
 
   const handleNewCandidate = (data: ICEUnit) => {
@@ -36,7 +28,6 @@ const StreamVideo: React.FC<{
       props.peerConnection?.listCandidate.push(
         new RTCIceCandidate(data.candidate)
       );
-    console.log(props.peerConnection);
   };
 
   useEffect(() => {
