@@ -5,21 +5,6 @@ import Form from "../../component/Layout/Form/FormInputWithAttachFile";
 import { IndividualSendMessage } from "../../component/Layout/Form/FormInputWithAttachFile/types";
 import socket from "../../config/socketIO";
 
-interface Meeting {
-  _id: string;
-  peer: Array<{
-    _id: string;
-    offer: {
-      type: RTCSdpType;
-      sdp: string;
-    };
-    answer: {
-      type: RTCSdpType;
-      sdp: string;
-    };
-  }>;
-}
-
 interface ICE {
   _roomId: string;
   _userId: string;
@@ -85,15 +70,13 @@ const Meeting = () => {
         audio: true,
       });
       localStream = stream;
-      if (localStream) {
-        setVideosStream([
-          <StreamVideo
-            key={"localStream"}
-            id={"localStream"}
-            stream={localStream!}
-          />,
-        ]);
-      }
+      setVideosStream([
+        <StreamVideo
+          key={"localStream"}
+          id={"localStream"}
+          stream={localStream!}
+        />,
+      ]);
     }
   };
 
@@ -156,7 +139,6 @@ const Meeting = () => {
   };
 
   const createOffer = async (id: string) => {
-    room = id;
     await createPeerConnection(id);
     const offer = await peerConnection?.createOffer();
     await peerConnection?.setLocalDescription(offer);
@@ -194,7 +176,7 @@ const Meeting = () => {
 
   const joinRoomById = async (room: IndividualSendMessage) => {
     try {
-      // await init();
+      await init();
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true,
