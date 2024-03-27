@@ -120,8 +120,7 @@ const getCandidate = async (socket, data, callback) => {
             });
             callback(candidates);
           } else {
-            console.log(existMeeting);
-            console.log(existMeeting.candidate);
+            callback(new Error("Invalid roomId"));
             console.log("Error...");
           }
         }

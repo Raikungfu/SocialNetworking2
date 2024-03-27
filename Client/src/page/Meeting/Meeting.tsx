@@ -20,8 +20,9 @@ interface ICE {
 
 const Meeting = () => {
   const [videosStream, setVideosStream] = useState<JSX.Element[]>([]);
-  let localStream: MediaStream;
-  let remoteStream: MediaStream;
+  let localMediaStream: MediaStream;
+  let localMediaStream2: MediaStream;
+  let remoteMediaStream: MediaStream;
   const [roomId, setRoomId] = useState<string>("");
   let room: string = "";
   const roomIdRef = useRef<HTMLSpanElement>(null);
@@ -64,17 +65,21 @@ const Meeting = () => {
   }, [roomId]);
 
   const init = async () => {
-    if (!localStream) {
-      const stream = await navigator.mediaDevices.getDisplayMedia({
+    if (!localMediaStream) {
+      localMediaStream = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true,
       });
-      localStream = stream;
+      localMediaStream2 = await navigator.mediaDevices.getDisplayMedia({
+        video: true,
+        audio: true,
+      });
       setVideosStream([
         <StreamVideo
           key={"localStream"}
           id={"localStream"}
-          stream={localStream!}
+          mediaStream={localMediaStream}
+          displayStream={localMediaStream2}
         />,
       ]);
     }
@@ -83,23 +88,23 @@ const Meeting = () => {
   const createPeerConnection = async (room: string) => {
     peerConnection = new RTCPeerConnection(configuration);
 
-    remoteStream = new MediaStream();
+    remoteMediaStream = new MediaStream();
     setVideosStream((prev) => [
       ...prev,
       <StreamVideo
         key={"remoteStream"}
         id={"remoteStream"}
-        stream={remoteStream}
+        mediaStream={remoteMediaStream}
       />,
     ]);
 
-    localStream?.getTracks().forEach((track) => {
-      peerConnection.addTrack(track, localStream);
+    localMediaStream?.getTracks().forEach((track) => {
+      peerConnection.addTrack(track, localMediaStream);
     });
 
     peerConnection.ontrack = (event) => {
       event.streams[0].getTracks().forEach((track) => {
-        remoteStream.addTrack(track);
+        remoteMediaStream.addTrack(track);
       });
     };
 
@@ -177,20 +182,6 @@ const Meeting = () => {
   const joinRoomById = async (room: IndividualSendMessage) => {
     try {
       await init();
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
-      });
-      localStream = stream;
-      if (localStream) {
-        setVideosStream([
-          <StreamVideo
-            key={"localStream"}
-            id={"localStream"}
-            stream={localStream!}
-          />,
-        ]);
-      }
       socket.emit(
         "join:meeting",
         {
@@ -267,18 +258,16 @@ const Meeting = () => {
 
   return (
     <div className="p-20">
-      <div id="buttons" className="flex flex-row gap-5">
+      <div
+        id="videosStream"
+        className="flex flex-row w-10/12 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 fixed bg-red-50 h-5/6"
+      >
         <Button
           id="openCamera"
-          className="p-2 bg-red-500 text-white rounded-lg"
+          className="absolute p-2 bg-red-500 z-50 text-white rounded-lg"
           label="Create new Room"
           onClick={createRoom}
         />
-      </div>
-      <div>
-        <span id="currentRoom"></span>
-      </div>
-      <div id="videosStream" className="flex flex-row">
         {videosStream.map((video) => video)}
       </div>
       <div className="fixed bottom-20 transform right-1/2 translate-x-1/2">
