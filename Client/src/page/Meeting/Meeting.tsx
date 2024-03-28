@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import Button from "../../component/Layout/Button";
-import StreamVideo from "../../component/Layout/StreamVideo";
 import Form from "../../component/Layout/Form/FormInputWithAttachFile";
 import { IndividualSendMessage } from "../../component/Layout/Form/FormInputWithAttachFile/types";
 import socket from "../../config/socketIO";
+import ListStreamVideo from "../../component/Layout/StreamVideo";
 
 export interface ICE {
   _roomId: string;
@@ -22,171 +22,30 @@ export interface peerC {
   _userId?: string;
   _roomId?: string;
   peerConnection: RTCPeerConnection;
-  // listCandidates: RTCIceCandidateInit[];
 }
 
 const Meeting = () => {
-  const [videosStream, setVideosStream] = useState<JSX.Element[]>([]);
   let localMediaStream: MediaStream;
   const [roomId, setRoomId] = useState<string>("");
   const roomIdRef = useRef<HTMLSpanElement>(null);
-  const configuration: RTCConfiguration = {
-    iceServers: [
-      {
-        urls: "stun:stun.relay.metered.ca:80",
-      },
-      {
-        urls: "turn:global.relay.metered.ca:80",
-        username: "f91d087726454191be59e9f8",
-        credential: "iLnK9wcR7hpGV3F1",
-      },
-      {
-        urls: "turn:global.relay.metered.ca:80?transport=tcp",
-        username: "f91d087726454191be59e9f8",
-        credential: "iLnK9wcR7hpGV3F1",
-      },
-      {
-        urls: "turn:global.relay.metered.ca:443",
-        username: "f91d087726454191be59e9f8",
-        credential: "iLnK9wcR7hpGV3F1",
-      },
-      {
-        urls: "turns:global.relay.metered.ca:443?transport=tcp",
-        username: "f91d087726454191be59e9f8",
-        credential: "iLnK9wcR7hpGV3F1",
-      },
-    ],
-    iceCandidatePoolSize: 10,
+  const [listStreamVideo, setListStreamVideo] = useState<JSX.Element>();
+  const init = async () => {
+    if (!localMediaStream) {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
+      localMediaStream = stream;
+      setListStreamVideo(
+        <ListStreamVideo
+          key={"localStream"}
+          idKey={"localStream"}
+          userId={"localStream"}
+          localMediaStream={localMediaStream}
+        />
+      );
+    }
   };
-
-  useEffect(() => {
-    const init = async () => {
-      if (!localMediaStream) {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: true,
-        });
-        localMediaStream = stream;
-        setVideosStream([
-          <StreamVideo
-            key={"localStream"}
-            userId={"localStream"}
-            // mediaStream={localMediaStream}
-            displayStream={stream}
-          />,
-        ]);
-      }
-    };
-
-    const createPeerConnection = async (
-      roomId: string,
-      userId: string,
-      peer: peerC
-    ) => {
-      const remoteMediaStream = new MediaStream();
-      localMediaStream?.getTracks().forEach((track) => {
-        peer.peerConnection?.addTrack(track, localMediaStream);
-      });
-
-      if (peer && peer.peerConnection) {
-        peer.peerConnection.ontrack = (event) => {
-          event.streams[0].getTracks().forEach((track) => {
-            remoteMediaStream.addTrack(track);
-          });
-        };
-      }
-
-      if (peer.peerConnection) {
-        peer.peerConnection.onicecandidate = async (event) => {
-          if (event.candidate) {
-            socket.emit("ice:candidate", {
-              _roomId: roomId,
-              _userId: userId,
-              candidate: new RTCIceCandidate(event.candidate),
-            });
-          }
-        };
-      }
-
-      setVideosStream((prev) => [
-        ...prev,
-        <StreamVideo
-          key={"remoteStream"}
-          userId={userId}
-          displayStream={remoteMediaStream}
-          peerConnection={peer}
-        />,
-      ]);
-    };
-
-    const handleUserJoinRoom = async ({
-      _userId,
-    }: {
-      _userId: string;
-      _roomId: string;
-    }) => {
-      if (!localMediaStream) {
-        await init();
-      }
-      const peerConnection = new RTCPeerConnection(configuration);
-      await createOffer(_userId, roomId, {
-        peerConnection: peerConnection,
-        _roomId: roomId,
-        _userId: _userId,
-      });
-    };
-
-    const handleGetOffer = async (roomRef: ICE) => {
-      if (!localMediaStream) {
-        await init();
-      }
-      const peerConnection = new RTCPeerConnection(configuration);
-      await createAnswer(roomRef, {
-        peerConnection: peerConnection,
-        _roomId: roomRef._roomId,
-        _userId: roomRef._userId,
-      });
-    };
-
-    const createOffer = async (
-      _userId: string,
-      _roomId: string,
-      peer: peerC
-    ) => {
-      await createPeerConnection(_roomId, _userId, peer);
-      const offer = await peer.peerConnection?.createOffer();
-      await peer.peerConnection?.setLocalDescription(offer);
-      socket.emit("send-offer", {
-        _userId: _userId,
-        _roomId: _roomId,
-        offer: offer,
-      });
-    };
-
-    const createAnswer = async (roomRef: ICE, peer: peerC) => {
-      await createPeerConnection(roomRef._roomId, roomRef._userId, peer);
-      try {
-        peer.peerConnection?.setRemoteDescription(roomRef.offer);
-        const answer = await peer.peerConnection?.createAnswer();
-        await peer.peerConnection?.setLocalDescription(answer);
-        socket.emit("send-answer", {
-          _roomId: roomRef._roomId,
-          _userId: roomRef._userId,
-          answer: answer,
-        });
-        setRoomId(roomRef._roomId);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    socket.on("send_offer", handleGetOffer);
-    socket.on("new_user_join", handleUserJoinRoom);
-    return () => {
-      socket.off("send_offer", handleGetOffer);
-      socket.off("new_user_join", handleUserJoinRoom);
-    };
-  });
 
   useEffect(() => {
     if (roomIdRef.current) {
@@ -196,6 +55,7 @@ const Meeting = () => {
   }, [roomId]);
 
   const createRoom = async () => {
+    await init();
     try {
       socket.emit(
         "create:meeting",
@@ -211,6 +71,7 @@ const Meeting = () => {
 
   const joinRoomById = async (room: IndividualSendMessage) => {
     try {
+      await init();
       socket.emit(
         "join:meeting",
         {
@@ -242,7 +103,7 @@ const Meeting = () => {
           label="Create new Room"
           onClick={createRoom}
         />
-        {videosStream.map((video) => video)}
+        <div>{listStreamVideo}</div>
       </div>
       <div className="fixed bottom-20 transform right-1/2 translate-x-1/2">
         <span className="text-base text-red-500 m-4" ref={roomIdRef}></span>

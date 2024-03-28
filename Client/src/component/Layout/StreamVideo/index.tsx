@@ -1,176 +1,133 @@
-import { useEffect, useRef, useState } from "react";
-import Button from "../Button";
-import VideocamOffIcon from "@mui/icons-material/VideocamOff";
-import VideocamIcon from "@mui/icons-material/Videocam";
-import MicIcon from "@mui/icons-material/KeyboardVoice";
-import MicOffIcon from "@mui/icons-material/MicOff";
-import CameraIcon from "@mui/icons-material/Camera";
-import ScreenShareIcon from "@mui/icons-material/ScreenShare";
+import { useEffect, useState } from "react";
 import { ICE, peerC } from "../../../page/Meeting/Meeting";
 import socket from "../../../config/socketIO";
+import StreamVideo from "./StreamVideo";
+import { configuration } from "../../../type/constant";
 
-const StreamVideo: React.FC<{
+const ListStreamVideo: React.FC<{
+  idKey: string;
   userId: string;
-  mediaStream?: MediaStream;
-  displayStream?: MediaStream;
-  peerConnection?: peerC;
+  localMediaStream: MediaStream;
 }> = (props) => {
-  const [isCamOpen, setIsCamOpen] = useState<boolean>(true);
-  const [isMicOpen, setIsMicOpen] = useState<boolean>(false);
-  const [isMediaStream, setIsMediaStream] = useState<boolean>(true);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const [videosStream, setVideosStream] = useState<JSX.Element[]>([]);
+
   useEffect(() => {
-    socket.on("ice_candidate", handleNewCandidate);
-    socket.on("send_answer", handleGetAnswer);
-    return () => {
-      socket.off("ice_candidate", handleNewCandidate);
-      socket.off("send_answer", handleGetAnswer);
-    };
-  });
-  const handleNewCandidate = (data: {
-    roomId: string;
-    _userId: string;
-    candidate: RTCIceCandidate;
-  }) => {
-    props.peerConnection?.peerConnection
-      .addIceCandidate(data.candidate)
-      .catch((e) => {
-        console.log(`Failure during addIceCandidate(): ${e.name}`);
+    setVideosStream([
+      <StreamVideo
+        key={"localStream"}
+        userId={"localStream"}
+        localMediaStream={props.localMediaStream}
+        idKey={"localStream"}
+      />,
+    ]);
+    const handleUserJoinRoom = async ({
+      _userId,
+      _roomId,
+    }: {
+      _userId: string;
+      _roomId: string;
+    }) => {
+      const peerConnection = new RTCPeerConnection(configuration);
+      await createOffer(_userId, _roomId, {
+        peerConnection: peerConnection,
+        _roomId: _roomId,
+        _userId: _userId,
       });
-  };
+    };
 
-  props.peerConnection?.peerConnection?.addEventListener(
-    "icegatheringstatechange",
-    () => {
-      console.log(
-        `ICE gathering state changed: ${props.peerConnection?.peerConnection?.iceGatheringState}`
-      );
-      console.log(props.peerConnection?.peerConnection);
-    }
-  );
+    const handleGetOffer = async (roomRef: ICE) => {
+      const peerConnection = new RTCPeerConnection(configuration);
+      await createAnswer(roomRef, {
+        peerConnection: peerConnection,
+        _roomId: roomRef._roomId,
+        _userId: roomRef._userId,
+      });
+    };
 
-  props.peerConnection?.peerConnection?.addEventListener(
-    "signalingstatechange",
-    () => {
-      console.log(props.peerConnection?.peerConnection.signalingState);
-    }
-  );
+    const createOffer = async (
+      _userId: string,
+      _roomId: string,
+      peer: peerC
+    ) => {
+      createPeerConnection(_roomId, _userId, peer);
+      const offer = await peer.peerConnection?.createOffer();
+      await peer.peerConnection?.setLocalDescription(offer);
+      socket.emit("send-offer", {
+        _userId: _userId,
+        _roomId: _roomId,
+        offer: offer,
+      });
+    };
 
-  props.peerConnection?.peerConnection?.addEventListener(
-    "connectionstatechange",
-    () => {
-      console.log(
-        `Connection state change: ${props.peerConnection?.peerConnection?.connectionState}`
-      );
-      console.log(props.peerConnection?.peerConnection);
-    }
-  );
-
-  props.peerConnection?.peerConnection?.addEventListener(
-    "iceconnectionstatechange ",
-    () => {
-      console.log(
-        `ICE connection state change: ${props.peerConnection?.peerConnection?.iceConnectionState}`
-      );
-      console.log(props.peerConnection?.peerConnection);
-    }
-  );
-
-  const handleGetAnswer = async (data: ICE) => {
-    try {
-      if (
-        !props.peerConnection?.peerConnection?.remoteDescription &&
-        data.answer
-      ) {
-        console.log(data.answer);
-        await props.peerConnection?.peerConnection?.setRemoteDescription(
-          data.answer
-        );
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  useEffect(() => {
-    const handleOpenVideoStream = async () => {
-      if (videoRef.current) {
-        videoRef.current.srcObject = props.displayStream || new MediaStream();
-        // = isMediaStream
-        //   ? props.mediaStream
-        //   : props.displayStream || props.mediaStream;
+    const createAnswer = async (roomRef: ICE, peer: peerC) => {
+      try {
+        console.log("createAnswer");
+        createPeerConnection(roomRef._roomId, roomRef._userId, peer);
+        peer.peerConnection?.setRemoteDescription(roomRef.offer);
+        const answer = await peer.peerConnection?.createAnswer();
+        await peer.peerConnection?.setLocalDescription(answer);
+        console.log(peer.peerConnection);
+        socket.emit("send-answer", {
+          _roomId: roomRef._roomId,
+          _userId: roomRef._userId,
+          answer: answer,
+        });
+      } catch (err) {
+        console.log(err);
       }
     };
-    handleOpenVideoStream();
-  }, [isMediaStream, props.displayStream, props.mediaStream]);
 
-  const handleOpenCamera = async () => {
-    // const videoTracks = isMediaStream
-    //   ? props.mediaStream.getVideoTracks()
-    //   : props.displayStream?.getVideoTracks() ||
-    //     props.mediaStream.getVideoTracks();
-    const videoTracks = props.displayStream?.getVideoTracks();
-    const videoTrack = videoTracks?.find(
-      (track) => track.id === videoTracks[0].id
-    );
-    if (videoRef.current && videoTrack) {
-      if (videoTrack.enabled === true) {
-        videoTrack.enabled = false;
-        setIsCamOpen(false);
-      } else {
-        videoTrack.enabled = true;
-        setIsCamOpen(true);
-      }
+    socket.on("send_offer", handleGetOffer);
+    socket.on("new_user_join", handleUserJoinRoom);
+    return () => {
+      socket.off("send_offer", handleGetOffer);
+      socket.off("new_user_join", handleUserJoinRoom);
+    };
+  }, []);
+
+  const createPeerConnection = async (
+    roomId: string,
+    userId: string,
+    peer: peerC
+  ) => {
+    const remoteMediaStream = new MediaStream();
+    props.localMediaStream.getTracks().forEach((track) => {
+      props.localMediaStream &&
+        peer.peerConnection?.addTrack(track, props.localMediaStream);
+    });
+
+    if (peer && peer.peerConnection) {
+      peer.peerConnection.ontrack = (event) => {
+        event.streams[0].getTracks().forEach((track) => {
+          remoteMediaStream.addTrack(track);
+        });
+      };
     }
+
+    if (peer.peerConnection) {
+      peer.peerConnection.onicecandidate = async (event) => {
+        if (event.candidate) {
+          socket.emit("ice:candidate", {
+            _roomId: roomId,
+            _userId: userId,
+            candidate: new RTCIceCandidate(event.candidate),
+          });
+        }
+      };
+    }
+    setVideosStream((prev) => [
+      ...prev,
+      <StreamVideo
+        key={"remote-stream-" + userId}
+        userId={userId}
+        remoteMediaStream={remoteMediaStream}
+        peerConnection={peer}
+        idKey={"remoteStream"}
+      />,
+    ]);
   };
 
-  const handleOpenMic = async () => {
-    // const audioTracks = isMediaStream
-    //   ? props.mediaStream.getAudioTracks()
-    //   : props.displayStream?.getAudioTracks() ||
-    //     props.mediaStream.getAudioTracks();
-    const audioTracks = props.displayStream?.getAudioTracks();
-    const audioTrack = audioTracks?.find(
-      (track) => track.id === audioTracks[0].id
-    );
-    if (videoRef.current && audioTrack) {
-      if (audioTrack.enabled === true) {
-        audioTrack.enabled = false;
-        setIsMicOpen(false);
-      } else {
-        audioTrack.enabled = true;
-        setIsMicOpen(true);
-      }
-    }
-  };
-
-  return (
-    <div className="p-10 flex flex-col w-1/2 h-1/2" key={`${props.userId}_key`}>
-      <video ref={videoRef} autoPlay muted className="w-full"></video>
-      <div className="relative">
-        <Button
-          id="isOpenCam"
-          className="absolute bottom-5 left-5 z-20 p-1 block bg-slate-100 opacity-50 rounded-lg"
-          onClick={handleOpenCamera}
-          childrencomp={isCamOpen ? <VideocamIcon /> : <VideocamOffIcon />}
-        />
-        <Button
-          id="isOpenMic"
-          className="absolute bottom-5 right-5 z-20 p-1 block bg-slate-100 opacity-50 rounded-lg"
-          onClick={handleOpenMic}
-          childrencomp={isMicOpen ? <MicIcon /> : <MicOffIcon />}
-        />
-
-        <Button
-          id="isMediaOpen"
-          className="absolute bottom-5 transform translate-x-1/2 p-1 block bg-slate-100 opacity-50 rounded-lg"
-          onClick={() => setIsMediaStream(!isMediaStream)}
-          childrencomp={isMediaStream ? <CameraIcon /> : <ScreenShareIcon />}
-          label={isMediaStream ? "Share screen" : "Share camera"}
-        />
-      </div>
-    </div>
-  );
+  return <div>{videosStream.map((video) => video)}</div>;
 };
 
-export default StreamVideo;
+export default ListStreamVideo;
