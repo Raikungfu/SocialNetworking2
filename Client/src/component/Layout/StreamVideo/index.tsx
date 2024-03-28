@@ -6,21 +6,96 @@ import MicIcon from "@mui/icons-material/KeyboardVoice";
 import MicOffIcon from "@mui/icons-material/MicOff";
 import CameraIcon from "@mui/icons-material/Camera";
 import ScreenShareIcon from "@mui/icons-material/ScreenShare";
+import { ICE, peerC } from "../../../page/Meeting/Meeting";
+import socket from "../../../config/socketIO";
 
 const StreamVideo: React.FC<{
-  id?: string;
+  userId: string;
   mediaStream?: MediaStream;
-  displayStream: MediaStream;
+  displayStream?: MediaStream;
+  peerConnection?: peerC;
 }> = (props) => {
   const [isCamOpen, setIsCamOpen] = useState<boolean>(true);
   const [isMicOpen, setIsMicOpen] = useState<boolean>(false);
   const [isMediaStream, setIsMediaStream] = useState<boolean>(true);
-
   const videoRef = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    socket.on("ice_candidate", handleNewCandidate);
+    socket.on("send_answer", handleGetAnswer);
+    return () => {
+      socket.off("ice_candidate", handleNewCandidate);
+      socket.off("send_answer", handleGetAnswer);
+    };
+  });
+  const handleNewCandidate = (data: {
+    roomId: string;
+    _userId: string;
+    candidate: RTCIceCandidate;
+  }) => {
+    props.peerConnection?.peerConnection
+      .addIceCandidate(data.candidate)
+      .catch((e) => {
+        console.log(`Failure during addIceCandidate(): ${e.name}`);
+      });
+  };
+
+  props.peerConnection?.peerConnection?.addEventListener(
+    "icegatheringstatechange",
+    () => {
+      console.log(
+        `ICE gathering state changed: ${props.peerConnection?.peerConnection?.iceGatheringState}`
+      );
+      console.log(props.peerConnection?.peerConnection);
+    }
+  );
+
+  props.peerConnection?.peerConnection?.addEventListener(
+    "signalingstatechange",
+    () => {
+      console.log(props.peerConnection?.peerConnection.signalingState);
+    }
+  );
+
+  props.peerConnection?.peerConnection?.addEventListener(
+    "connectionstatechange",
+    () => {
+      console.log(
+        `Connection state change: ${props.peerConnection?.peerConnection?.connectionState}`
+      );
+      console.log(props.peerConnection?.peerConnection);
+    }
+  );
+
+  props.peerConnection?.peerConnection?.addEventListener(
+    "iceconnectionstatechange ",
+    () => {
+      console.log(
+        `ICE connection state change: ${props.peerConnection?.peerConnection?.iceConnectionState}`
+      );
+      console.log(props.peerConnection?.peerConnection);
+    }
+  );
+
+  const handleGetAnswer = async (data: ICE) => {
+    try {
+      if (
+        !props.peerConnection?.peerConnection?.remoteDescription &&
+        data.answer
+      ) {
+        console.log(data.answer);
+        await props.peerConnection?.peerConnection?.setRemoteDescription(
+          data.answer
+        );
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
     const handleOpenVideoStream = async () => {
       if (videoRef.current) {
-        videoRef.current.srcObject = props.displayStream;
+        videoRef.current.srcObject = props.displayStream || new MediaStream();
         // = isMediaStream
         //   ? props.mediaStream
         //   : props.displayStream || props.mediaStream;
@@ -70,7 +145,7 @@ const StreamVideo: React.FC<{
   };
 
   return (
-    <div className="p-10 flex flex-col w-1/2 h-1/2" key={`${props.id}_key`}>
+    <div className="p-10 flex flex-col w-1/2 h-1/2" key={`${props.userId}_key`}>
       <video ref={videoRef} autoPlay muted className="w-full"></video>
       <div className="relative">
         <Button

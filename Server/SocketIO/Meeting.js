@@ -1,13 +1,17 @@
 const RoomChatGroup = require("../Modules/RoomChatGroup");
 const Meeting = require("../Modules/Meeting");
 const Candidate = require("../Modules/Candidate");
-const createMeeting = async (socket, offer, callback) => {
+const createMeeting = async (socket, offer, callback, io) => {
   await new Meeting({ users: { _id: socket.user.id } })
     .save()
     .then((newRoom) => {
       try {
         socket.join(newRoom._id.toString());
-        callback(newRoom._id);
+        io.to(newRoom._id).emit("join_room_success");
+        callback({
+          _roomId: newRoom._id.toString(),
+          _userId: socket.user.id,
+        });
       } catch (err) {
         console.log(err);
       }
@@ -34,18 +38,18 @@ const updateMeeting = async (socket, data) => {
   }
 };
 
-const joinMeeting = async (io, socket, roomId, callback) => {
-  socket.join(roomId.roomId);
-  await Meeting.findById(roomId.roomId)
+const joinMeeting = async (io, socket, data, callback) => {
+  socket.join(data._roomId);
+  await Meeting.findById(data._roomId)
     .then((existRoom) => {
-      const offer =
-        existRoom.users[0]._id !== socket.user.id
-          ? existRoom.users[0].offer
-          : existRoom.users[1].offer;
-      callback({
-        _roomId: roomId.roomId,
+      socket.to(data._roomId).emit("new_user_join", {
         _userId: socket.user.id,
-        offer: offer,
+        _roomId: data._roomId,
+      });
+      io.to(data._roomId).emit("join_room_success");
+      callback({
+        _roomId: data._roomId,
+        _userId: socket.user.id,
       });
     })
     .catch((err) => {
@@ -60,23 +64,23 @@ const joinMeetingSuccess = async (io, socket, data, callback) => {
       _userId: socket.user.id,
       answer: data.answer,
     });
-    await Meeting.findByIdAndUpdate(
-      data._roomId,
-      {
-        $addToSet: {
-          users: {
-            _id: socket.user.id,
-            offer: data.offer,
-            answer: data.answer,
-          },
-        },
-      },
-      { new: true }
-    )
-      .then((existRoom) => {})
-      .catch((err) => {
-        console.log(err);
-      });
+    // await Meeting.findByIdAndUpdate(
+    //   data._roomId,
+    //   {
+    //     $addToSet: {
+    //       users: {
+    //         _id: socket.user.id,
+    //         offer: data.offer,
+    //         answer: data.answer,
+    //       },
+    //     },
+    //   },
+    //   { new: true }
+    // )
+    //   .then((existRoom) => {})
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
   } catch (err) {
     console.log(err);
   }
@@ -98,6 +102,7 @@ const saveCandidate = async (socket, data) => {
 
 const getCandidate = async (socket, data, callback) => {
   try {
+    console.log(data);
     await Candidate.findOne({
       roomId: data._roomId,
       userId: { $ne: socket.user.id },

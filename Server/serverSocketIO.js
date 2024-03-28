@@ -67,28 +67,35 @@ const startSocketIOServer = (httpServer) => {
     });
 
     socket.on("create:meeting", (offer, callback) => {
-      createMeeting(socket, offer, callback);
+      createMeeting(socket, offer, callback, io);
     });
 
-    socket.on("update:meeting", (data, callback) => {
-      updateMeeting(socket, data);
+    socket.on("send-offer", (data, callback) => {
+      socket.to(userSocketMap.get(data._userId)).emit("send_offer", {
+        _userId: socket.user.id,
+        _roomId: data._roomId,
+        offer: data.offer,
+      });
+    });
+
+    socket.on("send-answer", (data) => {
+      socket.to(userSocketMap.get(data._userId)).emit("send_answer", {
+        _roomId: data._roomId,
+        _userId: socket.user.id,
+        answer: data.answer,
+      });
     });
 
     socket.on("join:meeting", (roomId, callback) => {
       joinMeeting(io, socket, roomId, callback);
     });
 
-    socket.on("join:meetingSuccess", (data, callback) => {
-      joinMeetingSuccess(io, socket, data, callback);
-    });
-
     socket.on("ice:candidate", (data, callback) => {
-      socket.to(data._roomId).emit("ice_candidate", data.candidate);
-      saveCandidate(socket, data);
-    });
-
-    socket.on("get:iceCandidateSuccess", (data, callback) => {
-      getCandidate(socket, data, callback);
+      socket.to(userSocketMap.get(data._userId)).emit("ice_candidate", {
+        _userId: socket.user.id,
+        _roomId: data._roomId,
+        candidate: data.candidate,
+      });
     });
 
     socket.on("friend:checkOnline", (data, callback) => {
