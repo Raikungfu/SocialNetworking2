@@ -21,7 +21,7 @@ const StreamVideo: React.FC<{
 }> = (props) => {
   const [isCamOpen, setIsCamOpen] = useState<boolean>(true);
   const [isMicOpen, setIsMicOpen] = useState<boolean>(false);
-  const [isMediaStream, setIsMediaStream] = useState<boolean>(true);
+  const [isMediaStream, setIsMediaStream] = useState<boolean>();
   const [mediaStream, setMediaStream] = useState<MediaStream>();
   const videoRef = useRef<HTMLVideoElement>(null);
   useEffect(() => {
@@ -99,16 +99,21 @@ const StreamVideo: React.FC<{
 
   useEffect(() => {
     const handleOpenVideoStream = async () => {
-      if (videoRef.current && !mediaStream) {
+      if (videoRef.current) {
         videoRef.current.srcObject =
+          mediaStream ||
           props.localMediaStream ||
           props.remoteMediaStream ||
           new MediaStream();
-        setMediaStream(props.localMediaStream || props.remoteMediaStream);
+      }
+      if (mediaStream === undefined) {
+        setMediaStream(
+          props.localMediaStream || props.remoteMediaStream || new MediaStream()
+        );
       }
     };
     handleOpenVideoStream();
-  }, [isMediaStream, props.remoteMediaStream, props.localMediaStream]);
+  }, [isMediaStream]);
 
   const handleOpenCamera = async () => {
     const videoTracks = mediaStream?.getVideoTracks();
@@ -157,21 +162,19 @@ const StreamVideo: React.FC<{
     const listPeerConnections =
       props.handleGetListPeer && props.handleGetListPeer();
     const stageStreamVideo = isMediaStream
-      ? await navigator.mediaDevices.getUserMedia({
+      ? await navigator.mediaDevices.getDisplayMedia({
+          video: {
+            aspectRatio: 16 / 9,
+          },
+          audio: true,
+        })
+      : await navigator.mediaDevices.getUserMedia({
           video: {
             aspectRatio: 16 / 9,
             width: { min: 720, ideal: 720, max: 1280 },
             height: { min: 480, ideal: 480, max: 720 },
           },
           audio: { echoCancellation: true },
-        })
-      : await navigator.mediaDevices.getDisplayMedia({
-          video: {
-            aspectRatio: 16 / 9,
-            width: { min: 720, ideal: 720, max: 1280 },
-            height: { min: 480, ideal: 480, max: 720 },
-          },
-          audio: true,
         });
     stageStreamVideo.getTracks().forEach((track) => {
       listPeerConnections?.forEach((connection) => {
@@ -181,32 +184,34 @@ const StreamVideo: React.FC<{
         });
       });
     });
-    if (videoRef.current) {
-      videoRef.current.srcObject = stageStreamVideo;
-    }
-    setIsMediaStream(!isMediaStream);
     setMediaStream(stageStreamVideo);
+    setIsMediaStream(!isMediaStream);
   };
 
   return (
     <div
-      className="m-3 flex flex-col container relative w-full "
+      className="m-3 flex flex-col container-meeting relative w-full"
       key={`${props.userId}_key`}
     >
       <div className="absolute z-20 p-2 w-full bg-slate-200 opacity-50">
         {props.idKey === "localStream" ? "You" : props.name}
       </div>
-      <video ref={videoRef} autoPlay muted className="w-full videoStream" />
+      <video
+        ref={videoRef}
+        autoPlay
+        muted
+        className="w-full videoStream object-contain"
+      />
       <Button
         id="isOpenCam"
-        className="absolute bottom-5 left-5 z-20 p-1 block bg-slate-200 opacity-50 rounded-lg"
+        className=" absolute bottom-5 left-5 z-20 p-1 bg-slate-200 opacity-50 rounded-lg"
         onClick={() => handleOpenCamera()}
         childrencomp={isCamOpen ? <VideoCamOnIcon /> : <VideoCamOffIcon />}
       />
       {props.idKey === "localStream" && (
         <Button
           id="isMediaOpen"
-          className="absolute bottom-5 transform translate-x-1/2 p-1 block bg-slate-200 opacity-50 rounded-lg"
+          className=" absolute bottom-5 transform translate-x-1/2 p-1 bg-slate-200 opacity-50 rounded-lg"
           onClick={() => turnStageVideoStream()}
           childrencomp={isMediaStream ? <CameraIcon /> : <ScreenShareIcon />}
           label={isMediaStream ? "Share screen" : "Share camera"}
@@ -215,7 +220,7 @@ const StreamVideo: React.FC<{
 
       <Button
         id="isOpenMic"
-        className="absolute bottom-5 right-5 z-20 p-1 block bg-slate-200 opacity-50 rounded-lg"
+        className=" absolute bottom-5 right-5 z-20 p-1 bg-slate-200 opacity-50 rounded-lg"
         onClick={() => handleOpenMic()}
         childrencomp={isMicOpen ? <MicIcon /> : <MicOffIcon />}
       />

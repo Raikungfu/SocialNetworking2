@@ -6,6 +6,12 @@ export interface errorData {
 }
 
 export interface FormProps {
+  fileToShow?: (data: File) => void;
+  wrapListFileVariant?: string;
+  wrapClassName?: string;
+  childFileVariant?: "logo" | "avt" | "banner" | "post";
+  filesListWrap?: string;
+  childListWrap?: string;
   onSubmit?: (api: Element) => void;
   id?: string;
   title?: string;

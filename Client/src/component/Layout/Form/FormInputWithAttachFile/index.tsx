@@ -25,16 +25,25 @@ const Form: React.FC<FormProps> = (props) => {
       `listFileInputChatChange-${idShowListFile}`
     );
     if (files && rootElement && name.endsWith("file-input")) {
-      const root = createRoot(rootElement);
-      root.render(
-        <FileListView
-          children={files}
-          onListFilesChanged={(data: FileList) =>
-            setFormData({ ...formData, [name]: data })
-          }
-          wrapVariant={"w-full h-40 flex overflow-x-auto gap-2"}
-        />
-      );
+      rootElement.className = props.wrapListFileVariant || "";
+      if (props.fileToShow) {
+        props.fileToShow(files[0]);
+      } else {
+        const root = createRoot(rootElement);
+        root.render(
+          <FileListView
+            children={files}
+            onListFilesChanged={(data: FileList) =>
+              setFormData({ ...formData, [name]: data })
+            }
+            childVariant={props.childFileVariant}
+            wrapVariant={
+              props.filesListWrap || "w-full h-40 flex overflow-x-auto gap-2"
+            }
+            childClassname={props.childListWrap}
+          />
+        );
+      }
     }
     props.onInputChange && props.onInputChange();
     props.onChange && props.onChange(event);
@@ -69,7 +78,7 @@ const Form: React.FC<FormProps> = (props) => {
   };
 
   return (
-    <div className={` flex flex-col w-full`}>
+    <div className={`${props.wrapClassName} flex flex-col w-full`}>
       <div id={`listFileInputChatChange-${idShowListFile}`}></div>
       <form
         onSubmit={handleSubmit}

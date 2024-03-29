@@ -14,6 +14,7 @@ export interface ListProps {
   }) => void;
   newRecord?: User;
   removeRecord?: (data: User) => void;
+  updateRecord?: User;
 }
 
 export interface User {

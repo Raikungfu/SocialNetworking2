@@ -44,6 +44,13 @@ const userOnline = async (socket, userSocketMap) => {
           message: `Best friend <strong>${user.name}</strong> online. Message now....`,
           type: "active",
         });
+
+        socket.to(friendOnline).emit("friend-online", {
+          _id: socket.user.id,
+          name: socket.user.name,
+          avt: socket.user.avt,
+          online: true,
+        });
       }
     });
   } catch (err) {

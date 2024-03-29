@@ -2,6 +2,7 @@ import { AxiosError } from "axios";
 import { errorData } from "../../component/Layout/Form/types";
 import AxiosApi from "../../config/axios";
 import { FormDataOrOther } from "../../type/API";
+import socket from "../../config/socketIO";
 
 export const API_USER_GET_ALL_USERS = <T>(
   data: FormDataOrOther<T>
@@ -56,17 +57,12 @@ export const API_GET_REQUESTS = <T>(data: FormDataOrOther<T>): Promise<T> => {
 };
 
 export const API_USER_ADD_FRIEND = <T>(_id: T): Promise<T> => {
-  return AxiosApi.patch<T>("/User/add-friend", true, _id)
-    .then((response) => {
-      if (response.data) {
-        return response.data;
-      } else {
-        throw new Error("Fail to add friend");
-      }
-    })
-    .catch((err) => {
-      throw err;
+  return new Promise((resolve, reject) => {
+    socket.emit("user:add-friend", _id, (dataRes: T) => {
+      if (dataRes) resolve(dataRes);
+      else reject(new Error("Failed to add friend"));
     });
+  });
 };
 
 export const API_ACCEPT_REQUEST = <T>(_id: T): Promise<T> => {

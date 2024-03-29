@@ -2,6 +2,11 @@ import { ChangeEvent } from "react";
 
 export interface ChatProps {
   formInput: {
+    wrapListFileVariant?: string;
+    wrapClassName?: string;
+    childFileVariant?: "logo" | "avt" | "banner" | "post";
+    filesListWrap?: string;
+    childListWrap?: string;
     onSubmit?: (api: Element) => void;
     id: string;
     title?: string;

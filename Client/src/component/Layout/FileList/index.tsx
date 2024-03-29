@@ -1,11 +1,15 @@
 import DescriptionIcon from "@mui/icons-material/Description";
 import CloseIcon from "@mui/icons-material/Close";
 import { useEffect, useState } from "react";
+import Img from "../Img";
 
 interface FileListProps {
   children?: FileList;
   onListFilesChanged?: (fileList: FileList) => void;
-  wrapVariant: string;
+  wrapVariant?: string;
+  childVariant?: "logo" | "avt" | "banner" | "post";
+  childClassname?: string;
+  wrapChildVariant?: string;
 }
 
 const FileListView: React.FC<FileListProps> = (props) => {
@@ -20,7 +24,12 @@ const FileListView: React.FC<FileListProps> = (props) => {
   const renderFile = (file: File) => {
     if (file.type.startsWith("image")) {
       return (
-        <img className="h-full" src={URL.createObjectURL(file)} alt="image" />
+        <Img
+          className={props.childClassname || "h-full"}
+          src={URL.createObjectURL(file)}
+          alt="image"
+          variant={props.childVariant}
+        />
       );
     } else if (file.type.startsWith("video")) {
       return (
@@ -48,7 +57,10 @@ const FileListView: React.FC<FileListProps> = (props) => {
     files.length > 0 && (
       <div className={props.wrapVariant}>
         {files.map((file, index) => (
-          <div key={index} className="shrink-0 relative">
+          <div
+            key={index}
+            className={`${props.wrapChildVariant || "shrink-0 relative"} `}
+          >
             <CloseIcon
               className="absolute top-1 right-1 p-1 bg-red-500 rounded-full cursor-pointer"
               onClick={() => removeFile(index)}

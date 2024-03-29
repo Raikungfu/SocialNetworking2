@@ -5,13 +5,29 @@ import {
 import List from "../../Layout/List";
 import { MenuRightProps } from "./type";
 import { User } from "../../Layout/List/type";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useChatBox } from "../../../hook/UseChatBox";
 import { GET_LIST_FRIEND_ONLINE_VIA_SOCKET } from "../../../service/Chat/chatIndivisual";
+import socket from "../../../config/socketIO";
 
 const MenuRight: React.FC<MenuRightProps> = () => {
+  const [newFiendOnline, setNewFriendOnline] = useState<User>();
   const [newRequestAccept, setNewRequestAccept] = useState<User>();
+  const [newRequest, setNewRequest] = useState<User>();
   const { handleOpenReceptMessage } = useChatBox();
+
+  useEffect(() => {
+    socket.on("new-friend-request", (data: User) => {
+      console.log("friend request");
+      console.log(data);
+      setNewRequest(data);
+    });
+    socket.on("friend-online", (data: User) => setNewFriendOnline(data));
+    return () => {
+      socket.off("new-friend-request");
+      socket.off("friend-online");
+    };
+  });
 
   return (
     <div className="flex flex-col justify-start gap-2">
@@ -22,6 +38,7 @@ const MenuRight: React.FC<MenuRightProps> = () => {
         typeList="requestsList"
         API_HANDLE_EVENT_1={API_ACCEPT_REQUEST}
         removeRecord={setNewRequestAccept}
+        newRecord={newRequest}
       />
       <List
         title="List friends"
@@ -31,6 +48,7 @@ const MenuRight: React.FC<MenuRightProps> = () => {
         API_HANDLE_EVENT_1={API_GET_REQUESTS}
         handleOpenReceptMessage={handleOpenReceptMessage}
         newRecord={newRequestAccept}
+        updateRecord={newFiendOnline}
       />
     </div>
   );

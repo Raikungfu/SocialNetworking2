@@ -5,6 +5,7 @@ const chatIndividual = require("./SocketIO/ChatIndividual");
 const { openChatIndividual } = require("./SocketIO/ChatIndividual");
 const { openChatGroup } = require("./SocketIO/ChatGroup");
 const friendsOnline = require("./SocketIO/FriendOnline");
+const addFriend = require("./SocketIO/User");
 const { userOnline } = require("./SocketIO/FriendOnline");
 const createMeeting = require("./SocketIO/Meeting");
 const { joinMeeting, joinMeetingSuccess } = require("./SocketIO/Meeting");
@@ -42,6 +43,10 @@ const startSocketIOServer = (httpServer) => {
 
     socket.on("login", (message) => {
       console.log(message);
+    });
+
+    socket.on("user:add-friend", (data, callback) => {
+      addFriend(userSocketMap, socket, data, callback);
     });
 
     socket.on("massage:group", (message, callback) => {

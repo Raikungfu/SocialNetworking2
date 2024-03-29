@@ -41,7 +41,28 @@ const List: React.FC<ListProps> = (props) => {
       setAllUsers((prev) => [props.newRecord as User, ...prev]);
       setNumberNewRecord(numberNewRecord + 1);
     }
-  }, [numberNewRecord, props.newRecord]);
+  }, [props.newRecord]);
+
+  useEffect(() => {
+    if (props.updateRecord) {
+      setAllUsers((prevUsers) => {
+        const existingUser = prevUsers.find(
+          (user) => user._id === props.updateRecord?._id
+        );
+
+        if (existingUser) {
+          return prevUsers.map((user) =>
+            user._id === props.updateRecord?._id
+              ? { ...user, ...props.updateRecord }
+              : user
+          );
+        } else {
+          const updatedUsers = [...prevUsers, props.updateRecord];
+          return updatedUsers.filter((user) => user !== undefined) as User[];
+        }
+      });
+    }
+  }, [props.updateRecord]);
 
   const groupButton = (item: User) => {
     switch (props.typeList) {

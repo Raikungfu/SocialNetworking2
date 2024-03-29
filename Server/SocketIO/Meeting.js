@@ -1,6 +1,4 @@
-const RoomChatGroup = require("../Modules/RoomChatGroup");
 const Meeting = require("../Modules/Meeting");
-const Candidate = require("../Modules/Candidate");
 const createMeeting = async (socket, offer, callback, io) => {
   await new Meeting({ users: { _id: socket.user.id } })
     .save()

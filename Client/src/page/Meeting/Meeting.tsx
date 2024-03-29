@@ -38,11 +38,13 @@ const Meeting = () => {
   const [listStreamVideo, setListStreamVideo] = useState<JSX.Element>();
   const init = async () => {
     if (!localMediaStream) {
-      const stream = await navigator.mediaDevices.getDisplayMedia({
+      const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           aspectRatio: 16 / 9,
+          width: { min: 720, ideal: 720, max: 1280 },
+          height: { min: 480, ideal: 480, max: 720 },
         },
-        audio: true,
+        audio: { echoCancellation: true },
       });
       localMediaStream = stream;
       setListStreamVideo(

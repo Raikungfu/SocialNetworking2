@@ -21,6 +21,7 @@ import { roomChat } from "../../../type/API/User";
 import { Link } from "react-router-dom";
 import VideoCamIcon from "@mui/icons-material/Videocam";
 import CallIcon from "@mui/icons-material/Call";
+import ChatVideo from "../../ChatVideo";
 
 const ChatBox: React.FC = () => {
   const dispatch = useDispatch();
@@ -29,7 +30,7 @@ const ChatBox: React.FC = () => {
   );
 
   const chatWith = useSelector((state: RootState) => state.chatBox.recept);
-
+  const [isVideoCallOpen, setIsVideoCallOpen] = useState(false);
   const [listUserGroup, setListUserGroup] = useState<clickUser[]>([]);
   const [listSearch, setListSearch] = useState<searchUser>();
   const [form, setForm] = useState<RefObject<HTMLFormElement>>();
@@ -106,10 +107,19 @@ const ChatBox: React.FC = () => {
 
   const openPhoneCall = () => {};
 
-  const openVideoCall = () => {};
+  const openVideoCall = () => {
+    setIsVideoCallOpen(true);
+  };
   return (
     <>
       <div className="fixed bottom-0 right-0 mb-4 mr-4">
+        {isVideoCallOpen && (
+          <ChatVideo
+            name={chatWith?.name}
+            avt={chatWith?.avt}
+            handleCloseChat={() => setIsVideoCallOpen(false)}
+          />
+        )}
         <Button
           id={"bubble-chat"}
           childrencomp={<ChatIcon />}
@@ -158,7 +168,7 @@ const ChatBox: React.FC = () => {
             {chatWith ? (
               <Chat
                 formInput={{
-                  formVariant: "w-full p-4 flex flex-row items-center",
+                  formVariant: "relative w-full p-4 flex flex-row items-center",
                   inputVariant:
                     "w-full px-3 py-2 border focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-e-full",
                   input: [
@@ -190,6 +200,8 @@ const ChatBox: React.FC = () => {
                       ),
                     },
                   ],
+                  wrapListFileVariant:
+                    "absolute overflow-x-auto scrollable z-50 transform -translate-y-full",
                   onSubmitFail: handleError,
                   onInputChange: handleInputChange,
                   id: "chat-box",
@@ -222,7 +234,7 @@ const ChatBox: React.FC = () => {
                   handleOpenReceptMessage: handleClickUserSearch,
                 }}
                 formInput={{
-                  formVariant: "w-full p-4 flex flex-row items-center",
+                  formVariant: "relative w-full p-4 flex flex-row items-center",
                   inputVariant:
                     "w-full border focus:outline-none focus:ring-2 focus:ring-red-500 rounded-e-full py-2 pl-3 pr-32",
                   input: [
@@ -260,6 +272,8 @@ const ChatBox: React.FC = () => {
                   onReset: (form) => {
                     setForm(form);
                   },
+                  wrapListFileVariant:
+                    "absolute overflow-x-auto scrollable z-50 transform -translate-y-full",
                   id: "search-chat-box",
                   buttonVariant:
                     "rounded-full text-white bg-red-600 absolute right-4 bottom-4",

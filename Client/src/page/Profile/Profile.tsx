@@ -133,6 +133,17 @@ const Profile: React.FC = () => {
                     ),
                   },
                 ]}
+                fileToShow={(data: File) => {
+                  const reader = new FileReader();
+                  reader.onload = () => {
+                    const url = reader.result as string;
+                    setUserData((prev) => ({
+                      ...prev,
+                      cover: url,
+                    }));
+                  };
+                  reader.readAsDataURL(data);
+                }}
                 id="chat-box"
                 buttonLabel="Upload cover..."
                 buttonVariant="rounded-full text-white bg-red-600"
@@ -173,6 +184,17 @@ const Profile: React.FC = () => {
                       ),
                     },
                   ]}
+                  fileToShow={(data: File) => {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                      const url = reader.result as string;
+                      setUserData((prev) => ({
+                        ...prev,
+                        avt: url,
+                      }));
+                    };
+                    reader.readAsDataURL(data);
+                  }}
                   buttonLabel="Upload Avatar..."
                   id="chat-box"
                   buttonVariant="rounded-full text-white bg-red-600"
