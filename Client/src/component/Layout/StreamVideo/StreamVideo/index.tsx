@@ -21,7 +21,7 @@ const StreamVideo: React.FC<{
 }> = (props) => {
   const [isCamOpen, setIsCamOpen] = useState<boolean>(true);
   const [isMicOpen, setIsMicOpen] = useState<boolean>(false);
-  const [isMediaStream, setIsMediaStream] = useState<boolean>();
+  const [isMediaStream, setIsMediaStream] = useState<boolean>(true);
   const [mediaStream, setMediaStream] = useState<MediaStream>();
   const videoRef = useRef<HTMLVideoElement>(null);
   useEffect(() => {
