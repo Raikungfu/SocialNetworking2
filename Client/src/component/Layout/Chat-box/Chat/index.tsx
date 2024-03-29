@@ -153,7 +153,7 @@ const Chat: React.FC<ChatProps> = (props) => {
         _id: uuid.v4().toString(),
         sender_id: me || "",
         content: response,
-        sent_at: Date.now().toString(),
+        sent_at: new Date().toString(),
       },
     ]);
     try {

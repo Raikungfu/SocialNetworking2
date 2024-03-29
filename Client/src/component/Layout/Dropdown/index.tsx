@@ -19,6 +19,7 @@ const DropdownMenu: React.FC<DropdownProps> = (props) => {
           <div
             className={props.wrapDropdownListVariant}
             key={`user-dropdown-${props.id}`}
+            onClick={props.handleCloseDropdown}
           >
             {props.navLinkIcon?.map((navLink) => (
               <Link

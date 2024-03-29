@@ -4,7 +4,12 @@ import { H3 } from "../Text/H3";
 
 const Nav: React.FC<NavProps> = (props) => {
   return (
-    <ul className={props.wrapNavVariant} key={props.id} id={props.id}>
+    <ul
+      className={props.wrapNavVariant}
+      key={props.id}
+      id={props.id}
+      onClick={props.handleOnClick}
+    >
       {props.label && <H3 content={props.label} />}
       {props.navContext.navChild.map((items) => (
         <Link

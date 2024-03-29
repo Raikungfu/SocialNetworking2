@@ -16,4 +16,5 @@ export interface NavProps {
       variant?: string;
     }>;
   };
+  handleOnClick?: () => void;
 }

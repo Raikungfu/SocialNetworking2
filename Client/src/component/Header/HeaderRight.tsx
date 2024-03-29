@@ -171,6 +171,7 @@ const HeaderRight: React.FC = () => {
         }
         wrapDropdownChildVariant="flex flex-row p-2 gap-2 min-w-0"
         handleOpenDropdown={toggleDropdown}
+        handleCloseDropdown={() => toggleDropdown("")}
         isOpen={isProfileOpen}
       />
     </div>

@@ -116,7 +116,7 @@ const Header: React.FC = () => {
                   "absolute font-light cursor-pointer flex-1 flex flex-col justify-around bg-white rounded-lg"
                 }
                 wrapChildVariant={
-                  "flex flex-row gap-3 hover:bg-[#827d7d21] hover:dark:bg-white hover:bg-opacity-30 border-red-500 rounded-lg px-4 py-3"
+                  "flex flex-row gap-3 hover:bg-[#827d7d21] text-red-500 hover:bg-opacity-30 border-red-500 rounded-lg px-4 py-3"
                 }
                 navContext={{
                   navChild: [
@@ -152,6 +152,7 @@ const Header: React.FC = () => {
                     },
                   ],
                 }}
+                handleOnClick={() => setIsNavOpen(!isNavOpen)}
               />
             }
             isOpen={isNavOpen}

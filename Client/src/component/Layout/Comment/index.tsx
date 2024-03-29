@@ -21,7 +21,11 @@ const CommentCmp: React.FC<CommentProps> = (props) => {
 
   return (
     <div className="flex flex-row items-center">
-      <Img src={props.inputAvt ? props.inputAvt : logo} variant="avt" />
+      <Img
+        src={props.inputAvt ? props.inputAvt : logo}
+        variant="avt"
+        className="self-end my-6"
+      />
       <Form
         {...props.formInput}
         input={[

@@ -23,4 +23,5 @@ export interface DropdownProps {
     onClick?: () => void;
   }>;
   navLinkAvt?: ReactNode;
+  handleCloseDropdown?: () => void;
 }

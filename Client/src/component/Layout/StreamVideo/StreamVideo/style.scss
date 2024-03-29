@@ -1,0 +1,29 @@
+.container {
+    .user-name {
+        +.videoStream:hover {
+            .absolute {
+                display: block;
+            }
+        }
+    }
+
+    .videoStream {
+        &:hover {
+            +.relative .bg-slate-100 {
+                display: block;
+            }
+        }
+    }
+
+    .relative {
+        .absolute:hover {
+            display: block;
+        }
+    }
+
+    // .relative {
+    //     .absolute {
+    //         display: none;
+    //     }
+    // }
+}

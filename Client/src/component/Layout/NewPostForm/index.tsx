@@ -6,6 +6,8 @@ import Textarea from "../Textarea/Textarea";
 import { H3 } from "../Text/H3";
 import { API_FETCH_FILE } from "../../../service/UploadFileToFirebase/uploadFile";
 import { FormDataPost } from "../../../type/API";
+import FileListView from "../FileList";
+import { createRoot } from "react-dom/client";
 
 const NewPostForm: React.FC<NewPostFormProps> = (props) => {
   const [formData, setFormData] = useState<FormDataPost>({
@@ -19,6 +21,21 @@ const NewPostForm: React.FC<NewPostFormProps> = (props) => {
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, files } = event.target;
     setFormData({ ...formData, [name]: name === "input-file" ? files : value });
+    if (files && name === "input-file") {
+      const rootElement = document.getElementById("showListFilesPost");
+      if (rootElement) {
+        const root = createRoot(rootElement);
+        root.render(
+          <FileListView
+            children={files}
+            onListFilesChanged={(data: FileList) =>
+              setFormData({ ...formData, ["input-file"]: data })
+            }
+            wrapVariant={"w-full h-40 flex overflow-x-auto gap-2"}
+          />
+        );
+      }
+    }
   };
 
   const handleTextareaChange = (
@@ -86,7 +103,7 @@ const NewPostForm: React.FC<NewPostFormProps> = (props) => {
       ) : (
         <></>
       )}
-
+      <div id="showListFilesPost"></div>
       <div className="flex justify-end gap-3">
         <Button
           type="submit"

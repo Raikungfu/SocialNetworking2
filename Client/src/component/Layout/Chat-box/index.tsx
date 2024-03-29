@@ -18,6 +18,9 @@ import socket from "../../../config/socketIO";
 import { IndividualSendMessage } from "../Form/FormInputWithAttachFile/types";
 import { useChatBox } from "../../../hook/UseChatBox";
 import { roomChat } from "../../../type/API/User";
+import { Link } from "react-router-dom";
+import VideoCamIcon from "@mui/icons-material/Videocam";
+import CallIcon from "@mui/icons-material/Call";
 
 const ChatBox: React.FC = () => {
   const dispatch = useDispatch();
@@ -100,6 +103,10 @@ const ChatBox: React.FC = () => {
       form?.current?.reset();
     }
   };
+
+  const openPhoneCall = () => {};
+
+  const openVideoCall = () => {};
   return (
     <>
       <div className="fixed bottom-0 right-0 mb-4 mr-4">
@@ -116,19 +123,36 @@ const ChatBox: React.FC = () => {
         <div id="chat-container" className={`fixed bottom-24 right-8 w-96`}>
           <div className="bg-white shadow-md rounded-lg max-w-lg w-full">
             <div className="p-4 border-b bg-red-400 text-white rounded-t-lg flex justify-between items-center">
-              <div className="flex flex-row gap-2 min-w-0">
+              <Link
+                className="flex flex-row gap-2 min-w-0"
+                to={`profile/${chatWith?.id}`}
+              >
                 <Img src={chatWith?.avt || avt} variant="avt" />
                 <p className="text-lg font-semibold truncate">
                   {" "}
                   {chatWith?.name ?? "Chat with ..."}
                 </p>
+              </Link>
+              <div className="flex flex-row gap-2">
+                <Button
+                  id={"phone-chat"}
+                  childrencomp={<CallIcon />}
+                  className="text-gray-300 hover:text-red-400 p-1 rounded-full hover:bg-gray-100"
+                  onClick={() => openPhoneCall()}
+                />
+                <Button
+                  id={"video-chat"}
+                  childrencomp={<VideoCamIcon />}
+                  className="text-gray-300 hover:text-red-400 p-1 rounded-full hover:bg-gray-100"
+                  onClick={() => openVideoCall()}
+                />
+                <Button
+                  id={"close-chat"}
+                  childrencomp={<CloseIcon />}
+                  className="text-gray-300 hover:text-red-400 p-1 rounded-full hover:bg-gray-100"
+                  onClick={() => dispatch(setIsChatBoxOpen(false))}
+                />
               </div>
-              <Button
-                id={"close-chat"}
-                childrencomp={<CloseIcon />}
-                className="text-gray-300 hover:text-gray-400 focus:outline-none focus:text-gray-400"
-                onClick={() => dispatch(setIsChatBoxOpen(false))}
-              />
             </div>
 
             {chatWith ? (
@@ -200,13 +224,13 @@ const ChatBox: React.FC = () => {
                 formInput={{
                   formVariant: "w-full p-4 flex flex-row items-center",
                   inputVariant:
-                    "w-full border focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-e-full",
+                    "w-full border focus:outline-none focus:ring-2 focus:ring-red-500 rounded-e-full py-2 pl-3 pr-32",
                   input: [
                     {
                       types: "text",
                       id: "content",
                       placeholder: "Search...",
-                      wrapInputVariant: "w-full pr-[5rem]",
+                      wrapInputVariant: "w-full",
                     },
                     {
                       id: "search-file-input",

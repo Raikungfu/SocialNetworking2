@@ -8,6 +8,7 @@ import ListStreamVideo from "../../component/Layout/StreamVideo";
 export interface ICE {
   _roomId: string;
   _userId: string;
+  _userName?: string;
   offer: {
     type: RTCSdpType;
     sdp: string;
@@ -16,6 +17,11 @@ export interface ICE {
     type: RTCSdpType;
     sdp: string;
   };
+  error?:
+    | string
+    | {
+        name: string;
+      };
 }
 
 export interface peerC {
@@ -27,12 +33,15 @@ export interface peerC {
 const Meeting = () => {
   let localMediaStream: MediaStream;
   const [roomId, setRoomId] = useState<string>("");
+  const [error, setError] = useState<string>("");
   const roomIdRef = useRef<HTMLSpanElement>(null);
   const [listStreamVideo, setListStreamVideo] = useState<JSX.Element>();
   const init = async () => {
     if (!localMediaStream) {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
+      const stream = await navigator.mediaDevices.getDisplayMedia({
+        video: {
+          aspectRatio: 16 / 9,
+        },
         audio: true,
       });
       localMediaStream = stream;
@@ -49,10 +58,15 @@ const Meeting = () => {
 
   useEffect(() => {
     if (roomIdRef.current) {
-      roomIdRef.current.style.display = "color:green";
-      roomIdRef.current.textContent = "Current room: " + roomId;
+      if (roomId) {
+        roomIdRef.current.style.color = "color:green";
+        roomIdRef.current.textContent = "Current room: " + roomId;
+      } else if (error !== "") {
+        roomIdRef.current.style.color = "color:red";
+        roomIdRef.current.textContent = "Error: " + error;
+      }
     }
-  }, [roomId]);
+  }, [roomId, error]);
 
   const createRoom = async () => {
     await init();
@@ -81,8 +95,13 @@ const Meeting = () => {
           if (roomRef._roomId) {
             setRoomId(roomRef._roomId);
           } else {
-            if (roomIdRef.current)
-              roomIdRef.current.textContent = "Not found!!!";
+            setRoomId("");
+            console.error(roomRef.error);
+            if (typeof roomRef.error === "string") {
+              setError(roomRef.error);
+            } else {
+              setError(roomRef.error?.name || "");
+            }
           }
         }
       );
@@ -92,21 +111,23 @@ const Meeting = () => {
   };
 
   return (
-    <div className="p-20">
+    <>
       <div
         id="videosStream"
         className="flex flex-row w-10/12 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 fixed bg-red-50 h-5/6"
       >
         <Button
           id="openCamera"
-          className="absolute p-2 bg-red-500 z-50 text-white rounded-lg"
+          className="absolute p-4 bg-red-500 z-50 text-white rounded-lg"
           label="Create new Room"
           onClick={createRoom}
         />
-        <div>{listStreamVideo}</div>
+        {listStreamVideo}
       </div>
-      <div className="fixed bottom-20 transform right-1/2 translate-x-1/2">
-        <span className="text-base text-red-500 m-4" ref={roomIdRef}></span>
+      <div className="fixed bottom-5 transform right-1/2 translate-x-1/2">
+        <span className="text-base text-red-900 font-medium" ref={roomIdRef}>
+          Enter RoomID:
+        </span>
         <Form
           formVariant=" items-center flex flex-row w-full"
           inputVariant="px-3 py-2 border focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-full"
@@ -119,13 +140,13 @@ const Meeting = () => {
             },
           ]}
           id="chat-box"
-          buttonLabel="Enter RoomId"
+          buttonLabel="Enter"
           buttonVariant="rounded-full text-white bg-red-600 text-base"
           onSubmitSuccess={joinRoomById}
           onSubmitFail={() => {}}
         />
       </div>
-    </div>
+    </>
   );
 };
 

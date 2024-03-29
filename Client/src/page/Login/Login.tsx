@@ -111,6 +111,12 @@ function Login() {
               <Link to="/" className="hover:text-red-500">
                 Dashboard
               </Link>
+              <h5>
+                About me&nbsp;
+                <Link to="/about" className="text-red-500">
+                  read here...
+                </Link>
+              </h5>
             </div>
           </div>
         </div>

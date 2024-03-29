@@ -7,6 +7,8 @@ import { RootState } from "../../../../hook/rootReducer";
 import logo from "../../../../assets/img/logoAvt.jpeg";
 import dayjs from "dayjs";
 
+import { v4 as uuidv4 } from "uuid";
+
 const ChatContent: React.FC<ContentProps> = (props) => {
   const chatRoomType = useSelector(
     (state: RootState) => state.chatBox.recept?.type
@@ -27,10 +29,10 @@ const ChatContent: React.FC<ContentProps> = (props) => {
               content.sender_id === props.me ? "justify-end" : ""
             } relative`}
             id={content._id}
-            key={`message-${i}`}
+            key={`message-${uuidv4()}`}
           >
             {content.sender_id !== props.me && (
-              <div className="w-[2.2rem]">
+              <div className="w-[2.2rem] self-end py-2">
                 {isOne ? (
                   <div className="w-[2rem] h-[2rem] self-center"></div>
                 ) : (

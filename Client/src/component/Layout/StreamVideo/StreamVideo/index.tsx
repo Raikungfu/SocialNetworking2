@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import VideocamOffIcon from "@mui/icons-material/VideocamOff";
-import VideocamIcon from "@mui/icons-material/Videocam";
+import VideoCamOffIcon from "@mui/icons-material/VideocamOff";
+import VideoCamOnIcon from "@mui/icons-material/Videocam";
 import MicIcon from "@mui/icons-material/KeyboardVoice";
 import MicOffIcon from "@mui/icons-material/MicOff";
 import CameraIcon from "@mui/icons-material/Camera";
@@ -8,19 +8,22 @@ import ScreenShareIcon from "@mui/icons-material/ScreenShare";
 import { ICE, peerC } from "../../../../page/Meeting/Meeting";
 import socket from "../../../../config/socketIO";
 import Button from "../../Button";
+import "./style.scss";
 
 const StreamVideo: React.FC<{
+  name?: string;
   idKey: string;
   userId: string;
   peerConnection?: peerC;
   localMediaStream?: MediaStream;
   remoteMediaStream?: MediaStream;
+  handleGetListPeer?: () => RTCPeerConnection[];
 }> = (props) => {
   const [isCamOpen, setIsCamOpen] = useState<boolean>(true);
   const [isMicOpen, setIsMicOpen] = useState<boolean>(false);
   const [isMediaStream, setIsMediaStream] = useState<boolean>(true);
+  const [mediaStream, setMediaStream] = useState<MediaStream>();
   const videoRef = useRef<HTMLVideoElement>(null);
-  console.log(props);
   useEffect(() => {
     socket.on("ice_candidate", handleNewCandidate);
     socket.on("send_answer", handleGetAnswer);
@@ -96,27 +99,19 @@ const StreamVideo: React.FC<{
 
   useEffect(() => {
     const handleOpenVideoStream = async () => {
-      if (videoRef.current) {
+      if (videoRef.current && !mediaStream) {
         videoRef.current.srcObject =
           props.localMediaStream ||
           props.remoteMediaStream ||
           new MediaStream();
-        // = isMediaStream
-        //   ? props.mediaStream
-        //   : props.displayStream || props.mediaStream;
+        setMediaStream(props.localMediaStream || props.remoteMediaStream);
       }
     };
     handleOpenVideoStream();
   }, [isMediaStream, props.remoteMediaStream, props.localMediaStream]);
 
   const handleOpenCamera = async () => {
-    // const videoTracks = isMediaStream
-    //   ? props.mediaStream.getVideoTracks()
-    //   : props.displayStream?.getVideoTracks() ||
-    //     props.mediaStream.getVideoTracks();
-    const videoTracks =
-      props.localMediaStream?.getVideoTracks() ||
-      props.remoteMediaStream?.getVideoTracks();
+    const videoTracks = mediaStream?.getVideoTracks();
     const videoTrack = videoTracks?.find(
       (track) => track.id === videoTracks[0].id
     );
@@ -132,16 +127,11 @@ const StreamVideo: React.FC<{
   };
 
   const handleOpenMic = async () => {
-    // const audioTracks = isMediaStream
-    //   ? props.mediaStream.getAudioTracks()
-    //   : props.displayStream?.getAudioTracks() ||
-    //     props.mediaStream.getAudioTracks();
-    const audioTracks =
-      props.localMediaStream?.getAudioTracks() ||
-      props.remoteMediaStream?.getAudioTracks();
+    const audioTracks = mediaStream?.getAudioTracks();
     const audioTrack = audioTracks?.find(
       (track) => track.id === audioTracks[0].id
     );
+    console.log(audioTrack);
     if (videoRef.current && audioTrack) {
       if (audioTrack.enabled === true) {
         audioTrack.enabled = false;
@@ -150,34 +140,85 @@ const StreamVideo: React.FC<{
         audioTrack.enabled = true;
         setIsMicOpen(true);
       }
+    } else if (!audioTrack && !isMicOpen) {
+      if (videoRef.current) {
+        videoRef.current.classList.remove("muted");
+        setIsMicOpen(true);
+      }
+    } else {
+      if (videoRef.current) {
+        videoRef.current.classList.add("muted");
+        setIsMicOpen(false);
+      }
     }
   };
 
-  return (
-    <div className="p-10 flex flex-col w-1/2 h-1/2" key={`${props.userId}_key`}>
-      <video ref={videoRef} autoPlay muted className="w-full"></video>
-      <div className="relative">
-        <Button
-          id="isOpenCam"
-          className="absolute bottom-5 left-5 z-20 p-1 block bg-slate-100 opacity-50 rounded-lg"
-          onClick={handleOpenCamera}
-          childrencomp={isCamOpen ? <VideocamIcon /> : <VideocamOffIcon />}
-        />
-        <Button
-          id="isOpenMic"
-          className="absolute bottom-5 right-5 z-20 p-1 block bg-slate-100 opacity-50 rounded-lg"
-          onClick={handleOpenMic}
-          childrencomp={isMicOpen ? <MicIcon /> : <MicOffIcon />}
-        />
+  const turnStageVideoStream = async () => {
+    const listPeerConnections =
+      props.handleGetListPeer && props.handleGetListPeer();
+    const stageStreamVideo = isMediaStream
+      ? await navigator.mediaDevices.getUserMedia({
+          video: {
+            aspectRatio: 16 / 9,
+            width: { min: 720, ideal: 720, max: 1280 },
+            height: { min: 480, ideal: 480, max: 720 },
+          },
+          audio: { echoCancellation: true },
+        })
+      : await navigator.mediaDevices.getDisplayMedia({
+          video: {
+            aspectRatio: 16 / 9,
+            width: { min: 720, ideal: 720, max: 1280 },
+            height: { min: 480, ideal: 480, max: 720 },
+          },
+          audio: true,
+        });
+    stageStreamVideo.getTracks().forEach((track) => {
+      listPeerConnections?.forEach((connection) => {
+        connection.getSenders().forEach((sender) => {
+          console.log(sender);
+          sender.replaceTrack(track);
+        });
+      });
+    });
+    if (videoRef.current) {
+      videoRef.current.srcObject = stageStreamVideo;
+    }
+    setIsMediaStream(!isMediaStream);
+    setMediaStream(stageStreamVideo);
+  };
 
+  return (
+    <div
+      className="m-3 flex flex-col container relative w-full "
+      key={`${props.userId}_key`}
+    >
+      <div className="absolute z-20 p-2 w-full bg-slate-200 opacity-50">
+        {props.idKey === "localStream" ? "You" : props.name}
+      </div>
+      <video ref={videoRef} autoPlay muted className="w-full videoStream" />
+      <Button
+        id="isOpenCam"
+        className="absolute bottom-5 left-5 z-20 p-1 block bg-slate-200 opacity-50 rounded-lg"
+        onClick={() => handleOpenCamera()}
+        childrencomp={isCamOpen ? <VideoCamOnIcon /> : <VideoCamOffIcon />}
+      />
+      {props.idKey === "localStream" && (
         <Button
           id="isMediaOpen"
-          className="absolute bottom-5 transform translate-x-1/2 p-1 block bg-slate-100 opacity-50 rounded-lg"
-          onClick={() => setIsMediaStream(!isMediaStream)}
+          className="absolute bottom-5 transform translate-x-1/2 p-1 block bg-slate-200 opacity-50 rounded-lg"
+          onClick={() => turnStageVideoStream()}
           childrencomp={isMediaStream ? <CameraIcon /> : <ScreenShareIcon />}
           label={isMediaStream ? "Share screen" : "Share camera"}
         />
-      </div>
+      )}
+
+      <Button
+        id="isOpenMic"
+        className="absolute bottom-5 right-5 z-20 p-1 block bg-slate-200 opacity-50 rounded-lg"
+        onClick={() => handleOpenMic()}
+        childrencomp={isMicOpen ? <MicIcon /> : <MicOffIcon />}
+      />
     </div>
   );
 };

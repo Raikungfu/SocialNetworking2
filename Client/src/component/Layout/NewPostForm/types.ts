@@ -60,6 +60,7 @@ export interface NewPostFormProps {
   onSubmitSuccess: (data: object) => void;
   onSubmitFail: (error: string) => void;
   apiFetchForm: <T>(data: FormDataOrOther<T>) => Promise<T>;
+  onInputFileChange?: (data: FileList) => void;
   button?: string;
   buttonVariant?: string;
 }

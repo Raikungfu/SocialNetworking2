@@ -3,6 +3,7 @@ import { ICE, peerC } from "../../../page/Meeting/Meeting";
 import socket from "../../../config/socketIO";
 import StreamVideo from "./StreamVideo";
 import { configuration } from "../../../type/constant";
+import VideoStream from "../MediaLayout/VideoStream";
 
 const ListStreamVideo: React.FC<{
   idKey: string;
@@ -10,6 +11,7 @@ const ListStreamVideo: React.FC<{
   localMediaStream: MediaStream;
 }> = (props) => {
   const [videosStream, setVideosStream] = useState<JSX.Element[]>([]);
+  const listPeerConnections: RTCPeerConnection[] = [];
 
   useEffect(() => {
     setVideosStream([
@@ -18,21 +20,32 @@ const ListStreamVideo: React.FC<{
         userId={"localStream"}
         localMediaStream={props.localMediaStream}
         idKey={"localStream"}
+        name={""}
+        handleGetListPeer={() => {
+          return listPeerConnections;
+        }}
       />,
     ]);
     const handleUserJoinRoom = async ({
       _userId,
       _roomId,
+      _userName,
     }: {
       _userId: string;
       _roomId: string;
+      _userName: string;
     }) => {
       const peerConnection = new RTCPeerConnection(configuration);
-      await createOffer(_userId, _roomId, {
-        peerConnection: peerConnection,
-        _roomId: _roomId,
-        _userId: _userId,
-      });
+      await createOffer(
+        _userId,
+        _roomId,
+        {
+          peerConnection: peerConnection,
+          _roomId: _roomId,
+          _userId: _userId,
+        },
+        _userName
+      );
     };
 
     const handleGetOffer = async (roomRef: ICE) => {
@@ -47,9 +60,10 @@ const ListStreamVideo: React.FC<{
     const createOffer = async (
       _userId: string,
       _roomId: string,
-      peer: peerC
+      peer: peerC,
+      _userName: string
     ) => {
-      createPeerConnection(_roomId, _userId, peer);
+      createPeerConnection(_roomId, _userId, peer, _userName);
       const offer = await peer.peerConnection?.createOffer();
       await peer.peerConnection?.setLocalDescription(offer);
       socket.emit("send-offer", {
@@ -62,7 +76,12 @@ const ListStreamVideo: React.FC<{
     const createAnswer = async (roomRef: ICE, peer: peerC) => {
       try {
         console.log("createAnswer");
-        createPeerConnection(roomRef._roomId, roomRef._userId, peer);
+        createPeerConnection(
+          roomRef._roomId,
+          roomRef._userId,
+          peer,
+          roomRef._userName || "User"
+        );
         peer.peerConnection?.setRemoteDescription(roomRef.offer);
         const answer = await peer.peerConnection?.createAnswer();
         await peer.peerConnection?.setLocalDescription(answer);
@@ -82,13 +101,17 @@ const ListStreamVideo: React.FC<{
     return () => {
       socket.off("send_offer", handleGetOffer);
       socket.off("new_user_join", handleUserJoinRoom);
+      props.localMediaStream.getTracks().forEach(function (track) {
+        track.stop();
+      });
     };
   }, []);
 
   const createPeerConnection = async (
     roomId: string,
     userId: string,
-    peer: peerC
+    peer: peerC,
+    name: string
   ) => {
     const remoteMediaStream = new MediaStream();
     props.localMediaStream.getTracks().forEach((track) => {
@@ -115,6 +138,7 @@ const ListStreamVideo: React.FC<{
         }
       };
     }
+    listPeerConnections.push(peer.peerConnection);
     setVideosStream((prev) => [
       ...prev,
       <StreamVideo
@@ -123,11 +147,12 @@ const ListStreamVideo: React.FC<{
         remoteMediaStream={remoteMediaStream}
         peerConnection={peer}
         idKey={"remoteStream"}
+        name={name}
       />,
     ]);
   };
 
-  return <div>{videosStream.map((video) => video)}</div>;
+  return <VideoStream childrencomp={videosStream} />;
 };
 
 export default ListStreamVideo;
