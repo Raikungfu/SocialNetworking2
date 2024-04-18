@@ -20,7 +20,7 @@ const StreamVideo: React.FC<{
   handleGetListPeer?: () => RTCPeerConnection[];
 }> = (props) => {
   const [isCamOpen, setIsCamOpen] = useState<boolean>(true);
-  const [isMicOpen, setIsMicOpen] = useState<boolean>(false);
+  const [isMicOpen, setIsMicOpen] = useState<boolean>(true);
   const [isMediaStream, setIsMediaStream] = useState<boolean>(true);
   const [mediaStream, setMediaStream] = useState<MediaStream>();
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -136,7 +136,6 @@ const StreamVideo: React.FC<{
     const audioTrack = audioTracks?.find(
       (track) => track.id === audioTracks[0].id
     );
-    console.log(audioTrack);
     if (videoRef.current && audioTrack) {
       if (audioTrack.enabled === true) {
         audioTrack.enabled = false;
@@ -147,12 +146,12 @@ const StreamVideo: React.FC<{
       }
     } else if (!audioTrack && !isMicOpen) {
       if (videoRef.current) {
-        videoRef.current.classList.remove("muted");
+        if (props.remoteMediaStream) videoRef.current.classList.remove("muted");
         setIsMicOpen(true);
       }
     } else {
       if (videoRef.current) {
-        videoRef.current.classList.add("muted");
+        if (props.remoteMediaStream) videoRef.current.classList.add("muted");
         setIsMicOpen(false);
       }
     }
@@ -199,7 +198,7 @@ const StreamVideo: React.FC<{
       <video
         ref={videoRef}
         autoPlay
-        muted
+        muted={props.localMediaStream ? true : false}
         className="w-full videoStream object-contain"
       />
       <Button
