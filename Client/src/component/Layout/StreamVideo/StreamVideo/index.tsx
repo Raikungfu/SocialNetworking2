@@ -33,15 +33,16 @@ const StreamVideo: React.FC<{
     };
   });
   const handleNewCandidate = (data: {
-    roomId: string;
+    _roomId: string;
     _userId: string;
     candidate: RTCIceCandidate;
   }) => {
-    props.peerConnection?.peerConnection
-      .addIceCandidate(data.candidate)
-      .catch((e) => {
-        console.log(`Failure during addIceCandidate(): ${e.name}`);
-      });
+    if (data._userId === props.userId)
+      props.peerConnection?.peerConnection
+        .addIceCandidate(data.candidate)
+        .catch((e) => {
+          console.log(`Failure during addIceCandidate(): ${e.name}`);
+        });
   };
 
   props.peerConnection?.peerConnection?.addEventListener(
