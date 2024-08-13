@@ -60,7 +60,7 @@ function genNewAccessToken(data, req, res) {
 }
 
 function genRefreshToken(user, role, privateKey, expiresIn, algorithm) {
-  return jwt.sign({ id: user._id, role: user }, privateKey, {
+  return jwt.sign({ id: user._id, role: role }, privateKey, {
     expiresIn: expiresIn,
     algorithm: algorithm,
   });
